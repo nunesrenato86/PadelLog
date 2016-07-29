@@ -93,7 +93,6 @@ public class LoginActivity extends CommonActivity {
             }
         });
 
-
         initViews();
         //verifyUserLogged();
     }
@@ -130,6 +129,7 @@ public class LoginActivity extends CommonActivity {
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount account = result.getSignInAccount();
