@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "982799390788",
+    "firebase_url": "https://padellog-b49b1.firebaseio.com",
+    "project_id": "padellog-b49b1",
+    "storage_bucket": "padellog-b49b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:982799390788:android:91f441c4fe0c2863",
+        "android_client_info": {
+          "package_name": "com.renatonunes.padellog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "982799390788-899vulh9ibm4qaiapjtdiknehe7e90vm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.renatonunes.padellog",
+            "certificate_hash": "0A2DB177D547E8BA03BF1B2B605EC5F16EAA1D7E"
+          }
+        },
+        {
+          "client_id": "982799390788-hohuid0jtbrt5on1cmkrl0cdj3jnm9g4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3ae8wt65A-rBBcFKGManixntl9JaVpww"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "982799390788-hohuid0jtbrt5on1cmkrl0cdj3jnm9g4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
