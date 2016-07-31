@@ -1,6 +1,5 @@
 package com.renatonunes.padellog;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -15,11 +14,17 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +37,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
-//                FirebaseAuth firebaseAuth = LibraryClass.getFirebaseAuth();
-//                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-//
-//                Snackbar.make(view, "Logado como " + firebaseUser.getDisplayName(), Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
-                //FirebaseAuth.getInstance().signOut();
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
@@ -49,14 +44,6 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(MainActivity.this, "Não Logado", Toast.LENGTH_SHORT).show();
                 }
-
-
-//                Firebase firebase = LibraryClass.getFirebase();
-//                firebase.unauth();
-//
-//                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//                startActivity(intent);
-//                finish();
             }
         });
 
@@ -76,15 +63,20 @@ public class MainActivity extends AppCompatActivity
         TextView navUsername = (TextView) headerView.findViewById(R.id.textview_nav_name);
         TextView navEmail = (TextView) headerView.findViewById(R.id.textview_nav_email);
 
-
         if (user != null) {
             navUsername.setText(user.getDisplayName());
             navEmail.setText(user.getEmail());
-
         } else {
             navUsername.setText("Não logado");
             navEmail.setText("");
         }
+
+        //para poder deslogar do gogle sign in
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
     }
 
     @Override
@@ -137,8 +129,13 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
+
+            LoginManager.getInstance().logOut();
+
+            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()){
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+            }
+
             finish();
         }
 

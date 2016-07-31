@@ -15,8 +15,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.renatonunes.padellog.domain.User;
-import com.renatonunes.padellog.domain.util.LibraryClass;
+import com.renatonunes.padellog.domain.Player;
 
 public class SignUpActivity extends CommonActivity  {
 
@@ -25,7 +24,7 @@ public class SignUpActivity extends CommonActivity  {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
-    private User user;
+    private Player player;
     private AutoCompleteTextView name;
 
     @Override
@@ -36,27 +35,26 @@ public class SignUpActivity extends CommonActivity  {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //firebase = LibraryClass.getFirebase();
-        mAuth = LibraryClass.getFirebaseAuth();
+        mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                 if (firebaseUser != null) {
-                    // User is signed in
+                    // Player is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + firebaseUser.getUid());
 
-                    if (user != null){
-                        user.setId(firebaseUser.getUid());
-                        user.saveDB();
+                    if (player != null){
+                        player.setId(firebaseUser.getUid());
+                        player.saveDB();
                         //firebaseAuth.unauth();
                         showToast("Conta criada com sucesso!");
                         closeProgressBar();
                         finish();//irá voltar para a activity de login
                     }
                 } else {
-                    // User is signed out
+                    // Player is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
             }
@@ -88,30 +86,47 @@ public class SignUpActivity extends CommonActivity  {
     }
 
     @Override
-    protected void initUser() {
-        user = new User();
-        user.setName( name.getText().toString() );
-        user.setEmail( email.getText().toString() );
-        user.setPassword( password.getText().toString() );
+    protected void initUser(){
+        player = new Player();
+        player.setName( name.getText().toString() );
+        player.setEmail( email.getText().toString() );
+        player.setPassword( password.getText().toString() );
 
     }
+//    protected void initPlayer(String email,
+//                              String password,
+//                              String photoUrl,
+//                              String displayName) {
+//        player = new Player();
+//        player.setName( displayName );
+//        player.setEmail( email );
+//        player.setPassword( password );
+//        player.setPhotoUrl( photoUrl );
+//    }
 
     public void sendSignUpData(View view){
         openProgressBar();
+
         initUser();
+
+//        initPlayer(email.getText().toString(),
+//                password.getText().toString(),
+//                "",
+//                name.getText().toString());
+
         saveUser();
     }
 
     private void saveUser(){
-        mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
+        mAuth.createUserWithEmailAndPassword(player.getEmail(), player.getPassword())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // If sign in fails, display a message to the player. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
+                        // signed in player can be handled in the listener.
                         if (!task.isSuccessful()) {
                             showToast("Erro criando conta: " + task.getException().getMessage());
                             closeProgressBar();

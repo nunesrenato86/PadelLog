@@ -90,18 +90,15 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
-            <Button
-                android:onClick="sendLoginFacebookData"
-                android:id="@+id/email_sign_in_facebook_button"
-                style="?android:textAppearanceSmall"
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button_facebook"
                 android:layout_width="match_parent"
+                android:onClick="sendLoginFacebookData"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in_facebook"
-                android:textStyle="bold" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp" />
 
             <com.google.android.gms.common.SignInButton
-                android:onClick="sendLoginGoogleData"
                 android:id="@+id/sign_in_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

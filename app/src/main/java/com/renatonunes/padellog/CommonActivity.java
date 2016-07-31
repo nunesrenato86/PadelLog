@@ -41,5 +41,9 @@ abstract public class CommonActivity extends AppCompatActivity {
 
     abstract protected void initViews();
 
+//    abstract protected void initPlayer(String email,
+//                                       String password,
+//                                       String photoUrl,
+//                                       String displayName);
     abstract protected void initUser();
 }
