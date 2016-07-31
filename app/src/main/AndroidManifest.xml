@@ -35,6 +35,13 @@
             android:name=".SignUpActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ResetActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".UpdateActivity"
+            android:label="@string/title_activity_update"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.NoActionBar">

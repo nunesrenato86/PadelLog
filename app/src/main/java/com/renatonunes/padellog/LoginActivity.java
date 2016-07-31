@@ -231,10 +231,10 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         startActivity(intent);
     }
 
-//    public void callReset(View view){
-//        Intent intent = new Intent( this, ResetActivity.class );
-//        startActivity(intent);
-//    }
+    public void callReset(View view){
+        Intent intent = new Intent( this, ResetActivity.class );
+        startActivity(intent);
+    }
 
     public void sendLoginData( View view ){
 //        FirebaseCrash.log("LoginActivity:clickListener:button:sendLoginData()");

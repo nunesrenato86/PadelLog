@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -154,5 +155,25 @@ public class Player {
             this.email = email;
         }
 
+    }
+
+    public void updateDB( DatabaseReference.CompletionListener... completionListener ){
+
+        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("players").child( getId() );
+
+        Map<String, Object> map = new HashMap<>();
+        setNameInMap(map);
+        setEmailInMap(map);
+
+        if( map.isEmpty() ){
+            return;
+        }
+
+        if( completionListener.length > 0 ){
+            firebase.updateChildren(map, completionListener[0]);
+        }
+        else{
+            firebase.updateChildren(map);
+        }
     }
 }

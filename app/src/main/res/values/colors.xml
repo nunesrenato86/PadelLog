@@ -3,4 +3,9 @@
     <color name="colorPrimary">#03A9F4</color>
     <color name="colorPrimaryDark">#0288D1</color>
     <color name="colorAccent">#8BC34A</color>
+
+    <color name="sideNavBarShapeCenterColor">#03A9F4</color>
+    <color name="sideNavBarShapeEndColor">#0288D1</color>
+    <color name="sideNavBarShapeStartColor">#B3E5FC</color>
+
 </resources>

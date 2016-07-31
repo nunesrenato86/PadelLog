@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="right"
-                android:onClick="callSignUp"
+                android:onClick="callReset"
                 android:text="@string/action_reset_call"
                 android:textColor="#0000ff" />
 
