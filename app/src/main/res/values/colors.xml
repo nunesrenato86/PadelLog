@@ -8,4 +8,6 @@
     <color name="sideNavBarShapeEndColor">#0288D1</color>
     <color name="sideNavBarShapeStartColor">#B3E5FC</color>
 
+    <color name="colorFacebookButtonText">#ffffff</color>
+
 </resources>

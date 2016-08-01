@@ -8,9 +8,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.renatonunes.padellog.domain.Player;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -59,17 +67,22 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        View headerView = navigationView.getHeaderView(0);
-        TextView navUsername = (TextView) headerView.findViewById(R.id.textview_nav_name);
-        TextView navEmail = (TextView) headerView.findViewById(R.id.textview_nav_email);
+        /*leio da minha classe player, pois no login por user e password, não tenho o valor
+        * de FirebaseUser user.getDisplayName()*/
+        final String userId = user.getUid();
+        FirebaseDatabase.getInstance().getReference().child("players").child( userId ).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Player player = dataSnapshot.getValue(Player.class);
+                        updateNavUi(player.getName());
+                    }
 
-        if (user != null) {
-            navUsername.setText(user.getDisplayName());
-            navEmail.setText(user.getEmail());
-        } else {
-            navUsername.setText("Não logado");
-            navEmail.setText("");
-        }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("RNN", "getUser:onCancelled", databaseError.toException());
+                    }
+                });
 
         //para poder deslogar do gogle sign in
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
@@ -77,6 +90,35 @@ public class MainActivity extends AppCompatActivity
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+    }
+
+    private void updateNavUi(String name){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = (TextView) headerView.findViewById(R.id.textview_nav_name);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.textview_nav_email);
+        ImageView navImage = (ImageView) headerView.findViewById(R.id.imageView);
+
+        if (user != null) {
+            if (name != ""){
+                navUsername.setText(name);
+            }else {
+                navUsername.setText(user.getDisplayName());
+            }
+
+            navEmail.setText(user.getEmail());
+
+            if (user.getPhotoUrl() != null) {
+                Picasso.with(this).load(user.getPhotoUrl()).into(navImage);
+            }
+            else
+                Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(navImage);
+        } else {
+            navUsername.setText("Não logado");
+            navEmail.setText("");
+        }
     }
 
     @Override
@@ -117,17 +159,13 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_championships) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_per_partner) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_per_year) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_logout) {
             FirebaseAuth.getInstance().signOut();
 
             LoginManager.getInstance().logOut();

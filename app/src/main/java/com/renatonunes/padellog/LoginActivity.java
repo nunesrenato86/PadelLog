@@ -81,7 +81,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.email_sign_in_google_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Log.d(TAG, "entrou no onClick botao google");
@@ -194,6 +194,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     player.setId( userFirebase.getUid() );
                     player.setNameIfNull( userFirebase.getDisplayName() );
                     player.setEmailIfNull( userFirebase.getEmail() );
+                    //player.setPhotoUrl( userFirebase.getPhotoUrl().toString() );
                     player.saveDB();
                 }
 

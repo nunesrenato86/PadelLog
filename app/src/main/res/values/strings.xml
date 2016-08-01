@@ -14,13 +14,13 @@
     <string name="prompt_email">E-mail</string>
     <string name="prompt_password">Senha</string>
     <string name="prompt_new_password">Nova senha</string>
-    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in">Entrar</string>
     <string name="action_link">Link convencional login</string>
     <string name="action_unlink">Unlink convencional login</string>
-    <string name="action_sign_in_facebook">Sign in com Facebook</string>
+    <string name="action_sign_in_facebook">Entrar com Facebook</string>
     <string name="action_link_facebook">Link Facebook login</string>
     <string name="action_unlink_facebook">Unlink Facebook login</string>
-    <string name="action_sign_in_google">Sign in com Google</string>
+    <string name="action_sign_in_google">Entrar com Google</string>
     <string name="action_link_google">Link Google login</string>
     <string name="action_unlink_google">Unlink Google login</string>
     <string name="action_sign_in_twitter">Sign in com Twitter</string>
@@ -69,4 +69,12 @@
     <string name="chk_swimming">Natação</string>
     <string name="chk_news">Notícias gerais</string>
     <string name="chk_unique_token">Unique token id</string>
+
+
+    <string name="nav_logout">Logout</string>
+    <string name="nav_championships">Campeonatos</string>
+    <string name="nav_statistics">Estatísticas</string>
+    <string name="nav_per_year">Por ano</string>
+    <string name="nav_per_partner">Por parceiro</string>
+
 </resources>
