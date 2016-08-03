@@ -1,5 +1,6 @@
 package com.renatonunes.padellog;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -160,15 +161,20 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_championships) {
-            // Handle the camera action
+            Intent intent = new Intent(this, ChampionshipListActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_per_partner) {
 
         } else if (id == R.id.nav_per_year) {
 
         } else if (id == R.id.nav_logout) {
-            FirebaseAuth.getInstance().signOut();
+            if (FirebaseAuth.getInstance() != null) {
+                FirebaseAuth.getInstance().signOut();
+            }
 
-            LoginManager.getInstance().logOut();
+            if (LoginManager.getInstance() != null) {
+                LoginManager.getInstance().logOut();
+            }
 
             if (mGoogleApiClient != null && mGoogleApiClient.isConnected()){
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient);

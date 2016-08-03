@@ -3,7 +3,6 @@
     package="com.renatonunes.padellog">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -15,22 +14,20 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-                android:value="@string/facebook_app_id"/>
+            android:value="@string/facebook_app_id" />
 
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SignUpActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -52,6 +49,14 @@
                 <!-- category android:name="android.intent.category.LAUNCHER" / -->
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ChampionshipListActivity"
+            android:label="@string/title_activity_championship_list"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AddChampionshipActivity"
+            android:label="@string/title_activity_add_championship"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

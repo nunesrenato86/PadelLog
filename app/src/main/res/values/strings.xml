@@ -77,4 +77,10 @@
     <string name="nav_per_year">Por ano</string>
     <string name="nav_per_partner">Por parceiro</string>
 
+    <string name="title_activity_championship_list">Meus campeonatos</string>
+    <string name="title_activity_add_championship">Adicionar campeonato</string>
+    <string name="edt_championship_name">Nome</string>
+    <string name="edt_partner_name">Parceiro</string>
+
+
 </resources>
