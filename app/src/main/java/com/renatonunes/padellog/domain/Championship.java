@@ -1,5 +1,6 @@
 package com.renatonunes.padellog.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
@@ -7,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 /**
  * Created by Renato on 02/08/2016.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Championship {
 
     private String id;
