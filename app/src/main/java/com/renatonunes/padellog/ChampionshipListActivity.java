@@ -78,15 +78,21 @@ public class ChampionshipListActivity extends AppCompatActivity {
     private void refreshData(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = user.getUid();
+
         FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
+//        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                getUpdates(dataSnapshot);
+                if (dataSnapshot.getKey().equals(userId)) {
+                    getUpdates(dataSnapshot);
+                }
             }
 
             @Override
             public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                getUpdates(dataSnapshot);
+                if (dataSnapshot.getKey().equals(userId)) {
+                    getUpdates(dataSnapshot);
+                }
 
             }
 
@@ -111,7 +117,9 @@ public class ChampionshipListActivity extends AppCompatActivity {
     private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
         championships.clear();
 
+        //for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()){
         for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()){
+
             Championship championship = new Championship();
             championship.setName(ds.getValue(Championship.class).getName());
             championship.setOwner(ds.getValue(Championship.class).getOwner());
