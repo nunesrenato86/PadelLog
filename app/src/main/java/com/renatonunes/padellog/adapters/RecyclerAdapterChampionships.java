@@ -1,7 +1,10 @@
 package com.renatonunes.padellog.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +46,25 @@ public class RecyclerAdapterChampionships extends RecyclerView.Adapter<ViewHolde
 
         String partner = championships.get(position).getPartner();
         holder.championshipDetail.setText(partner);
+
+        String imgStr = championships.get(position).getImageStr();
+
+        if (((imgStr != null)) && (imgStr != "")){
+            holder.championshipImage.setImageBitmap(imgStrToImage(imgStr));
+        }else
+            holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+
+        //holder.championshipImage.setBackgroundResource(R.drawable.fotopadel);
     }
 
     @Override
     public int getItemCount() {
         return championships.size();
+    }
+
+    private Bitmap imgStrToImage(String imgStr){
+        byte[] imageAsBytes = Base64.decode(imgStr.getBytes(), Base64.DEFAULT);
+
+        return BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
     }
 }

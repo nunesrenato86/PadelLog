@@ -36,6 +36,12 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:24.1.1'
     compile 'com.android.support:cardview-v7:24.1.1'
 
+    compile 'com.wdullaer:materialdatetimepicker:1.4.1'
+
+//    compile 'com.google.gms:google-services:3.0.0'
+
+    compile 'com.google.android.gms:play-services:9.0.0'
+    //compile 'com.google.android.gms:play-services-places:9.4.0'
 
 }
 

@@ -57,7 +57,11 @@
     <string name="title_activity_notification">Notifications Firebase</string>
     <string name="password_info">Para prosseguir com a atualização informe abaixo sua senha.</string>
 
+    <string name="edt_initial_date">Início</string>
+    <string name="edt_final_date">Fim</string>
+
     <string name="facebook_app_id">1748665178734590</string>
+    <string name="my_google_app_id">AIzaSyB3ae8wt65A-rBBcFKGManixntl9JaVpww</string>
 
     <string name="github_app_id"></string>
     <string name="github_app_secret"></string>

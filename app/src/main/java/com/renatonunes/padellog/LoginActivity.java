@@ -194,7 +194,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     player.setId( userFirebase.getUid() );
                     player.setNameIfNull( userFirebase.getDisplayName() );
                     player.setEmailIfNull( userFirebase.getEmail() );
-                    //player.setPhotoUrl( userFirebase.getPhotoUrl().toString() );
+                    player.setPhotoUrl( userFirebase.getPhotoUrl().toString() );
                     player.saveDB();
                 }
 

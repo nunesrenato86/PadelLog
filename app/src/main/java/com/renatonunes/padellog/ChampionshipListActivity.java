@@ -76,23 +76,26 @@ public class ChampionshipListActivity extends AppCompatActivity {
 
     //retrieve data
     private void refreshData(){
+        championships.clear();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = user.getUid();
 
-        FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
-//        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
+        //ver aqui um modo de filtar melhor
+//        FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
+        //FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                if (dataSnapshot.getKey().equals(userId)) {
+                //if (dataSnapshot.getKey().equals(userId)) { //ver aqui um modo de filtar melhor
                     getUpdates(dataSnapshot);
-                }
+                //}
             }
 
             @Override
             public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                if (dataSnapshot.getKey().equals(userId)) {
+//                if (dataSnapshot.getKey().equals(userId)) {
                     getUpdates(dataSnapshot);
-                }
+//                }
 
             }
 
@@ -115,18 +118,20 @@ public class ChampionshipListActivity extends AppCompatActivity {
     }
 
     private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
-        championships.clear();
+        //championships.clear();
 
         //for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()){
-        for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()){
+//        for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()){
 
-            Championship championship = new Championship();
-            championship.setName(ds.getValue(Championship.class).getName());
-            championship.setOwner(ds.getValue(Championship.class).getOwner());
-            championship.setPartner(ds.getValue(Championship.class).getPartner());
+//            com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()
+        Championship championship = new Championship();
+        championship.setName(dataSnapshot.getValue(Championship.class).getName());
+        championship.setOwner(dataSnapshot.getValue(Championship.class).getOwner());
+        championship.setPartner(dataSnapshot.getValue(Championship.class).getPartner());
+        championship.setImageStr(dataSnapshot.getValue(Championship.class).getImageStr());
 
-            championships.add(championship);
-        }
+        championships.add(championship);
+//        }
 
         if (championships.size() > 0){
             adapter = new RecyclerAdapterChampionships(ChampionshipListActivity.this, championships);
