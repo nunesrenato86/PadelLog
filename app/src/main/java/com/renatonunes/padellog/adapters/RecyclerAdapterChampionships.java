@@ -51,8 +51,10 @@ public class RecyclerAdapterChampionships extends RecyclerView.Adapter<ViewHolde
 
         if (((imgStr != null)) && (imgStr != "")){
             holder.championshipImage.setImageBitmap(imgStrToImage(imgStr));
-        }else
+        }else {
+            holder.championshipImage.setImageBitmap(null);
             holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+        }
 
         //holder.championshipImage.setBackgroundResource(R.drawable.fotopadel);
     }

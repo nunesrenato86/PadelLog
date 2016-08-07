@@ -37,7 +37,6 @@ public class ViewHolderChampionship extends RecyclerView.ViewHolder {
                 Snackbar.make(v, "Click detected on item " + position,
                         Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
             }
         });
     }

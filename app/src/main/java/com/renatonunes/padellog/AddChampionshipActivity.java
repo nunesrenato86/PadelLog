@@ -1,6 +1,7 @@
 package com.renatonunes.padellog;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,14 +38,31 @@ import com.google.firebase.auth.FirebaseUser;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Calendar;
 
-public class AddChampionshipActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class AddChampionshipActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        DatePickerDialog.OnDateSetListener,
+        DialogInterface.OnCancelListener {
+
+    //fields
+    @BindView(R.id.edtInitialDate)
+    EditText edtInitialDate;
+
+    @BindView(R.id.edtFinalDate)
+    EditText edtFinalDate;
 
     static final int REQUEST_PLACE_PICKER = 103;
     private FloatingActionButton fab;
+
+    private int year, month, day;
 
     //to handle images
     private ImageView mThumbnailPreview;
@@ -59,6 +78,9 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         setContentView(R.layout.activity_add_championship);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ButterKnife.setDebug(true);
+        ButterKnife.bind(this);
 
         mPhotoTaker = new PhotoTaker(this);
 
@@ -83,13 +105,27 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
+
+        edtInitialDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setDate(true);
+            }
+        });
+
+        edtFinalDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setDate(false);
+            }
+        });
     }
 
     public void TakePhoto(View view){
         //tem que verificar a permissao pro android 6
 
         File placeholderFile = ImageFactory.newFile();
-
         mCurrentPhotoUri = Uri.fromFile(placeholderFile);
 
         if (!mPhotoTaker.takePhoto(placeholderFile)) {
@@ -204,6 +240,8 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
             championship.setPartner(partner.getText().toString());
             championship.setOwner(user.getUid());
             championship.setImageStr(getImageStr());
+            championship.setInitialDate(edtInitialDate.getText().toString());
+            championship.setFinalDate(edtFinalDate.getText().toString());
             championship.saveDB();
 
             //ver aqui - tratar erro
@@ -230,21 +268,24 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     }
 
     public String getImageStr(){
-        BitmapFactory.Options options = new BitmapFactory.Options();
+        if (mCurrentPhotoUri != null) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
 
-        options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+            options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
 
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
+            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-        byte[] bytes = baos.toByteArray();
+            byte[] bytes = baos.toByteArray();
 
-        String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+            String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-        return base64Image;
+            return base64Image;
+        }else
+            return "";
     }
 
     @Override
@@ -291,5 +332,52 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         }
     }
 
+    private void setDate(Boolean initial){
+        initDate();
 
+        Calendar cDefault = Calendar.getInstance();
+        cDefault.set(year, month, day);
+
+        DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(
+                this,
+                cDefault.get(Calendar.YEAR),
+                cDefault.get(Calendar.MONTH),
+                cDefault.get(Calendar.DAY_OF_MONTH)
+        );
+
+        String tag = (initial ? "initial" : "final");
+
+        datePickerDialog.setOnCancelListener(this);
+        datePickerDialog.show( getFragmentManager(), tag );
+    }
+
+    private void initDate(){
+        if( year == 0 ){
+            Calendar c = Calendar.getInstance();
+            year = c.get(Calendar.YEAR);
+            month = c.get(Calendar.MONTH);
+            day = c.get(Calendar.DAY_OF_MONTH);
+        }
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialogInterface) {
+        year = month = day = 0;
+        //edtInitialDate.setText("");
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        EditText editText;
+
+        if (view.getTag() == "initial"){
+            editText = edtInitialDate;
+        }
+        else
+            editText = edtFinalDate;
+
+        editText.setText( (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "/" +
+                (monthOfYear + 1 < 10 ? "0" + (monthOfYear + 1) : monthOfYear + 1) + "/" +
+                year);
+    }
 }

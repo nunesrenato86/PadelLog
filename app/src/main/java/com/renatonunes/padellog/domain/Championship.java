@@ -5,8 +5,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Date;
-
 /**
  * Created by Renato on 02/08/2016.
  */
@@ -18,8 +16,8 @@ public class Championship {
     private String partner;
     private String owner;
     private String imageStr;
-    private Date initialDate;
-    private Date finalDate;
+    private String initialDate;
+    private String finalDate;
 
     public Championship() {}
 
@@ -47,19 +45,15 @@ public class Championship {
         this.imageStr = imageStr;
     }
 
-    public Date getInitialDate() {
-        return initialDate;
-    }
+    public String getInitialDate() {return initialDate;}
 
-    public void setInitialDate(Date initialDate) {
-        this.initialDate = initialDate;
-    }
+    public void setInitialDate(String initialDate) {this.initialDate = initialDate;}
 
-    public Date getFinalDate() {
+    public String getFinalDate() {
         return finalDate;
     }
 
-    public void setFinalDate(Date finalDate) {
+    public void setFinalDate(String finalDate) {
         this.finalDate = finalDate;
     }
 
