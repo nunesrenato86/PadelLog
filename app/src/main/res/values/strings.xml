@@ -63,17 +63,7 @@
     <string name="facebook_app_id">1748665178734590</string>
     <string name="my_google_app_id">AIzaSyB3ae8wt65A-rBBcFKGManixntl9JaVpww</string>
 
-    <string name="github_app_id"></string>
-    <string name="github_app_secret"></string>
-    <string name="github_app_url"></string>
-    <string name="chk_topics">Topics</string>
-    <string name="chk_soccer">Futebol</string>
-    <string name="chk_basketball">Basquete</string>
-    <string name="chk_volley">Volei</string>
-    <string name="chk_swimming">Natação</string>
-    <string name="chk_news">Notícias gerais</string>
     <string name="chk_unique_token">Unique token id</string>
-
 
     <string name="nav_logout">Logout</string>
     <string name="nav_championships">Campeonatos</string>
@@ -85,6 +75,9 @@
     <string name="title_activity_add_championship">Adicionar campeonato</string>
     <string name="edt_championship_name">Nome</string>
     <string name="edt_partner_name">Parceiro</string>
+    <string name="edt_category">Categoria</string>
+
+    <string name="menu_save">Salvar</string>
 
 
 </resources>

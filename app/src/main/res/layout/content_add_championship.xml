@@ -18,7 +18,7 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/add_championship_name"
+            android:id="@+id/edt_add_championship_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/edt_championship_name"
@@ -34,10 +34,26 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/add_partner_name"
+            android:id="@+id/edt_add_partner_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/edt_partner_name"
+            android:imeOptions="actionUnspecified"
+            android:inputType="textCapWords"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/edt_add_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edt_category"
             android:imeOptions="actionUnspecified"
             android:inputType="textCapWords"
             android:maxLines="1"
@@ -57,7 +73,7 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/edtInitialDate"
+                android:id="@+id/edt_add_initial_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/edt_initial_date"
@@ -75,7 +91,7 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/edtFinalDate"
+                android:id="@+id/edt_add_final_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
@@ -89,61 +105,57 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/edt_add_place"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:hint="Local"
+        android:focusable="false"
+        android:imeOptions="actionUnspecified"
+        android:inputType="date"
+        android:maxLines="1"
+        android:singleLine="true" />
 
-        <EditText
-            android:id="@+id/edtPlace"
-            android:layout_width="0dp"
-            android:layout_weight="0.8"
-            android:layout_height="wrap_content"
-            android:hint="Local"
-            android:imeOptions="actionUnspecified"
-            android:inputType="date"
-            android:maxLines="1"
-            android:singleLine="true" />
-
-        <Button
-            android:layout_weight="0.2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnPickPlace"
-            android:onClick="onPickButtonClick"
-            android:text="Local"/>
-
-    </LinearLayout>
-
-    <ImageView
+    <FrameLayout
         android:layout_height="200dp"
-        android:layout_width="match_parent"
-        android:id="@+id/thumbnail_preview"
-        android:background="@drawable/no_photo"/>
+        android:layout_width="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        <ImageView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:id="@+id/thumbnail_preview"
+            android:background="@drawable/no_photo"/>
 
-        <Button
-            android:layout_weight="0.5"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/btnTakePhoto"
-            android:onClick="TakePhoto"
-            android:text="Tirar Foto"/>
-        <Button
-            android:layout_width="0dp"
-            android:layout_weight="0.5"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnPickPhoto"
-            android:onClick="PickPhoto"
-            android:text="Selecionar Foto"/>
+            android:orientation="horizontal"
+            android:layout_gravity="bottom"
+            android:padding="16dp">
 
-    </LinearLayout>
+            <Button
+                android:layout_weight="0.2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnTakePhoto"
+                android:onClick="TakePhoto"
+                android:background="@drawable/ic_camera"/>
+            <Button
+                android:layout_weight="0.6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnTakePhoto3"
+                android:onClick="TakePhoto"
+                android:visibility="invisible"
+                android:background="@drawable/ic_camera"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnPickPhoto"
+                android:onClick="PickPhoto"
+                android:background="@drawable/ic_folder_image"/>
 
-
-
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

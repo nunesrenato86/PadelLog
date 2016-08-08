@@ -23,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -33,6 +32,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.renatonunes.padellog.domain.Championship;
@@ -53,16 +53,33 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         DialogInterface.OnCancelListener {
 
     //fields
-    @BindView(R.id.edtInitialDate)
+    @BindView(R.id.edt_add_championship_name)
+    EditText edtName;
+
+    @BindView(R.id.edt_add_partner_name)
+    EditText edtPartner;
+
+    @BindView(R.id.edt_add_initial_date)
     EditText edtInitialDate;
 
-    @BindView(R.id.edtFinalDate)
+    @BindView(R.id.edt_add_final_date)
     EditText edtFinalDate;
+
+    @BindView(R.id.edt_add_place)
+    EditText edtPlace;
+
+    @BindView(R.id.edt_add_category)
+    EditText edtCategory;
 
     static final int REQUEST_PLACE_PICKER = 103;
     private FloatingActionButton fab;
+    private final Activity mActivity = this;
 
+    //to handle dates
     private int year, month, day;
+
+    //to handle place
+    private LatLng mCurrentLatLng;
 
     //to handle images
     private ImageView mThumbnailPreview;
@@ -118,6 +135,25 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
             @Override
             public void onClick(View view) {
                 setDate(false);
+            }
+        });
+
+        edtPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Construct an intent for the place picker
+                try {
+                    PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+                    Intent intent = intentBuilder.build(mActivity);
+                    // Start the intent by requesting a result,
+                    // identified by a request code.
+                    startActivityForResult(intent, REQUEST_PLACE_PICKER);
+
+                } catch (GooglePlayServicesRepairableException e) {
+                    // ...
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // ...
+                }
             }
         });
     }
@@ -208,23 +244,18 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
 
             final CharSequence name = place.getName();
             final CharSequence address = place.getAddress();
+            mCurrentLatLng = place.getLatLng();
             String attributions = PlacePicker.getAttributions(data);
+
             if (attributions == null) {
                 attributions = "";
             }
 
-            TextView edtPlace = (TextView) findViewById(R.id.edtPlace);
             edtPlace.setText(name + " " + address + " " + Html.fromHtml(attributions));
-
-//            mViewName.setText(name);
-//            mViewAddress.setText(address);
-//            mViewAttributions.setText(Html.fromHtml(attributions));
 
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-
-
     }
 
     public void saveChampionship(){
@@ -232,16 +263,17 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
 
         if (user != null) {
 
-            TextView name = (TextView) findViewById(R.id.add_championship_name);
-            TextView partner = (TextView) findViewById(R.id.add_partner_name);
-
             Championship championship = new Championship();
-            championship.setName(name.getText().toString());
-            championship.setPartner(partner.getText().toString());
+            championship.setName(edtName.getText().toString());
+            championship.setPartner(edtPartner.getText().toString());
             championship.setOwner(user.getUid());
             championship.setImageStr(getImageStr());
             championship.setInitialDate(edtInitialDate.getText().toString());
             championship.setFinalDate(edtFinalDate.getText().toString());
+            championship.setCategory(edtCategory.getText().toString());
+            championship.setPlace(edtPlace.getText().toString());
+            championship.setLat(mCurrentLatLng.latitude);
+            championship.setLng(mCurrentLatLng.longitude);
             championship.saveDB();
 
             //ver aqui - tratar erro
@@ -313,23 +345,6 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d("RNN", "failed");
-    }
-
-
-    public void onPickButtonClick(View v) {
-        // Construct an intent for the place picker
-        try {
-            PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
-            Intent intent = intentBuilder.build(this);
-            // Start the intent by requesting a result,
-            // identified by a request code.
-            startActivityForResult(intent, REQUEST_PLACE_PICKER);
-
-        } catch (GooglePlayServicesRepairableException e) {
-            // ...
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // ...
-        }
     }
 
     private void setDate(Boolean initial){

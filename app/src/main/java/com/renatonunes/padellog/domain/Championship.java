@@ -18,6 +18,10 @@ public class Championship {
     private String imageStr;
     private String initialDate;
     private String finalDate;
+    private String category;
+    private String place;
+    private Double lat;
+    private Double lng;
 
     public Championship() {}
 
@@ -57,6 +61,34 @@ public class Championship {
         this.finalDate = finalDate;
     }
 
+    public String getCategory() {return category;}
+
+    public void setCategory(String category) {this.category = category;}
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
+    }
+
     @Exclude
     public String getId() {
         return id;
@@ -89,5 +121,4 @@ public class Championship {
             firebase.setValue(this, completionListener[0]);
         }
     }
-
 }
