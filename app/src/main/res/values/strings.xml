@@ -79,5 +79,12 @@
 
     <string name="menu_save">Salvar</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="championship_info">
+        Campeonato disputado em %1$s, de %2$s até %3$s. %4$s e você
+        obtiveram o seguinte resultado na %5$s: %6$s.</string>
+
 
 </resources>

@@ -96,7 +96,6 @@ public class ChampionshipListActivity extends AppCompatActivity {
 //                if (dataSnapshot.getKey().equals(userId)) {
                     getUpdates(dataSnapshot);
 //                }
-
             }
 
             @Override
@@ -125,13 +124,18 @@ public class ChampionshipListActivity extends AppCompatActivity {
 
 //            com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()
         Championship championship = new Championship();
+        championship.setId(dataSnapshot.getKey());
         championship.setName(dataSnapshot.getValue(Championship.class).getName());
         championship.setOwner(dataSnapshot.getValue(Championship.class).getOwner());
         championship.setPartner(dataSnapshot.getValue(Championship.class).getPartner());
         championship.setImageStr(dataSnapshot.getValue(Championship.class).getImageStr());
+        championship.setLat(dataSnapshot.getValue(Championship.class).getLat());
+        championship.setLng(dataSnapshot.getValue(Championship.class).getLng());
+        championship.setInitialDate(dataSnapshot.getValue(Championship.class).getInitialDate());
+        championship.setFinalDate(dataSnapshot.getValue(Championship.class).getFinalDate());
+        championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
 
-        championships.add(championship);
-//        }
+        championships.add(championship);//        }
 
         if (championships.size() > 0){
             adapter = new RecyclerAdapterChampionships(ChampionshipListActivity.this, championships);

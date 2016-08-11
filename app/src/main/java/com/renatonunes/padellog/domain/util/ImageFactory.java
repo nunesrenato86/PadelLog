@@ -1,6 +1,9 @@
 package com.renatonunes.padellog.domain.util;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Base64;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,5 +43,11 @@ public class ImageFactory {
         }
 
         return imageFile;
+    }
+
+    public static Bitmap imgStrToImage(String imgStr){
+        byte[] imageAsBytes = Base64.decode(imgStr.getBytes(), Base64.DEFAULT);
+
+        return BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
     }
 }
