@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.renatonunes.padellog.AddChampionshipActivity"
-    tools:showIn="@layout/activity_add_championship"
+    tools:context="com.renatonunes.padellog.AddMatchActivity"
+    tools:showIn="@layout/activity_add_match"
     android:orientation="vertical">
 
     <FrameLayout
@@ -18,12 +17,11 @@
         <ImageView
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:id="@+id/img_championship"
+            android:id="@+id/img_match"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:background="@drawable/no_photo"
-            android:scaleType="centerCrop"
-            />
+            android:scaleType="centerCrop"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,14 +34,14 @@
                 android:layout_weight="0.2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/btnTakeChampionshipPhoto"
+                android:id="@+id/btnTakeMatchPhoto"
                 android:onClick="TakePhoto"
                 android:background="@drawable/ic_camera"/>
             <Button
                 android:layout_weight="0.6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/btnTakeChampionshipPhoto3"
+                android:id="@+id/btnTakeMatchPhoto3"
                 android:onClick="TakePhoto"
                 android:visibility="invisible"
                 android:background="@drawable/ic_camera"/>
@@ -51,7 +49,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="0.2"
                 android:layout_height="wrap_content"
-                android:id="@+id/btnPickChampionshipPhoto"
+                android:id="@+id/btnPickMatchPhoto"
                 android:onClick="PickPhoto"
                 android:background="@drawable/ic_folder_image"/>
         </LinearLayout>
@@ -71,10 +69,10 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/edt_add_championship_name"
+                android:id="@+id/edt_add_match_round"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/edt_championship_name"
+                android:hint="@string/edt_match_round"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textCapWords"
                 android:maxLines="1"
@@ -87,10 +85,10 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/edt_add_partner_name"
+                android:id="@+id/edt_add_match_opponent_drive"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/edt_partner_name"
+                android:hint="@string/edt_match_opponent_drive"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textCapWords"
                 android:maxLines="1"
@@ -103,10 +101,10 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/edt_add_category"
+                android:id="@+id/edt_add_match_opponent_backdrive"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/edt_category"
+                android:hint="@string/edt_match_opponent_backdrive"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textCapWords"
                 android:maxLines="1"
@@ -114,62 +112,6 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/edt_add_initial_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/edt_initial_date"
-                    android:focusable="false"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="date"
-                    android:maxLines="1"
-                    android:singleLine="true" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/edt_add_final_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:hint="@string/edt_final_date"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="date"
-                    android:maxLines="1"
-                    android:singleLine="true" />
-
-            </android.support.design.widget.TextInputLayout>
-
-        </LinearLayout>
-
-        <EditText
-            android:id="@+id/edt_add_place"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Local"
-            android:focusable="false"
-            android:imeOptions="actionUnspecified"
-            android:inputType="date"
-            android:paddingTop="@dimen/activity_horizontal_margin"
-            android:maxLines="1"
-            android:singleLine="true" />
     </LinearLayout>
-
 </LinearLayout>
 

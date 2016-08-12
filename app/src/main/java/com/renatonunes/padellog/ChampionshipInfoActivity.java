@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -25,7 +26,8 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 	implements AppBarLayout.OnOffsetChangedListener {
 
 	private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 20;
-	private boolean mIsAvatarShown = true;
+    private static Context context;
+    private boolean mIsAvatarShown = true;
 
     @BindView(R.id.championship_detail_title)
     TextView textTitle;
@@ -36,6 +38,9 @@ public class ChampionshipInfoActivity extends AppCompatActivity
     @BindView(R.id.championship_detail_top_picture)
     ImageView TopImage;
 
+    @BindView(R.id.fab_add_match)
+    FloatingActionButton fabAddMatch;
+
 	private ImageView mProfileImage;
 	private int mMaxScrollSize;
 
@@ -44,12 +49,15 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_material_up_concept);
+		setContentView(R.layout.activity_championship_info);
 
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.materialup_tabs);
 		ViewPager viewPager  = (ViewPager) findViewById(R.id.materialup_viewpager);
 		AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.materialup_appbar);
 		mProfileImage = (ImageView) findViewById(R.id.materialup_profile_image);
+
+        ButterKnife.bind(this);
+        ButterKnife.setDebug(true);
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.materialup_toolbar);
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -57,6 +65,13 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 				onBackPressed();
 			}
 		});
+
+        fabAddMatch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddMatchActivity.start(context, currentChampionship);
+            }
+        });
 
 		appbarLayout.addOnOffsetChangedListener(this);
 		mMaxScrollSize = appbarLayout.getTotalScrollRange();
@@ -81,6 +96,7 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 
 	public static void start(Context c, Championship championship) {
 		//passar o objeto pra outra activity serializado
+        context = c;
 		currentChampionship = championship;
 
 		c.startActivity(new Intent(c, ChampionshipInfoActivity.class));
@@ -123,7 +139,7 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 		@Override
 		public Fragment getItem(int i) {
 			switch(i) {
-				case 0: return ChampionshipInfoFragment.newInstance();
+				case 0: return ChampionshipInfoFragment.newInstance(currentChampionship);
 				case 1: return ChampionshipMatchesFragment.newInstance();
 //				case 2: return ChampionshipMatchesFragment.newInstance();
 			}

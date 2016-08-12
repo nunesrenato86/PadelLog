@@ -77,6 +77,10 @@
     <string name="edt_partner_name">Parceiro</string>
     <string name="edt_category">Categoria</string>
 
+    <string name="edt_match_round">Fase</string>
+    <string name="edt_match_opponent_drive">Adversário direita</string>
+    <string name="edt_match_opponent_backdrive">Adversário esquerda</string>
+
     <string name="menu_save">Salvar</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -85,6 +89,7 @@
     <string name="championship_info">
         Campeonato disputado em %1$s, de %2$s até %3$s. %4$s e você
         obtiveram o seguinte resultado na %5$s: %6$s.</string>
+    <string name="title_activity_add_match">AddMatchActivity</string>
 
 
 </resources>

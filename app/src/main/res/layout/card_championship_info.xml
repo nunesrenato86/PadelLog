@@ -21,6 +21,7 @@
 		android:text="Descrição do campeonato"
 		android:lineSpacingExtra="4dp"
 		android:ellipsize="end"
+		android:textSize="20sp"
 		/>
 </android.support.v7.widget.CardView>
 

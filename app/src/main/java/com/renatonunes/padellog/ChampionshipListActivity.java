@@ -22,6 +22,9 @@ import com.renatonunes.padellog.domain.Championship;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class ChampionshipListActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
@@ -29,6 +32,9 @@ public class ChampionshipListActivity extends AppCompatActivity {
     RecyclerView.Adapter adapter;
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
+
+    @BindView(R.id.fab_add_championship)
+    FloatingActionButton fabAddChampionship;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +50,12 @@ public class ChampionshipListActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
+        ButterKnife.setDebug(true);
+        ButterKnife.bind(this);
+
         this.refreshData();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_add_championship);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabAddChampionship.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 callAddChampionshipActivity();
@@ -128,6 +136,8 @@ public class ChampionshipListActivity extends AppCompatActivity {
         championship.setName(dataSnapshot.getValue(Championship.class).getName());
         championship.setOwner(dataSnapshot.getValue(Championship.class).getOwner());
         championship.setPartner(dataSnapshot.getValue(Championship.class).getPartner());
+        championship.setPlace(dataSnapshot.getValue(Championship.class).getPlace());
+        championship.setResult(dataSnapshot.getValue(Championship.class).getResult());
         championship.setImageStr(dataSnapshot.getValue(Championship.class).getImageStr());
         championship.setLat(dataSnapshot.getValue(Championship.class).getLat());
         championship.setLng(dataSnapshot.getValue(Championship.class).getLng());

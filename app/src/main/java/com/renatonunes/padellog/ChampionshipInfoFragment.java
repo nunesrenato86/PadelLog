@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.renatonunes.padellog.domain.Championship;
 
 public class ChampionshipInfoFragment extends Fragment {
+    private static Championship currentChampionship;
     private RecyclerView mRootView;
 
     @Nullable
@@ -26,17 +27,12 @@ public class ChampionshipInfoFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        Championship c = new Championship();
-        c.setPartner("Teste");
-        c.setPlace("Teste");
-        c.setCategory("Teste");
-        c.setFinalDate("Teste");
-        c.setInitialDate("Teste");
-
-        mRootView.setAdapter(new ChampionshipInfoAdapter(getActivity().getApplicationContext(), c));
+        mRootView.setAdapter(new ChampionshipInfoAdapter(getActivity().getApplicationContext(), currentChampionship));
     }
 
-    public static Fragment newInstance() {
+    public static Fragment newInstance(Championship championship) {
+        
+        currentChampionship = championship;
 
         return new ChampionshipInfoFragment();
     }

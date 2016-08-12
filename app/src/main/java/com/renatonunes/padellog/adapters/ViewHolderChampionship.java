@@ -1,7 +1,6 @@
 package com.renatonunes.padellog.adapters;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -44,9 +43,9 @@ public class ViewHolderChampionship extends RecyclerView.ViewHolder {
             @Override public void onClick(View v) {
                 int position = getAdapterPosition();
 
-                Snackbar.make(v, "Click on item " + position + " " + currentKey,
-                        Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(v, "Click on item " + position + " " + currentKey,
+//                        Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
 
                 ChampionshipInfoActivity.start(context, currentChampionship);
 

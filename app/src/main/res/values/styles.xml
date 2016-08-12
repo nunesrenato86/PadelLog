@@ -9,7 +9,7 @@
     </style>
 
     <style name="ToolBarWithNavigationBack">
-        <item name="navigationIcon">@drawable/ic_fab_plus</item>
+        <item name="navigationIcon">@drawable/ic_back</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

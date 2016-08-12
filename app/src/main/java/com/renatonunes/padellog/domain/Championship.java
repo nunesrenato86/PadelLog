@@ -22,8 +22,17 @@ public class Championship {
     private String place;
     private Double lat;
     private Double lng;
+    private Integer result;
 
     public Championship() {}
+
+    public Integer getResult() {
+        return result;
+    }
+
+    public void setResult(Integer result) {
+        this.result = result;
+    }
 
     public String getName() {
         return name;
@@ -87,6 +96,16 @@ public class Championship {
 
     public void setLng(Double lng) {
         this.lng = lng;
+    }
+
+    @Exclude
+    public String getResultStr() {
+        switch(this.result) {
+            case 0: return "Campeão";  // TODO: create strings.xml
+            case 1: return "Campeão";
+//				case 2: return ChampionshipMatchesFragment.newInstance();
+        }
+        return "";
     }
 
     @Exclude

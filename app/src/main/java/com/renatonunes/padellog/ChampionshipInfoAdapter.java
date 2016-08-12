@@ -27,7 +27,7 @@ public class ChampionshipInfoAdapter extends RecyclerView.Adapter<ChampioshipInf
 	@Override public ChampioshipInfoViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
 
 		View itemView = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.championship_info_card, viewGroup, false);
+                .inflate(R.layout.card_championship_info, viewGroup, false);
 
 		return new ChampioshipInfoViewHolder(itemView);
 	}
@@ -43,11 +43,11 @@ public class ChampionshipInfoAdapter extends RecyclerView.Adapter<ChampioshipInf
 
         String text = String.format(res.getString(R.string.championship_info),
                 currentChampionship.getPlace(),
-                "10/10/2016",
-                "13/10/2016",
-                "Nícolas",
-                "2ª categoria",
-                "Campeão");
+                currentChampionship.getInitialDate(),
+                currentChampionship.getFinalDate(),
+                currentChampionship.getPartner(),
+                currentChampionship.getCategory(),
+                currentChampionship.getResultStr());
 
 //        String name = championships.get(position).getName();
         champioshipInfoViewHolder.championshipInfoText.setText(text);

@@ -72,7 +72,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-				android:text="Saúl Molinero"
+				android:text="Championship name"
 				/>
 			​
 			<TextView
@@ -82,7 +82,7 @@
 				android:layout_marginTop="4dp"
 				android:layout_marginBottom="4dp"
 				android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"
-				android:text="Here I am with a subtitle"
+				android:text="10/10/2000 to 10/10/2000"
 				android:textColor="@android:color/white"
 				/>
 			​
@@ -107,6 +107,7 @@
 		/>
 	​
 	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/fab_add_match"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
 		android:elevation="8dp"

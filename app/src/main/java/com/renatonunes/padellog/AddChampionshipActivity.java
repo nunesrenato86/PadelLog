@@ -72,7 +72,10 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     EditText edtCategory;
 
     static final int REQUEST_PLACE_PICKER = 103;
-    private FloatingActionButton fab;
+
+    @BindView(R.id.fab_save_championship_form)
+    FloatingActionButton fabSaveChampionship;
+
     private final Activity mActivity = this;
 
     //to handle dates
@@ -82,7 +85,9 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     private LatLng mCurrentLatLng;
 
     //to handle images
-    private ImageView mThumbnailPreview;
+    @BindView(R.id.img_championship)
+    ImageView mThumbnailPreview;
+
     private Uri mCurrentPhotoUri;
     private PhotoTaker mPhotoTaker;
 
@@ -104,15 +109,12 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab_save_championship_form);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabSaveChampionship.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveChampionship();
             }
         });
-
-        mThumbnailPreview = (ImageView) findViewById(R.id.thumbnail_preview);
 
         //google places api
         mGoogleApiClient = new GoogleApiClient
@@ -251,7 +253,8 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
                 attributions = "";
             }
 
-            edtPlace.setText(name + " " + address + " " + Html.fromHtml(attributions));
+//            edtPlace.setText(name + " " + address + " " + Html.fromHtml(attributions));
+            edtPlace.setText(address + " " + Html.fromHtml(attributions));
 
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -274,11 +277,12 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
             championship.setPlace(edtPlace.getText().toString());
             championship.setLat(mCurrentLatLng.latitude);
             championship.setLng(mCurrentLatLng.longitude);
+            championship.setResult(-1); //dont have matches yet
             championship.saveDB();
 
             //ver aqui - tratar erro
 
-            Snackbar.make(fab,
+            Snackbar.make(fabSaveChampionship,
                     "Campeonato salvo com sucesso.",
                     Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();

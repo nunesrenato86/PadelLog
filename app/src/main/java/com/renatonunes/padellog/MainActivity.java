@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -47,12 +46,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user != null) {
-                    Toast.makeText(MainActivity.this, "Logado", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Não Logado", Toast.LENGTH_SHORT).show();
-                }
             }
         });
 
