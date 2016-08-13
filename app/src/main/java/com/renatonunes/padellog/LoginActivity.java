@@ -45,7 +45,6 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     private CallbackManager callbackManager;
     private GoogleApiClient mGoogleApiClient;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,10 +209,6 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                         || firebaseUser.getDisplayName() != null
         );
     }
-
-
-
-
 
     protected void initViews(){
         email = (AutoCompleteTextView) findViewById(R.id.email);

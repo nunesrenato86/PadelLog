@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.renatonunes.padellog.adapters.RecyclerAdapterChampionships;
+import com.renatonunes.padellog.adapters.ChampionshipListAdapter;
 import com.renatonunes.padellog.domain.Championship;
 
 import java.util.ArrayList;
@@ -148,7 +148,7 @@ public class ChampionshipListActivity extends AppCompatActivity {
         championships.add(championship);//        }
 
         if (championships.size() > 0){
-            adapter = new RecyclerAdapterChampionships(ChampionshipListActivity.this, championships);
+            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships);
             recyclerView.setAdapter(adapter);
         }else{
             Toast.makeText(ChampionshipListActivity.this, "Sem dados", Toast.LENGTH_SHORT).show();

@@ -13,25 +13,18 @@ import com.renatonunes.padellog.domain.Championship;
 /**
  * Created by Renato on 04/08/2016.
  */
-public class ViewHolderChampionship extends RecyclerView.ViewHolder {
+public class ChampionshipListViewHolder extends RecyclerView.ViewHolder {
 
     private final Context context;
-    public int currentItem;
+//    public int currentItem;
 
     public Championship currentChampionship;
 
-    public String currentKey;
     public ImageView championshipImage;
     public TextView championshipTitle;
     public TextView championshipDetail;
 
-    /*
-    * private String id;
-    private String name;
-    private String partner;
-    private String owner;*/
-
-    public ViewHolderChampionship(View itemView) {
+    public ChampionshipListViewHolder(View itemView) {
         super(itemView);
         championshipImage = (ImageView)itemView.findViewById(R.id.item_image);
         championshipTitle = (TextView)itemView.findViewById(R.id.item_title);
@@ -41,7 +34,7 @@ public class ViewHolderChampionship extends RecyclerView.ViewHolder {
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                int position = getAdapterPosition();
+//                int position = getAdapterPosition();
 
 //                Snackbar.make(v, "Click on item " + position + " " + currentKey,
 //                        Snackbar.LENGTH_LONG)

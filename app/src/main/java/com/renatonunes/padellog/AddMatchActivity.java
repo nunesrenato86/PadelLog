@@ -173,11 +173,12 @@ public class AddMatchActivity extends AppCompatActivity {
             match.setImageStr(getImageStr());
             match.setOwner(currentChampionship.getId());
             match.setRound(edtRound.getText().toString());
+            match.setScoreStr("0 X 0");
             match.saveDB();
 
             //ver aqui - tratar erro
             Snackbar.make(fabSaveMatch,
-                    "Partida salva com sucesso.",
+                    "Partida salva.",
                     Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }

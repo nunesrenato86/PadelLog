@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginActivity"
+    android:background="@drawable/side_nav_bar"
     android:fillViewport="true">
 
     <RelativeLayout
@@ -11,19 +12,20 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:id="@+id/logo"
-            android:layout_marginTop="160dp"
-            android:layout_marginBottom="30dp"
-            android:gravity="center"
+            android:gravity="bottom"
             android:scaleType="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"/>
+            android:layout_height="100dp"
+            android:src="@drawable/padel_log_text"
+            android:layout_marginTop="100dp"
+            android:layout_marginBottom="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <include
-            layout="@layout/content_login" />
+            layout="@layout/content_login"
+            android:id="@+id/include" />
 
     </RelativeLayout>
 </ScrollView>

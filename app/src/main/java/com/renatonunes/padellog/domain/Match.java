@@ -16,6 +16,7 @@ public class Match {
     private String opponentBackdrive;
     private String owner;
     private String imageStr;
+    private String scoreStr;
 
     public Match() {
     }
@@ -68,6 +69,14 @@ public class Match {
 
     public void setImageStr(String imageStr) {
         this.imageStr = imageStr;
+    }
+
+    public String getScoreStr() {
+        return scoreStr;
+    }
+
+    public void setScoreStr(String scoreStr) {
+        this.scoreStr = scoreStr;
     }
 
     public void saveDB(DatabaseReference.CompletionListener... completionListener ){

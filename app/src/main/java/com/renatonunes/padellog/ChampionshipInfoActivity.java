@@ -41,7 +41,9 @@ public class ChampionshipInfoActivity extends AppCompatActivity
     @BindView(R.id.fab_add_match)
     FloatingActionButton fabAddMatch;
 
-	private ImageView mProfileImage;
+    @BindView(R.id.materialup_profile_image)
+	ImageView mProfileImage;
+
 	private int mMaxScrollSize;
 
 	private static Championship currentChampionship;
@@ -52,9 +54,8 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 		setContentView(R.layout.activity_championship_info);
 
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.materialup_tabs);
-		ViewPager viewPager  = (ViewPager) findViewById(R.id.materialup_viewpager);
+		ViewPager viewPager = (ViewPager) findViewById(R.id.materialup_viewpager);
 		AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.materialup_appbar);
-		mProfileImage = (ImageView) findViewById(R.id.materialup_profile_image);
 
         ButterKnife.bind(this);
         ButterKnife.setDebug(true);
@@ -140,8 +141,8 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 		public Fragment getItem(int i) {
 			switch(i) {
 				case 0: return ChampionshipInfoFragment.newInstance(currentChampionship);
-				case 1: return ChampionshipMatchesFragment.newInstance();
-//				case 2: return ChampionshipMatchesFragment.newInstance();
+				case 1: return MatchListFragment.newInstance(currentChampionship, context);
+//				case 2: return MatchListFragment.newInstance();
 			}
 			return null;
 		}

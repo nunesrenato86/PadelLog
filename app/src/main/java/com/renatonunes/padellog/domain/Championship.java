@@ -103,7 +103,7 @@ public class Championship {
         switch(this.result) {
             case 0: return "Campeão";  // TODO: create strings.xml
             case 1: return "Campeão";
-//				case 2: return ChampionshipMatchesFragment.newInstance();
+//				case 2: return MatchListFragment.newInstance();
         }
         return "";
     }

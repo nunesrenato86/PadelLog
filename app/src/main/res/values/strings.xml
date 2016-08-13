@@ -14,7 +14,7 @@
     <string name="prompt_email">E-mail</string>
     <string name="prompt_password">Senha</string>
     <string name="prompt_new_password">Nova senha</string>
-    <string name="action_sign_in">Entrar</string>
+    <string name="action_sign_in">Entrar com e-mail</string>
     <string name="action_link">Link convencional login</string>
     <string name="action_unlink">Unlink convencional login</string>
     <string name="action_sign_in_facebook">Entrar com Facebook</string>
@@ -23,12 +23,7 @@
     <string name="action_sign_in_google">Entrar com Google</string>
     <string name="action_link_google">Link Google login</string>
     <string name="action_unlink_google">Unlink Google login</string>
-    <string name="action_sign_in_twitter">Sign in com Twitter</string>
-    <string name="action_link_twitter">Link Twitter login</string>
-    <string name="action_unlink_twitter">Unlink Twitter login</string>
-    <string name="action_sign_in_github">Sign in com GitHub</string>
-    <string name="action_link_github">Link GitHub login</string>
-    <string name="action_unlink_github">Unlink GitHub login</string>
+
     <string name="action_sign_up">Cadastrar</string>
     <string name="action_sign_up_call">Cadastrar</string>
     <string name="action_reset_call">Recuperar acesso</string>

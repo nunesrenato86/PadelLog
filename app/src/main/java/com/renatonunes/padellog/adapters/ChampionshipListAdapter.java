@@ -15,27 +15,27 @@ import java.util.ArrayList;
 /**
  * Created by Renato on 04/08/2016.
  */
-public class RecyclerAdapterChampionships extends RecyclerView.Adapter<ViewHolderChampionship> {
+public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipListViewHolder> {
 
     Context context;
     ArrayList<Championship> championships;
 
-    public RecyclerAdapterChampionships(Context context, ArrayList<Championship> championships) {
+    public ChampionshipListAdapter(Context context, ArrayList<Championship> championships) {
         this.championships = championships;
         this.context = context;
     }
 
     @Override
-    public ViewHolderChampionship onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ChampionshipListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_championship, parent, false);
 
-        ViewHolderChampionship viewHolder = new ViewHolderChampionship(v);
+        ChampionshipListViewHolder viewHolder = new ChampionshipListViewHolder(v);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolderChampionship holder, int position) {
+    public void onBindViewHolder(ChampionshipListViewHolder holder, int position) {
         holder.currentChampionship = championships.get(position);
 
         holder.championshipTitle.setText(championships.get(position).getName());
