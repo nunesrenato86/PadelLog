@@ -17,8 +17,62 @@ public class Match {
     private String owner;
     private String imageStr;
     private String scoreStr;
+    private Integer set1Score1;
+    private Integer set1Score2;
+    private Integer set2Score1;
+    private Integer set2Score2;
+    private Integer set3Score1;
+    private Integer set3Score2;
 
     public Match() {
+    }
+
+    public Integer getSet1Score1() {
+        return set1Score1;
+    }
+
+    public void setSet1Score1(Integer set1Score1) {
+        this.set1Score1 = set1Score1;
+    }
+
+    public Integer getSet1Score2() {
+        return set1Score2;
+    }
+
+    public void setSet1Score2(Integer set1Score2) {
+        this.set1Score2 = set1Score2;
+    }
+
+    public Integer getSet2Score1() {
+        return set2Score1;
+    }
+
+    public void setSet2Score1(Integer set2Score1) {
+        this.set2Score1 = set2Score1;
+    }
+
+    public Integer getSet2Score2() {
+        return set2Score2;
+    }
+
+    public void setSet2Score2(Integer set2Score2) {
+        this.set2Score2 = set2Score2;
+    }
+
+    public Integer getSet3Score1() {
+        return set3Score1;
+    }
+
+    public void setSet3Score1(Integer set3Score1) {
+        this.set3Score1 = set3Score1;
+    }
+
+    public Integer getSet3Score2() {
+        return set3Score2;
+    }
+
+    public void setSet3Score2(Integer set3Score2) {
+        this.set3Score2 = set3Score2;
     }
 
     @Exclude
@@ -72,11 +126,30 @@ public class Match {
     }
 
     public String getScoreStr() {
-        return scoreStr;
-    }
+        //0 X 0 3 X 2 11 X 10
+        String set1 = getSet1Score1().toString()
+                + " X "
+                + getSet1Score2().toString();
 
-    public void setScoreStr(String scoreStr) {
-        this.scoreStr = scoreStr;
+        String set2 = getSet2Score1().toString()
+                + " X "
+                + getSet2Score2().toString();
+
+        String set3 = getSet3Score1().toString()
+                + " X "
+                + getSet3Score2().toString();
+
+        String result = set1;
+
+        if (!set2.contentEquals("0 X 0")){
+            result = result + " " + set2;
+        }
+
+        if (!set3.contentEquals("0 X 0")){
+            result = result + " " + set3;
+        }
+
+        return result;
     }
 
     public void saveDB(DatabaseReference.CompletionListener... completionListener ){

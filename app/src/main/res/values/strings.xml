@@ -84,7 +84,18 @@
     <string name="championship_info">
         Campeonato disputado em %1$s, de %2$s até %3$s. %4$s e você
         obtiveram o seguinte resultado na %5$s: %6$s.</string>
-    <string name="title_activity_add_match">AddMatchActivity</string>
+    <string name="title_activity_add_match">Adicionar jogos</string>
 
+    <string name="spinner_title">Fase</string>
+    <string name="round_draw">Chave</string>
+    <string name="round_64">64 avos de final</string>
+    <string name="round_32">32 avos de final</string>
+    <string name="round_16">16 avos de final</string>
+    <string name="round_8">Oitavas de final</string>
+    <string name="round_4">Quartas de final</string>
+    <string name="round_semi">Semifinal</string>
+    <string name="round_final">Final</string>
+
+    <string name="msg_error_img_file">"Sorry! Couldn't create a new image file"</string>
 
 </resources>

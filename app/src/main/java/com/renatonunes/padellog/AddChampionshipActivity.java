@@ -50,7 +50,7 @@ import butterknife.ButterKnife;
 public class AddChampionshipActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         DatePickerDialog.OnDateSetListener,
-        DialogInterface.OnCancelListener {
+        DialogInterface.OnCancelListener{
 
     //fields
     @BindView(R.id.edt_add_championship_name)
@@ -205,9 +205,10 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     }
 
     private void displayPhotoError() {
-        Toast.makeText(getApplicationContext(),
-                "Sorry! Couldn't create a new image file", Toast.LENGTH_SHORT)
-                .show();
+        Snackbar.make(fabSaveChampionship,
+                getResources().getString(R.string.msg_error_img_file),
+                Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 
     @Override
@@ -283,7 +284,7 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
             //ver aqui - tratar erro
 
             Snackbar.make(fabSaveChampionship,
-                    "Campeonato salvo com sucesso.",
+                    "Campeonato salvo.",
                     Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }

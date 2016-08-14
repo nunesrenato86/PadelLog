@@ -41,7 +41,7 @@
 				android:weightSum="1">
 				<TextView
 					android:layout_width="0dp"
-					android:layout_weight="0.7"
+					android:layout_weight="0.5"
 					android:layout_height="wrap_content"
 					android:id="@+id/item_match_round"
 					android:textSize="20sp"
@@ -52,7 +52,7 @@
 
 				<TextView
 					android:layout_width="0dp"
-					android:layout_weight="0.3"
+					android:layout_weight="0.5"
 					android:layout_height="wrap_content"
 					android:id="@+id/item_match_score"
 					android:textAlignment="viewEnd"

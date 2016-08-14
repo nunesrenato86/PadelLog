@@ -64,21 +64,29 @@
         android:paddingRight="@dimen/activity_vertical_margin"
         android:paddingEnd="@dimen/activity_vertical_margin">
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/edt_add_match_round"
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="6dp"
+                android:text="Fase"
+                android:layout_marginBottom="5dp"/>
+
+            <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/edt_match_round"
-                android:imeOptions="actionUnspecified"
-                android:inputType="textCapWords"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:id="@+id/spinner_match_round"
+                android:spinnerMode="dialog"
+                android:prompt="@string/spinner_title"
+                style="@android:style/Widget.Holo.Light.Spinner"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -112,6 +120,187 @@
 
         </android.support.design.widget.TextInputLayout>
 
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="0.99">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.33"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="6dp"
+                android:text="SET 1"
+                android:textAlignment="center"
+                android:layout_marginBottom="5dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.33"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="6dp"
+                android:text="SET 2"
+                android:textAlignment="center"
+                android:layout_marginBottom="5dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.33"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="6dp"
+                android:text="SET 3"
+                android:textAlignment="center"
+                android:layout_marginBottom="5dp"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="0.99">
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:layout_width="0dp"
+                android:layout_weight="0.33"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edt_add_match_score_set1_1"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="wrap_content"
+                    android:hint="0"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:textAlignment="center"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="6dp"
+                    android:text="X"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/edt_add_match_score_set1_2"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="wrap_content"
+                    android:hint="0"
+                    android:textAlignment="center"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:layout_width="0dp"
+                android:layout_weight="0.33"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edt_add_match_score_set2_1"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="wrap_content"
+                    android:hint="0"
+                    android:textAlignment="center"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="6dp"
+                    android:text="X"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/edt_add_match_score_set2_2"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="wrap_content"
+                    android:hint="0"
+                    android:textAlignment="center"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:layout_width="0dp"
+                android:layout_weight="0.33"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edt_add_match_score_set3_1"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="wrap_content"
+                    android:hint="0"
+                    android:textAlignment="center"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="6dp"
+                    android:text="X"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/edt_add_match_score_set3_2"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="wrap_content"
+                    android:hint="0"
+                    android:textAlignment="center"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
 

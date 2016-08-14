@@ -99,33 +99,41 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:weightSum="1">
-            <Button
-                android:id="@+id/login_button_facebook"
-                android:onClick="sendLoginFacebookData"
-                style="?android:textAppearanceSmall"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/action_sign_in_facebook"
-                android:drawableLeft="@drawable/ic_facebook128"
-                android:background="@color/com_facebook_blue"
-                android:textColor="@color/colorFacebookButtonText"
-                android:padding="10dp" />
+                <Button
+                    android:id="@+id/login_button_facebook"
+                    android:onClick="sendLoginFacebookData"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.49"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/action_sign_in_facebook"
+                    android:drawableLeft="@drawable/ic_facebook128"
+                    android:background="@color/com_facebook_blue"
+                    android:textColor="@color/colorFacebookButtonText"
+                    android:padding="10dp" />
 
-            <Button
-                android:id="@+id/email_sign_in_google_button"
-                android:onClick="sendLoginData"
-                style="?android:textAppearanceSmall"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/action_sign_in_google"
-                android:drawableLeft="@drawable/ic_google128"
-                android:background="@color/colorFacebookButtonText"
-                android:padding="10dp"/>
-        </LinearLayout>
+                <Button
+                    android:id="@+id/login_button_facebook2"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.02"
+                    android:visibility="invisible"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+                <Button
+                    android:id="@+id/email_sign_in_google_button"
+                    android:onClick="sendLoginData"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.49"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/action_sign_in_google"
+                    android:drawableLeft="@drawable/ic_google128"
+                    android:background="@color/colorFacebookButtonText"
+                    android:padding="10dp"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_gravity="center"

@@ -17,8 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.renatonunes.padellog.domain.Championship;
@@ -28,6 +30,8 @@ import com.renatonunes.padellog.domain.util.PhotoTaker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,9 +45,6 @@ public class AddMatchActivity extends AppCompatActivity {
     @BindView(R.id.edt_add_match_opponent_backdrive)
     EditText edtOpponentBackdrive;
 
-    @BindView(R.id.edt_add_match_round)
-    EditText edtRound;
-
     private final Activity mActivity = this;
 
     //to handle images
@@ -53,9 +54,31 @@ public class AddMatchActivity extends AppCompatActivity {
     @BindView(R.id.fab_save_match)
     FloatingActionButton fabSaveMatch;
 
+    @BindView(R.id.spinner_match_round)
+    Spinner spinnerRound;
+
+    @BindView(R.id.edt_add_match_score_set1_1)
+    EditText edtSet1Score1;
+
+    @BindView(R.id.edt_add_match_score_set1_2)
+    EditText edtSet1Score2;
+
+    @BindView(R.id.edt_add_match_score_set2_1)
+    EditText edtSet2Score1;
+
+    @BindView(R.id.edt_add_match_score_set2_2)
+    EditText edtSet2Score2;
+
+    @BindView(R.id.edt_add_match_score_set3_1)
+    EditText edtSet3Score1;
+
+    @BindView(R.id.edt_add_match_score_set3_2)
+    EditText edtSet3Score2;
+
     private Uri mCurrentPhotoUri;
     private static Championship currentChampionship = null;
     private PhotoTaker mPhotoTaker;
+    private ArrayAdapter<String> dataAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +101,43 @@ public class AddMatchActivity extends AppCompatActivity {
                 saveMatch();
             }
         });
+
+        // Spinner element
+        // Spinner Drop down elements
+        List<String> categories = new ArrayList<String>();
+        categories.add(getResources().getString(R.string.round_draw));
+        categories.add(getResources().getString(R.string.round_64));
+        categories.add(getResources().getString(R.string.round_32));
+        categories.add(getResources().getString(R.string.round_16));
+        categories.add(getResources().getString(R.string.round_8));
+        categories.add(getResources().getString(R.string.round_4));
+        categories.add(getResources().getString(R.string.round_semi));
+        categories.add(getResources().getString(R.string.round_final));
+
+        // Creating adapter for spinner
+        dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(R.layout.spinner_item);
+
+        // attaching data adapter to spinner
+        spinnerRound.setAdapter(dataAdapter);
+
+//        spinnerRound.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                // On selecting a spinner item
+////                String round = adapterView.getItemAtPosition(i).toString();
+//                // Showing selected spinner item
+////                Toast.makeText(getApplicationContext(),
+////                        "Selected round : " + round, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
     }
 
     public void TakePhoto(View view){
@@ -125,9 +185,10 @@ public class AddMatchActivity extends AppCompatActivity {
     }
 
     private void displayPhotoError() {
-        Toast.makeText(getApplicationContext(),
-                "Sorry! Couldn't create a new image file", Toast.LENGTH_SHORT)
-                .show();
+        Snackbar.make(fabSaveMatch,
+                getResources().getString(R.string.msg_error_img_file),
+                Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 
     @Override
@@ -172,8 +233,56 @@ public class AddMatchActivity extends AppCompatActivity {
             match.setOpponentDrive(edtOpponentDrive.getText().toString());
             match.setImageStr(getImageStr());
             match.setOwner(currentChampionship.getId());
-            match.setRound(edtRound.getText().toString());
-            match.setScoreStr("0 X 0");
+
+            int value;
+
+            //score 1
+            if (edtSet1Score1.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet1Score1.getText().toString());
+            }
+            match.setSet1Score1(value);
+
+            if (edtSet1Score2.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet1Score2.getText().toString());
+            }
+            match.setSet1Score2(value);
+
+            //score 2
+            if (edtSet2Score1.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet2Score1.getText().toString());
+            }
+            match.setSet2Score1(value);
+
+            if (edtSet2Score2.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet2Score2.getText().toString());
+            }
+            match.setSet2Score2(value);
+
+            //score 3
+            if (edtSet3Score1.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet3Score1.getText().toString());
+            }
+            match.setSet3Score1(value);
+
+            if (edtSet3Score2.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet3Score2.getText().toString());
+            }
+            match.setSet3Score2(value);
+
+            //match.setRound(edtRound.getText().toString());
+            match.setRound(dataAdapter.getItem(spinnerRound.getSelectedItemPosition()).toString());
             match.saveDB();
 
             //ver aqui - tratar erro

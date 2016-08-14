@@ -98,7 +98,12 @@ public class MatchListFragment extends Fragment {
         match.setOpponentBackdrive(dataSnapshot.getValue(Match.class).getOpponentBackdrive());
         match.setOpponentDrive(dataSnapshot.getValue(Match.class).getOpponentDrive());
         match.setOwner(dataSnapshot.getValue(Match.class).getOwner());
-        match.setScoreStr(dataSnapshot.getValue(Match.class).getScoreStr());
+        match.setSet1Score1(dataSnapshot.getValue(Match.class).getSet1Score1());
+        match.setSet1Score2(dataSnapshot.getValue(Match.class).getSet1Score2());
+        match.setSet2Score1(dataSnapshot.getValue(Match.class).getSet2Score1());
+        match.setSet2Score2(dataSnapshot.getValue(Match.class).getSet2Score2());
+        match.setSet3Score1(dataSnapshot.getValue(Match.class).getSet3Score1());
+        match.setSet3Score2(dataSnapshot.getValue(Match.class).getSet3Score2());
         match.setRound(dataSnapshot.getValue(Match.class).getRound());
         match.setImageStr(dataSnapshot.getValue(Match.class).getImageStr());
 
