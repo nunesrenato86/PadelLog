@@ -114,6 +114,7 @@ public class MatchListFragment extends Fragment {
         match.setRound(dataSnapshot.getValue(Match.class).getRound());
         match.setImageStr(dataSnapshot.getValue(Match.class).getImageStr());
         match.setTeam1(myName + " / " + mCurrentChampionship.getPartner());
+        match.setContext(mContext);
         matches.add(match);
 
         if (matches.size() > 0){

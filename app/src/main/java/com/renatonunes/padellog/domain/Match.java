@@ -1,17 +1,22 @@
 package com.renatonunes.padellog.domain;
 
+import android.content.Context;
+import android.content.res.Resources;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
+import com.renatonunes.padellog.R;
 
 /**
  * Created by Renato on 11/08/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Match {
+    private Context context;
     private String id;
-    private String round;
+    private Integer round;
     private String opponentDrive;
     private String opponentBackdrive;
     private String owner;
@@ -103,11 +108,11 @@ public class Match {
         this.owner = owner;
     }
 
-    public String getRound() {
+    public Integer getRound() {
         return round;
     }
 
-    public void setRound(String round) {
+    public void setRound(Integer round) {
         this.round = round;
     }
 
@@ -133,6 +138,15 @@ public class Match {
 
     public void setImageStr(String imageStr) {
         this.imageStr = imageStr;
+    }
+
+    @Exclude
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public String getTeam2(){
@@ -164,6 +178,52 @@ public class Match {
         }
 
         return result;
+    }
+
+    public String getRoundStr(){
+        Resources res = this.context.getResources();
+
+        switch(this.round) {
+            case 0: return res.getString(R.string.round_draw);
+            case 1: return res.getString(R.string.round_64);
+            case 2: return res.getString(R.string.round_32);
+            case 3: return res.getString(R.string.round_16);
+            case 4: return res.getString(R.string.round_8);
+            case 5: return res.getString(R.string.round_4);
+            case 6: return res.getString(R.string.round_semi);
+            case 7: return res.getString(R.string.round_final);
+//				case 2: return MatchListFragment.newInstance();
+        }
+        return "";
+    }
+
+    @Exclude
+    public Integer getResult(){
+        //if its the final, need to check if its a victory or not
+        if (this.round == 7){ //its the final match
+            if (this.isVictory()){
+                return 8; //champion
+            }else{
+                return this.round;
+            }
+        } else{
+          return this.round;
+        }
+    }
+
+    public Boolean isVictory(){
+        Boolean has3sets = (this.getSet3Score1() != this.getSet3Score2())
+                && (this.getSet3Score1() > 0 || this.getSet3Score2() > 0);
+
+        Boolean has2sets = (this.getSet2Score1() != this.getSet2Score2())
+                && (this.getSet2Score1() > 0 || this.getSet2Score2() > 0);
+
+        if (has3sets) {
+            return this.getSet3Score1() > this.getSet3Score2();
+        } else if (has2sets){
+            return this.getSet2Score1() > this.getSet2Score2();
+        } else
+            return this.getSet1Score1() > this.getSet1Score2();
     }
 
     public void saveDB(DatabaseReference.CompletionListener... completionListener ){

@@ -37,7 +37,7 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> 
 	public void onBindViewHolder(MatchListViewHolder holder, int position) {
         holder.currentMatch = matches.get(position);
 
-        holder.matchRound.setText(matches.get(position).getRound());
+        holder.matchRound.setText(matches.get(position).getRoundStr());
         holder.matchScore.setText(matches.get(position).getScoreStr());
 
         String imgStr = matches.get(position).getImageStr();

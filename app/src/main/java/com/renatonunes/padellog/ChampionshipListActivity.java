@@ -53,14 +53,18 @@ public class ChampionshipListActivity extends AppCompatActivity {
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
-        this.refreshData();
-
         fabAddChampionship.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 callAddChampionshipActivity();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.refreshData();
     }
 
     public void callAddChampionshipActivity(){
@@ -134,7 +138,11 @@ public class ChampionshipListActivity extends AppCompatActivity {
         Championship championship = new Championship();
         championship.setId(dataSnapshot.getKey());
         championship.setName(dataSnapshot.getValue(Championship.class).getName());
-        championship.setOwner(dataSnapshot.getValue(Championship.class).getOwner());
+
+        String owner = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        championship.setOwner(owner);
+//        championship.setOwner(dataSnapshot.getValue(Championship.class).getOwner());
+
         championship.setPartner(dataSnapshot.getValue(Championship.class).getPartner());
         championship.setPlace(dataSnapshot.getValue(Championship.class).getPlace());
         championship.setResult(dataSnapshot.getValue(Championship.class).getResult());
@@ -144,6 +152,7 @@ public class ChampionshipListActivity extends AppCompatActivity {
         championship.setInitialDate(dataSnapshot.getValue(Championship.class).getInitialDate());
         championship.setFinalDate(dataSnapshot.getValue(Championship.class).getFinalDate());
         championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
+        championship.setContext(this);
 
         championships.add(championship);//        }
 

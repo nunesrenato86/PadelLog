@@ -26,7 +26,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.renatonunes.padellog.domain.Player;
 import com.squareup.picasso.Picasso;
 
@@ -86,8 +85,8 @@ public class MainActivity extends AppCompatActivity
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        String token = FirebaseInstanceId.getInstance().getToken();
-        Log.e("TESTEMSG", "token no service: " + token);
+//        String token = FirebaseInstanceId.getInstance().getToken();
+//        Log.e("TESTEMSG", "token no service: " + token);
         //dy7aCLp4u04:APA91bHeqe_pUFatAw41Ra7KU726TuFHXgC36Kn4VUxXBMWXQUAqnUMTwEYVHQIeEX94VwkEk5cbyl2JTGl0yG1D3I8k77ZC5p4i_8kOhAr-CdFO0kUuXFOBhMHSte6cTSwt0bCYoARf
     }
 

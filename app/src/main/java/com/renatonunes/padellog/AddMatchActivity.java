@@ -282,8 +282,14 @@ public class AddMatchActivity extends AppCompatActivity {
             match.setSet3Score2(value);
 
             //match.setRound(edtRound.getText().toString());
-            match.setRound(dataAdapter.getItem(spinnerRound.getSelectedItemPosition()).toString());
+//            match.setRound(dataAdapter.getItem(spinnerRound.getSelectedItemPosition()).toString());
+
+            match.setRound(spinnerRound.getSelectedItemPosition());
+            match.setContext(this);
             match.saveDB();
+
+            currentChampionship.updateResult();
+            ChampionshipInfoActivity.currentChampionship = currentChampionship;
 
             //ver aqui - tratar erro
             Snackbar.make(fabSaveMatch,

@@ -65,7 +65,7 @@ public class MatchInfoActivity extends AppCompatActivity {
 		//setting top image
 		TopImage.setImageBitmap(ImageFactory.imgStrToImage( mCurrentMatch.getImageStr() ));
 
-		collapsingToolbarLayout.setTitle(mCurrentMatch.getRound());
+		collapsingToolbarLayout.setTitle(mCurrentMatch.getRoundStr());
 
 		//SET 1
 		textSet1Score1.setText(mCurrentMatch.getSet1Score1().toString());

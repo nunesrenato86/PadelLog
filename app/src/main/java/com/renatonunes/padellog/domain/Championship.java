@@ -1,9 +1,17 @@
 package com.renatonunes.padellog.domain;
 
+import android.content.Context;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Renato on 02/08/2016.
@@ -11,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Championship {
 
+    private Context context;
     private String id;
     private String name;
     private String partner;
@@ -23,6 +32,7 @@ public class Championship {
     private Double lat;
     private Double lng;
     private Integer result;
+    private Match lastMatch;
 
     public Championship() {}
 
@@ -99,6 +109,24 @@ public class Championship {
     }
 
     @Exclude
+    public Match getLastMatch() {
+        return lastMatch;
+    }
+
+    public void setLastMatch(Match lastMatch) {
+        this.lastMatch = lastMatch;
+    }
+
+    @Exclude
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    @Exclude
     public String getResultStr() {
         switch(this.result) {
             case 0: return "Campeão";  // TODO: create strings.xml
@@ -126,6 +154,27 @@ public class Championship {
         this.owner = owner;
     }
 
+    public void updateResult(){
+        //retrieve the max round
+        FirebaseDatabase.getInstance().getReference().child("matches").child(this.id).orderByChild("round").limitToLast(1).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                getMatchUpdates(dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                getMatchUpdates(dataSnapshot);
+            }
+
+            @Override public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+            @Override public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+
+            @Override public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
     public void saveDB(DatabaseReference.CompletionListener... completionListener ){
         DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
 
@@ -138,6 +187,38 @@ public class Championship {
         }
         else{
             firebase.setValue(this, completionListener[0]);
+        }
+    }
+
+    private void getMatchUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
+        lastMatch = new Match();
+        lastMatch.setId(dataSnapshot.getKey());
+        lastMatch.setOpponentBackdrive(dataSnapshot.getValue(Match.class).getOpponentBackdrive());
+        lastMatch.setOpponentDrive(dataSnapshot.getValue(Match.class).getOpponentDrive());
+        lastMatch.setOwner(dataSnapshot.getValue(Match.class).getOwner());
+        lastMatch.setSet1Score1(dataSnapshot.getValue(Match.class).getSet1Score1());
+        lastMatch.setSet1Score2(dataSnapshot.getValue(Match.class).getSet1Score2());
+        lastMatch.setSet2Score1(dataSnapshot.getValue(Match.class).getSet2Score1());
+        lastMatch.setSet2Score2(dataSnapshot.getValue(Match.class).getSet2Score2());
+        lastMatch.setSet3Score1(dataSnapshot.getValue(Match.class).getSet3Score1());
+        lastMatch.setSet3Score2(dataSnapshot.getValue(Match.class).getSet3Score2());
+        lastMatch.setRound(dataSnapshot.getValue(Match.class).getRound());
+        lastMatch.setImageStr(dataSnapshot.getValue(Match.class).getImageStr());
+//                match.setTeam1(myName + " / " + mCurrentChampionship.getPartner());
+//                match.setContext(mContext);
+
+        //update the championship result
+        if (lastMatch != null) {
+            Map<String, Object> result = new HashMap<String, Object>();
+
+            this.result = lastMatch.getResult();
+
+            result.put("result", this.result);
+
+            FirebaseDatabase.getInstance().getReference().child("championships")
+                    .child(this.getOwner())
+                    .child(getId())
+                    .updateChildren(result);
         }
     }
 }

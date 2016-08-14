@@ -46,7 +46,7 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 
 	private int mMaxScrollSize;
 
-	private static Championship currentChampionship;
+	public static Championship currentChampionship;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,11 @@ public class ChampionshipInfoActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         //setting top image
-        TopImage.setImageBitmap(ImageFactory.imgStrToImage( currentChampionship.getImageStr() ));
+        if (currentChampionship.getImageStr().isEmpty()){
+            TopImage.setImageResource(R.drawable.no_photo);
+        }else{
+            TopImage.setImageBitmap(ImageFactory.imgStrToImage(currentChampionship.getImageStr()));
+        }
 
         //setting championship title
         textTitle.setText(currentChampionship.getName());
@@ -121,6 +125,24 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 				.scaleY(1).scaleX(1)
 				.start();
 		}
+	}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUi();
+    }
+
+    private void updateUi(){
+		if (currentChampionship.getResult() == 8){
+			mProfileImage.setVisibility(View.VISIBLE);
+			mProfileImage.setImageResource(R.drawable.trophy_gold);
+		}else if (currentChampionship.getResult() == 7){
+			mProfileImage.setVisibility(View.VISIBLE);
+			mProfileImage.setImageResource(R.drawable.trophy_silver);
+		}else
+			mProfileImage.setVisibility(View.INVISIBLE);
+
 	}
 
 	class TabsAdapter extends FragmentPagerAdapter {
