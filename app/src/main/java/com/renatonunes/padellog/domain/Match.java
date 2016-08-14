@@ -17,6 +17,7 @@ public class Match {
     private String owner;
     private String imageStr;
     private String scoreStr;
+    private String team1;
     private Integer set1Score1;
     private Integer set1Score2;
     private Integer set2Score1;
@@ -76,6 +77,15 @@ public class Match {
     }
 
     @Exclude
+    public String getTeam1() {
+        return team1;
+    }
+
+    public void setTeam1(String team1) {
+        this.team1 = team1;
+    }
+
+    @Exclude
     public String getId() {
         return id;
     }
@@ -123,6 +133,10 @@ public class Match {
 
     public void setImageStr(String imageStr) {
         this.imageStr = imageStr;
+    }
+
+    public String getTeam2(){
+        return getOpponentDrive() + " / " + getOpponentBackdrive();
     }
 
     public String getScoreStr() {

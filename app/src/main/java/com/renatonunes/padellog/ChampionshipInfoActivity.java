@@ -96,7 +96,6 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 	}
 
 	public static void start(Context c, Championship championship) {
-		//passar o objeto pra outra activity serializado
         context = c;
 		currentChampionship = championship;
 

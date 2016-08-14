@@ -7,7 +7,6 @@
 package com.renatonunes.padellog;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -38,15 +37,13 @@ public class MatchListViewHolder extends RecyclerView.ViewHolder {
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                int position = getAdapterPosition();
+//                int position = getAdapterPosition();
+//
+//                Snackbar.make(v, "Click on item " + position,
+//                        Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
 
-                Snackbar.make(v, "Click on item " + position,
-                        Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
-                //ChampionshipInfoActivity.start(context, currentChampionship);
-
-//                callMaterialUpActivity();
+                MatchInfoActivity.start(context, currentMatch);
 
             }
         });

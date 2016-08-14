@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,6 +31,7 @@ public class MatchListFragment extends Fragment {
     RecyclerView.Adapter adapter;
     public static Championship mCurrentChampionship;
     public static Context mContext;
+    public static String myName;
 
     @Nullable @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +54,10 @@ public class MatchListFragment extends Fragment {
     public static Fragment newInstance(Championship currentChampionship, Context context) {
         mContext = context;
         mCurrentChampionship = currentChampionship;
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        myName = user.getDisplayName();
+
         return new MatchListFragment();
     }
 
@@ -106,7 +113,7 @@ public class MatchListFragment extends Fragment {
         match.setSet3Score2(dataSnapshot.getValue(Match.class).getSet3Score2());
         match.setRound(dataSnapshot.getValue(Match.class).getRound());
         match.setImageStr(dataSnapshot.getValue(Match.class).getImageStr());
-
+        match.setTeam1(myName + " / " + mCurrentChampionship.getPartner());
         matches.add(match);
 
         if (matches.size() > 0){
