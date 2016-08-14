@@ -26,8 +26,10 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 	implements AppBarLayout.OnOffsetChangedListener {
 
 	private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 20;
+    private static final int PERCENTAGE_TO_ANIMATE_TITLES = 80;
     private static Context context;
     private boolean mIsAvatarShown = true;
+    private boolean mIsTitlesShown = true;
 
     @BindView(R.id.championship_detail_title)
     TextView textTitle;
@@ -125,6 +127,24 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 				.scaleY(1).scaleX(1)
 				.start();
 		}
+
+        if (percentage >= PERCENTAGE_TO_ANIMATE_TITLES && mIsTitlesShown) {
+            mIsTitlesShown = false;
+            textTitle.animate().scaleY(0).scaleX(0).setDuration(200).start();
+            textSubtitle.animate().scaleY(0).scaleX(0).setDuration(200).start();
+        }
+
+        if (percentage <= PERCENTAGE_TO_ANIMATE_TITLES && !mIsTitlesShown) {
+            mIsTitlesShown = true;
+
+            textTitle.animate()
+                    .scaleY(1).scaleX(1)
+                    .start();
+
+            textSubtitle.animate()
+                    .scaleY(1).scaleX(1)
+                    .start();
+        }
 	}
 
     @Override

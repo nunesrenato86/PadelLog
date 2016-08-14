@@ -63,7 +63,12 @@ public class MatchInfoActivity extends AppCompatActivity {
 		ButterKnife.setDebug(true);
 
 		//setting top image
-		TopImage.setImageBitmap(ImageFactory.imgStrToImage( mCurrentMatch.getImageStr() ));
+		if (mCurrentMatch.getImageStr().isEmpty()){
+			TopImage.setImageResource(R.drawable.no_photo);
+		}
+		else{
+			TopImage.setImageBitmap(ImageFactory.imgStrToImage( mCurrentMatch.getImageStr() ));
+		}
 
 		collapsingToolbarLayout.setTitle(mCurrentMatch.getRoundStr());
 
