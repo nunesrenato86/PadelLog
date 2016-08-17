@@ -97,8 +97,9 @@
 			android:id="@+id/materialup.tabs"
 			android:layout_width="fill_parent"
 			android:layout_height="?attr/actionBarSize"
-			app:tabSelectedTextColor="?android:attr/textColorPrimaryInverse"
-			app:tabIndicatorColor="?android:attr/textColorPrimaryInverse"
+			app:tabSelectedTextColor="@color/colorFacebookButtonText"
+			app:tabIndicatorColor="@color/colorFacebookButtonText"
+            app:tabTextColor="@color/colorPrimayLight"
 			app:tabIndicatorHeight="4dp"
 			/>
 	</android.support.design.widget.AppBarLayout>

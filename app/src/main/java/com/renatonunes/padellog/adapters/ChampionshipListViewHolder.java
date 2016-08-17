@@ -21,6 +21,7 @@ public class ChampionshipListViewHolder extends RecyclerView.ViewHolder {
     public Championship currentChampionship;
 
     public ImageView championshipImage;
+    public ImageView championshipTrophyImage;
     public TextView championshipTitle;
     public TextView championshipDetail;
 
@@ -29,6 +30,7 @@ public class ChampionshipListViewHolder extends RecyclerView.ViewHolder {
         championshipImage = (ImageView)itemView.findViewById(R.id.item_image);
         championshipTitle = (TextView)itemView.findViewById(R.id.item_title);
         championshipDetail = (TextView)itemView.findViewById(R.id.item_detail);
+        championshipTrophyImage = (ImageView)itemView.findViewById(R.id.item_image_trophy);
 
         context = itemView.getContext();
 
@@ -48,8 +50,4 @@ public class ChampionshipListViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-//    public void callMaterialUpActivity(){
-//        Intent intent = new Intent(context, ChampionshipInfoActivity.class);
-//        context.startActivity(intent);
-//    }
 }

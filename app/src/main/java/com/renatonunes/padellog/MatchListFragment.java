@@ -8,6 +8,7 @@ package com.renatonunes.padellog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -36,6 +37,19 @@ public class MatchListFragment extends Fragment {
     @Nullable @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = (RecyclerView) inflater.inflate(R.layout.fragment_championship_matches, container, false);
+
+        mRootView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                FloatingActionButton fab = ((FloatingActionButton) getActivity().findViewById(R.id.fab_add_match));
+
+                if (dy > 0)
+                    fab.hide();
+                else if (dy < 0)
+                    fab.show();
+            }
+        });
+
         return mRootView;
     }
 

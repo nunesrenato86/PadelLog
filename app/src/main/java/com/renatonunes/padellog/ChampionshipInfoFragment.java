@@ -18,6 +18,19 @@ public class ChampionshipInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = (RecyclerView) inflater.inflate(R.layout.fragment_championship_info, container, false);
+
+//        mRootView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                FloatingActionButton fab = ((FloatingActionButton) getActivity().findViewById(R.id.fab_add_match));
+//
+//                if (dy > 0)
+//                    fab.hide();
+//                else if (dy < 0)
+//                    fab.show();
+//            }
+//        });
+
         return mRootView;
     }
 

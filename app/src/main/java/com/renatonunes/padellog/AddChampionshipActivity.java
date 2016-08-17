@@ -90,6 +90,7 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
 
     private Uri mCurrentPhotoUri;
     private PhotoTaker mPhotoTaker;
+    private Boolean compressImg = true;
 
     //google places api
     private GoogleApiClient mGoogleApiClient;
@@ -161,6 +162,7 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     }
 
     public void TakePhoto(View view){
+        compressImg = true;
         //tem que verificar a permissao pro android 6
 
         File placeholderFile = ImageFactory.newFile();
@@ -172,6 +174,8 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     }
 
     public void PickPhoto(View view){
+        compressImg = false;
+
         //tem que verificar a permissao pro android 6
         File placeholderFile = ImageFactory.newFile();
 
@@ -308,7 +312,9 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         if (mCurrentPhotoUri != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
 
-            options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+            if (compressImg) {
+                options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+            }
 
             Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
 
