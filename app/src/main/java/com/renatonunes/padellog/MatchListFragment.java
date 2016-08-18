@@ -86,12 +86,12 @@ public class MatchListFragment extends Fragment {
             FirebaseDatabase.getInstance().getReference().child("matches").child(mCurrentChampionship.getId()).addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                    getUpdates(dataSnapshot);
+                    getUpdates(dataSnapshot, true);
                 }
 
                 @Override
                 public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                    getUpdates(dataSnapshot);
+                    getUpdates(dataSnapshot, false);
                 }
 
                 @Override
@@ -112,7 +112,8 @@ public class MatchListFragment extends Fragment {
         }
     }
 
-    private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
+    private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot,
+                            Boolean isInserting){
 
         Match match = new Match();
         match.setId(dataSnapshot.getKey());
@@ -129,10 +130,13 @@ public class MatchListFragment extends Fragment {
         match.setImageStr(dataSnapshot.getValue(Match.class).getImageStr());
         match.setTeam1(myName + " / " + mCurrentChampionship.getPartner());
         match.setContext(mContext);
-        matches.add(match);
+
+        if (isInserting) {
+            matches.add(match);
+        }
 
         if (matches.size() > 0){
-            adapter = new MatchListAdapter(mContext, matches);
+            adapter = new MatchListAdapter(mContext, matches, mCurrentChampionship);
             mRootView.setAdapter(adapter);
         }else{
             Toast.makeText(getActivity().getApplicationContext(), "Sem dados", Toast.LENGTH_SHORT).show();

@@ -39,13 +39,13 @@ import butterknife.ButterKnife;
 public class AddMatchActivity extends AppCompatActivity {
 
     //fields
+    private final Activity mActivity = this;
+
     @BindView(R.id.edt_add_match_opponent_drive)
     EditText edtOpponentDrive;
 
     @BindView(R.id.edt_add_match_opponent_backdrive)
     EditText edtOpponentBackdrive;
-
-    private final Activity mActivity = this;
 
     //to handle images
     @BindView(R.id.img_match)
@@ -75,9 +75,13 @@ public class AddMatchActivity extends AppCompatActivity {
     @BindView(R.id.edt_add_match_score_set3_2)
     EditText edtSet3Score2;
 
+    private String mCurrentMatchImageStr = "";
+    private static Match mCurrentMatch;
     private Uri mCurrentPhotoUri;
     private static Championship currentChampionship = null;
     private PhotoTaker mPhotoTaker;
+    private Boolean compressImg = true;
+
     private ArrayAdapter<String> dataAdapter;
 
     @Override
@@ -123,6 +127,8 @@ public class AddMatchActivity extends AppCompatActivity {
         // attaching data adapter to spinner
         spinnerRound.setAdapter(dataAdapter);
 
+        updateUI();
+
 //        spinnerRound.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //            @Override
 //            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -140,7 +146,36 @@ public class AddMatchActivity extends AppCompatActivity {
 //        });
     }
 
+    private void updateUI(){
+        if (mCurrentMatch != null){
+            edtOpponentDrive.setText(mCurrentMatch.getOpponentDrive());
+
+            edtOpponentBackdrive.setText(mCurrentMatch.getOpponentBackdrive());
+
+            mCurrentMatchImageStr = mCurrentMatch.getImageStr();
+
+            if (((mCurrentMatchImageStr != null)) && (mCurrentMatchImageStr != "")){
+                mThumbnailPreview.setImageBitmap(ImageFactory.imgStrToImage(mCurrentMatchImageStr));
+            }else {
+                mThumbnailPreview.setImageBitmap(null);
+                mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
+            }
+
+            spinnerRound.setSelection(mCurrentMatch.getRound());
+
+            edtSet1Score1.setText(mCurrentMatch.getSet1Score1().toString());
+            edtSet1Score2.setText(mCurrentMatch.getSet1Score2().toString());
+
+            edtSet2Score1.setText(mCurrentMatch.getSet2Score1().toString());
+            edtSet2Score2.setText(mCurrentMatch.getSet2Score2().toString());
+
+            edtSet3Score1.setText(mCurrentMatch.getSet3Score1().toString());
+            edtSet3Score2.setText(mCurrentMatch.getSet3Score2().toString());
+        }
+    }
+
     public void TakePhoto(View view){
+        compressImg = true;
         //tem que verificar a permissao pro android 6
 
         File placeholderFile = ImageFactory.newFile();
@@ -152,6 +187,7 @@ public class AddMatchActivity extends AppCompatActivity {
     }
 
     public void PickPhoto(View view){
+        compressImg = false;
         //tem que verificar a permissao pro android 6
         File placeholderFile = ImageFactory.newFile();
 
@@ -228,11 +264,16 @@ public class AddMatchActivity extends AppCompatActivity {
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentChampionship != null) {
-            Match match = new Match();
-            match.setOpponentBackdrive(edtOpponentBackdrive.getText().toString());
-            match.setOpponentDrive(edtOpponentDrive.getText().toString());
-            match.setImageStr(getImageStr());
-            match.setOwner(currentChampionship.getId());
+            Boolean isNewMatch = false;
+
+            if (mCurrentMatch == null) { //not editing
+                isNewMatch = true;
+                mCurrentMatch = new Match();
+            }
+            mCurrentMatch.setOpponentBackdrive(edtOpponentBackdrive.getText().toString());
+            mCurrentMatch.setOpponentDrive(edtOpponentDrive.getText().toString());
+            mCurrentMatch.setImageStr(getImageStr());
+            mCurrentMatch.setOwner(currentChampionship.getId());
 
             int value;
 
@@ -242,14 +283,14 @@ public class AddMatchActivity extends AppCompatActivity {
             }else {
                 value = Integer.valueOf(edtSet1Score1.getText().toString());
             }
-            match.setSet1Score1(value);
+            mCurrentMatch.setSet1Score1(value);
 
             if (edtSet1Score2.getText().toString().isEmpty()){
                 value = 0;
             }else {
                 value = Integer.valueOf(edtSet1Score2.getText().toString());
             }
-            match.setSet1Score2(value);
+            mCurrentMatch.setSet1Score2(value);
 
             //score 2
             if (edtSet2Score1.getText().toString().isEmpty()){
@@ -257,14 +298,14 @@ public class AddMatchActivity extends AppCompatActivity {
             }else {
                 value = Integer.valueOf(edtSet2Score1.getText().toString());
             }
-            match.setSet2Score1(value);
+            mCurrentMatch.setSet2Score1(value);
 
             if (edtSet2Score2.getText().toString().isEmpty()){
                 value = 0;
             }else {
                 value = Integer.valueOf(edtSet2Score2.getText().toString());
             }
-            match.setSet2Score2(value);
+            mCurrentMatch.setSet2Score2(value);
 
             //score 3
             if (edtSet3Score1.getText().toString().isEmpty()){
@@ -272,21 +313,23 @@ public class AddMatchActivity extends AppCompatActivity {
             }else {
                 value = Integer.valueOf(edtSet3Score1.getText().toString());
             }
-            match.setSet3Score1(value);
+            mCurrentMatch.setSet3Score1(value);
 
             if (edtSet3Score2.getText().toString().isEmpty()){
                 value = 0;
             }else {
                 value = Integer.valueOf(edtSet3Score2.getText().toString());
             }
-            match.setSet3Score2(value);
+            mCurrentMatch.setSet3Score2(value);
 
-            //match.setRound(edtRound.getText().toString());
-//            match.setRound(dataAdapter.getItem(spinnerRound.getSelectedItemPosition()).toString());
+            mCurrentMatch.setRound(spinnerRound.getSelectedItemPosition());
+            mCurrentMatch.setContext(this);
 
-            match.setRound(spinnerRound.getSelectedItemPosition());
-            match.setContext(this);
-            match.saveDB();
+            if (isNewMatch) {
+                mCurrentMatch.saveDB();
+            }else{
+                mCurrentMatch.updateDB();
+            }
 
             currentChampionship.updateResult();
             ChampionshipInfoActivity.currentChampionship = currentChampionship;
@@ -317,7 +360,9 @@ public class AddMatchActivity extends AppCompatActivity {
         if (mCurrentPhotoUri != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
 
-            options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+            if (compressImg) {
+                options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+            }
 
             Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
 
@@ -331,11 +376,12 @@ public class AddMatchActivity extends AppCompatActivity {
 
             return base64Image;
         }else
-            return "";
+            return mCurrentMatchImageStr;
     }
 
-    public static void start(Context c, Championship championship) {
+    public static void start(Context c, Championship championship, Match currentMatch) {
         currentChampionship = championship;
+        mCurrentMatch = currentMatch;
 
         c.startActivity(new Intent(c, AddMatchActivity.class));
     }

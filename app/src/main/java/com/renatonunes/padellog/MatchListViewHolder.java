@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 
 public class MatchListViewHolder extends RecyclerView.ViewHolder {
@@ -20,6 +21,7 @@ public class MatchListViewHolder extends RecyclerView.ViewHolder {
 //    public int currentItem;
 
     public Match currentMatch;
+    public Championship currentChampionship;
 
 //    public String currentKey;
     public ImageView matchImage;
@@ -43,7 +45,7 @@ public class MatchListViewHolder extends RecyclerView.ViewHolder {
 //                        Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 
-                MatchInfoActivity.start(context, currentMatch);
+                MatchInfoActivity.start(context, currentMatch, currentChampionship);
 
             }
         });

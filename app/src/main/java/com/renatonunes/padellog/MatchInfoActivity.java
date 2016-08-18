@@ -9,10 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 
@@ -22,10 +25,14 @@ import butterknife.ButterKnife;
 public class MatchInfoActivity extends AppCompatActivity {
 
 	public static Match mCurrentMatch;
+	public static Championship mCurrentChampionship;
 	public static Context mContext;
 
 	@BindView(R.id.main_collapsing)
 	CollapsingToolbarLayout collapsingToolbarLayout;
+
+	@BindView(R.id.fab_edit_match)
+	FloatingActionButton fabEditMatch;
 
 	@BindView(R.id.img_top_match)
 	ImageView TopImage;
@@ -62,6 +69,28 @@ public class MatchInfoActivity extends AppCompatActivity {
 		ButterKnife.bind(this);
 		ButterKnife.setDebug(true);
 
+		fabEditMatch.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				AddMatchActivity.start(mContext, mCurrentChampionship, mCurrentMatch);
+			}
+		});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		updateUI();
+	}
+
+	public static void start(Context c, Match currentMatch, Championship currentChampionship) {
+		mContext = c;
+		mCurrentMatch = currentMatch;
+		mCurrentChampionship = currentChampionship;
+		c.startActivity(new Intent(c, MatchInfoActivity.class));
+	}
+
+	private void updateUI(){
 		//setting top image
 		if (mCurrentMatch.getImageStr().isEmpty()){
 			TopImage.setImageResource(R.drawable.no_photo);
@@ -89,11 +118,5 @@ public class MatchInfoActivity extends AppCompatActivity {
 
 		//TEAM 2
 		textTeam2.setText(mCurrentMatch.getTeam2());
-	}
-
-	public static void start(Context c, Match currentMatch) {
-		mContext = c;
-		mCurrentMatch = currentMatch;
-		c.startActivity(new Intent(c, MatchInfoActivity.class));
 	}
 }

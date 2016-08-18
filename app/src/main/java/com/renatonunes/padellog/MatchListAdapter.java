@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 
@@ -19,10 +20,12 @@ import java.util.ArrayList;
 public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> {
 	Context context;
 	ArrayList<Match> matches;
+    Championship mCurrentChampionship;
 
-    public MatchListAdapter(Context context, ArrayList<Match> matches) {
+    public MatchListAdapter(Context context, ArrayList<Match> matches, Championship currentChampionship) {
         this.matches = matches;
         this.context = context;
+        this.mCurrentChampionship = currentChampionship;
     }
 
 	@Override public MatchListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -36,6 +39,7 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> 
 	@Override
 	public void onBindViewHolder(MatchListViewHolder holder, int position) {
         holder.currentMatch = matches.get(position);
+        holder.currentChampionship = mCurrentChampionship;
 
         holder.matchRound.setText(matches.get(position).getRoundStr());
         holder.matchScore.setText(matches.get(position).getScoreStr());

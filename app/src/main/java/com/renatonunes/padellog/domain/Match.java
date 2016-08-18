@@ -9,6 +9,9 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.renatonunes.padellog.R;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Renato on 11/08/2016.
  */
@@ -149,10 +152,12 @@ public class Match {
         this.context = context;
     }
 
+    @Exclude
     public String getTeam2(){
         return getOpponentDrive() + " / " + getOpponentBackdrive();
     }
 
+    @Exclude
     public String getScoreStr() {
         //0 X 0 3 X 2 11 X 10
         String set1 = getSet1Score1().toString()
@@ -180,6 +185,7 @@ public class Match {
         return result;
     }
 
+    @Exclude
     public String getRoundStr(){
         Resources res = this.context.getResources();
 
@@ -207,10 +213,11 @@ public class Match {
                 return this.round;
             }
         } else{
-          return this.round;
+            return this.round;
         }
     }
 
+    @Exclude
     public Boolean isVictory(){
         Boolean has3sets = (this.getSet3Score1() != this.getSet3Score2())
                 && (this.getSet3Score1() > 0 || this.getSet3Score2() > 0);
@@ -238,6 +245,67 @@ public class Match {
         }
         else{
             firebase.setValue(this, completionListener[0]);
+        }
+    }
+
+    public void updateDB( DatabaseReference.CompletionListener... completionListener ){
+
+        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("matches").child(getOwner()).child( getId() );
+
+        Map<String, Object> map = new HashMap<>();
+        setDataInMap(map);
+
+        if( map.isEmpty() ){
+            return;
+        }
+
+        if( completionListener.length > 0 ){
+            firebase.updateChildren(map, completionListener[0]);
+        }
+        else{
+            firebase.updateChildren(map);
+        }
+    }
+
+    private void setDataInMap( Map<String, Object> map ) {
+        if( getImageStr() != null ){
+            map.put( "imageStr", getImageStr() );
+        }
+
+        if( getOpponentBackdrive() != null ){
+            map.put( "opponentBackdrive", getOpponentBackdrive() );
+        }
+
+        if( getOpponentDrive() != null ){
+            map.put( "opponentDrive", getOpponentDrive() );
+        }
+
+        if( getRound() != null ){
+            map.put( "round", getRound() );
+        }
+
+        if( getSet1Score1() != null ){
+            map.put( "set1Score1", getSet1Score1() );
+        }
+
+        if( getSet1Score2() != null ){
+            map.put( "set1Score2", getSet1Score2() );
+        }
+
+        if( getSet2Score1() != null ){
+            map.put( "set2Score1", getSet2Score1() );
+        }
+
+        if( getSet2Score2() != null ){
+            map.put( "set2Score2", getSet2Score2() );
+        }
+
+        if( getSet3Score1() != null ){
+            map.put( "set3Score1", getSet3Score1() );
+        }
+
+        if( getSet3Score2() != null ){
+            map.put( "set3Score2", getSet3Score2() );
         }
     }
 }
