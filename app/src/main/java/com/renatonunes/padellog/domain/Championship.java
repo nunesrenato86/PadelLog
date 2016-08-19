@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
+import com.renatonunes.padellog.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -129,11 +130,17 @@ public class Championship {
     @Exclude
     public String getResultStr() {
         switch(this.result) {
-            case 0: return "Campeão";  // TODO: create strings.xml
-            case 1: return "Campeão";
-//				case 2: return MatchListFragment.newInstance();
+            case 0: return context.getResources().getString(R.string.round_draw);
+            case 1: return context.getResources().getString(R.string.round_64);
+			case 2: return context.getResources().getString(R.string.round_32);
+            case 3: return context.getResources().getString(R.string.round_16);
+            case 4: return context.getResources().getString(R.string.round_8);
+            case 5: return context.getResources().getString(R.string.round_4);
+            case 6: return context.getResources().getString(R.string.round_semi);
+            case 7: return context.getResources().getString(R.string.result_name_vice);
+            case 8: return context.getResources().getString(R.string.result_name_champion);
         }
-        return "";
+        return context.getResources().getString(R.string.result_name_none);
     }
 
     @Exclude
@@ -220,5 +227,66 @@ public class Championship {
                     .child(getId())
                     .updateChildren(result);
         }
+    }
+
+    public void updateDB( DatabaseReference.CompletionListener... completionListener ){
+
+        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("championships").child(getOwner()).child( getId() );
+
+        Map<String, Object> map = new HashMap<>();
+        setDataInMap(map);
+
+        if( map.isEmpty() ){
+            return;
+        }
+
+        if( completionListener.length > 0 ){
+            firebase.updateChildren(map, completionListener[0]);
+        }
+        else{
+            firebase.updateChildren(map);
+        }
+    }
+
+    private void setDataInMap( Map<String, Object> map ) {
+        if( getImageStr() != null ){
+            map.put( "imageStr", getImageStr() );
+        }
+
+        if( getCategory() != null ){
+            map.put( "category", getCategory() );
+        }
+
+        if( getFinalDate() != null ){
+            map.put( "finalDate", getFinalDate() );
+        }
+
+        if( getInitialDate() != null ){
+            map.put( "initialDate", getInitialDate() );
+        }
+
+        if( getLat() != null ){
+            map.put( "lat", getLat() );
+        }
+
+        if( getLng() != null ){
+            map.put( "lng", getLng() );
+        }
+
+        if( getName() != null ){
+            map.put( "name", getName() );
+        }
+
+        if( getPartner() != null ){
+            map.put( "partner", getPartner() );
+        }
+
+        if( getPlace() != null ){
+            map.put( "place", getPlace() );
+        }
+
+//        if( getResult() != null ){
+//            map.put( "result", getResult() );
+//        }
     }
 }

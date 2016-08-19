@@ -95,6 +95,9 @@
     <string name="round_4">Quartas de final</string>
     <string name="round_semi">Semifinal</string>
     <string name="round_final">Final</string>
+    <string name="result_name_vice">Vice-campeões</string>
+    <string name="result_name_champion">Campeões</string>
+    <string name="result_name_none">Sem jogos</string>
 
     <string name="msg_error_img_file">"Sorry! Couldn't create a new image file"</string>
 

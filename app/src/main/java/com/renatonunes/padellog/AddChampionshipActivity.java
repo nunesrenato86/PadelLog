@@ -1,6 +1,7 @@
 package com.renatonunes.padellog;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -77,6 +78,8 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     FloatingActionButton fabSaveChampionship;
 
     private final Activity mActivity = this;
+    private static Championship currentChampionship = null;
+    private String mCurrentMatchImageStr = "";
 
     //to handle dates
     private int year, month, day;
@@ -159,7 +162,30 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
                 }
             }
         });
+
+        updateUI();
     }
+
+    private void updateUI(){
+        if (currentChampionship != null){
+            edtName.setText(currentChampionship.getName());
+            edtPartner.setText(currentChampionship.getPartner());
+            edtCategory.setText(currentChampionship.getCategory());
+            edtInitialDate.setText(currentChampionship.getInitialDate());
+            edtFinalDate.setText(currentChampionship.getFinalDate());
+            edtPlace.setText(currentChampionship.getPlace());
+
+            mCurrentMatchImageStr = currentChampionship.getImageStr();
+
+            if (((mCurrentMatchImageStr != null)) && (mCurrentMatchImageStr != "")){
+                mThumbnailPreview.setImageBitmap(ImageFactory.imgStrToImage(mCurrentMatchImageStr));
+            }else {
+                mThumbnailPreview.setImageBitmap(null);
+                mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
+            }
+        }
+    }
+
 
     public void TakePhoto(View view){
         compressImg = true;
@@ -270,20 +296,33 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
+            Boolean isNewChampionship = false;
 
-            Championship championship = new Championship();
-            championship.setName(edtName.getText().toString());
-            championship.setPartner(edtPartner.getText().toString());
-            championship.setOwner(user.getUid());
-            championship.setImageStr(getImageStr());
-            championship.setInitialDate(edtInitialDate.getText().toString());
-            championship.setFinalDate(edtFinalDate.getText().toString());
-            championship.setCategory(edtCategory.getText().toString());
-            championship.setPlace(edtPlace.getText().toString());
-            championship.setLat(mCurrentLatLng.latitude);
-            championship.setLng(mCurrentLatLng.longitude);
-            championship.setResult(-1); //dont have matches yet
-            championship.saveDB();
+            if (currentChampionship == null) { //not editing
+                isNewChampionship = true;
+                currentChampionship = new Championship();
+            }
+
+            currentChampionship.setName(edtName.getText().toString());
+            currentChampionship.setPartner(edtPartner.getText().toString());
+            currentChampionship.setOwner(user.getUid());
+            currentChampionship.setImageStr(getImageStr());
+            currentChampionship.setInitialDate(edtInitialDate.getText().toString());
+            currentChampionship.setFinalDate(edtFinalDate.getText().toString());
+            currentChampionship.setCategory(edtCategory.getText().toString());
+            currentChampionship.setPlace(edtPlace.getText().toString());
+
+            if (mCurrentLatLng != null){
+                currentChampionship.setLat(mCurrentLatLng.latitude);
+                currentChampionship.setLng(mCurrentLatLng.longitude);
+            }
+
+            if (isNewChampionship) {
+                currentChampionship.setResult(-1); //dont have matches yet
+                currentChampionship.saveDB();
+            }else{
+                currentChampionship.updateDB();
+            }
 
             //ver aqui - tratar erro
 
@@ -328,7 +367,7 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
 
             return base64Image;
         }else
-            return "";
+            return mCurrentMatchImageStr;
     }
 
     @Override
@@ -405,5 +444,11 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         editText.setText( (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "/" +
                 (monthOfYear + 1 < 10 ? "0" + (monthOfYear + 1) : monthOfYear + 1) + "/" +
                 year);
+    }
+
+    public static void start(Context c, Championship championship) {
+        currentChampionship = championship;
+
+        c.startActivity(new Intent(c, AddChampionshipActivity.class));
     }
 }

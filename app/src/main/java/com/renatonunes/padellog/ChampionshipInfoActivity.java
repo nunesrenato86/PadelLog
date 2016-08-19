@@ -12,9 +12,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
@@ -39,6 +43,9 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 
     @BindView(R.id.championship_detail_top_picture)
     ImageView TopImage;
+
+	@BindView(R.id.btn_menu_championship_info)
+	ImageButton btnMenuChampionshipInfo;
 
     @BindView(R.id.fab_add_match)
     FloatingActionButton fabAddMatch;
@@ -76,6 +83,8 @@ public class ChampionshipInfoActivity extends AppCompatActivity
             }
         });
 
+		registerForContextMenu(btnMenuChampionshipInfo);
+
 		appbarLayout.addOnOffsetChangedListener(this);
 		mMaxScrollSize = appbarLayout.getTotalScrollRange();
 
@@ -101,21 +110,35 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
+	}
 
-        //setting top image
-        if (currentChampionship.getImageStr().isEmpty()){
-            TopImage.setImageResource(R.drawable.no_photo);
-        }else{
-            TopImage.setImageBitmap(ImageFactory.imgStrToImage(currentChampionship.getImageStr()));
-        }
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
 
-        //setting championship title
-        textTitle.setText(currentChampionship.getName());
+		if(v.getId() == R.id.btn_menu_championship_info){
+			getMenuInflater().inflate(R.menu.context_menu, menu);
+		}
+	}
 
-        //setting championship title
-        textSubtitle.setText(currentChampionship.getInitialDate()
-                + " até "
-                + currentChampionship.getFinalDate());
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+			case R.id.menuEdit:
+				AddChampionshipActivity.start(context, currentChampionship);
+
+				break;
+			case R.id.menuDelete:
+				Toast.makeText(ChampionshipInfoActivity.this, "Deletar", Toast.LENGTH_SHORT).show();
+				break;
+			default:
+				break;
+		}
+		return super.onContextItemSelected(item);
+	}
+
+	public void callEditChampionship(View v){
+		openContextMenu(v);
 	}
 
 	public static void start(Context c, Championship championship) {
@@ -171,6 +194,21 @@ public class ChampionshipInfoActivity extends AppCompatActivity
     }
 
     private void updateUi(){
+		//setting top image
+		if (currentChampionship.getImageStr().isEmpty()){
+			TopImage.setImageResource(R.drawable.no_photo);
+		}else{
+			TopImage.setImageBitmap(ImageFactory.imgStrToImage(currentChampionship.getImageStr()));
+		}
+
+		//setting championship title
+		textTitle.setText(currentChampionship.getName());
+
+		//setting championship title
+		textSubtitle.setText(currentChampionship.getInitialDate()
+				+ " até "
+				+ currentChampionship.getFinalDate());
+
 		if (currentChampionship.getResult() == 8){
 			mProfileImage.setVisibility(View.VISIBLE);
 			mProfileImage.setImageResource(R.drawable.trophy_gold);
@@ -179,7 +217,6 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 			mProfileImage.setImageResource(R.drawable.trophy_silver);
 		}else
 			mProfileImage.setVisibility(View.INVISIBLE);
-
 	}
 
 	class TabsAdapter extends FragmentPagerAdapter {

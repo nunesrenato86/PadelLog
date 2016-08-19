@@ -56,5 +56,6 @@ public class ChampionshipInfoAdapter extends RecyclerView.Adapter<ChampioshipInf
 	@Override public int getItemCount() {
 		return 1;
 	}
+
 }
 

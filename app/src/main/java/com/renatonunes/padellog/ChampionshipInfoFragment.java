@@ -34,8 +34,15 @@ public class ChampionshipInfoFragment extends Fragment {
         return mRootView;
     }
 
-    @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+//        initRecyclerView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         initRecyclerView();
     }
 
