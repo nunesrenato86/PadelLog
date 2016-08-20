@@ -52,16 +52,16 @@
 			/>
 		​
 		<android.support.v7.widget.Toolbar
-			android:id="@+id/materialup.toolbar"
+			android:id="@+id/championship_info_toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:minHeight="?attr/actionBarSize"
 			android:background="?colorPrimary"
 			android:layout_marginTop="-48dp"
 			android:paddingRight="8dp"
-			app:theme="@style/ThemeOverlay.AppCompat.Light"
+			app:theme="@style/ThemeOverlay.AppCompat.Dark"
 			app:layout_scrollFlags="scroll|enterAlways|snap"
-			style="@style/ToolBarWithNavigationBack">
+            app:popupTheme="@style/AppTheme.PopupOverlay">
 
 			<ImageButton
 				android:id="@+id/btn_menu_championship_info"
@@ -70,6 +70,7 @@
 				android:layout_gravity="end"
                 android:onClick="callEditChampionship"
 				android:background="@drawable/ic_dots"
+                android:visibility="gone"
 				 />
 			/>
 		</android.support.v7.widget.Toolbar>

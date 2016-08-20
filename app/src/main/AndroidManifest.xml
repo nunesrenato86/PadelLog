@@ -36,7 +36,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ChampionshipInfoActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label=""/>
 
         <activity
             android:name=".MatchInfoActivity"

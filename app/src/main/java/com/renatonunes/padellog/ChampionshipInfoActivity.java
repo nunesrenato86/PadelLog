@@ -10,9 +10,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -74,12 +76,20 @@ public class ChampionshipInfoActivity extends AppCompatActivity
         ButterKnife.bind(this);
         ButterKnife.setDebug(true);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.materialup_toolbar);
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override public void onClick(View v) {
-				onBackPressed();
-			}
-		});
+		Toolbar toolbar = (Toolbar) findViewById(R.id.championship_info_toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+//        actionbar.setTitle("");
+
+
+//
+//		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//			@Override public void onClick(View v) {
+//				onBackPressed();
+//			}
+//		});
 
         fabAddMatch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -304,5 +314,34 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 			return "";
 		}
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_match_info, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_match_edit) {
+            AddChampionshipActivity.start(context, currentChampionship);
+
+            return true;
+        }else if (id == R.id.action_match_delete){
+            return true;
+        }else if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 }
