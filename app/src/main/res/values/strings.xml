@@ -100,5 +100,6 @@
     <string name="result_name_none">Sem jogos</string>
 
     <string name="msg_error_img_file">"Sorry! Couldn't create a new image file"</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

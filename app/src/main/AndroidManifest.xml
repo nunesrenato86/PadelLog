@@ -40,7 +40,7 @@
 
         <activity
             android:name=".MatchInfoActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".SignUpActivity"
@@ -56,7 +56,6 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
-
             android:theme="@style/AppTheme.NoActionBar.Full">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -79,6 +78,11 @@
             android:label="@string/title_activity_add_match"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
+        <activity
+            android:name="com.renatonunes.padellog.MapsActivity"
+            android:label="@string/title_activity_maps">
+        </activity>
+
         <service android:name=".MyFirebaseInstanceIdService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -91,5 +95,4 @@
         </service>
 
     </application>
-
 </manifest>

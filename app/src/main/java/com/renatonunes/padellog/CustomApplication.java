@@ -19,6 +19,6 @@ public class CustomApplication extends Application {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //para trabalar offline tb
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true); //para trabalhar offline tb
     }
 }

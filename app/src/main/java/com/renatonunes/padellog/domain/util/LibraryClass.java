@@ -8,30 +8,6 @@ import android.content.SharedPreferences;
  */
 public class LibraryClass {
     public static String PREF = "com.renatonunes.padellog.PREF";
-//    private static Firebase firebase;
-//    private static FirebaseAuth firebaseAuth;
-//    private static FirebaseDatabase firebaseDatabase;
-//
-//    public static FirebaseDatabase getFirebaseDatabase(){
-//        if( firebaseDatabase == null ){
-//            firebaseDatabase = FirebaseDatabase.getInstance();
-//        }
-//        return( firebaseDatabase );
-//    }
-
-//    public static Firebase getFirebase(){
-//        if( firebase == null ){
-//            firebase = new Firebase("https://padellog-b49b1.firebaseio.com");
-//        }
-//        return( firebase );
-//    }
-
-//    public static FirebaseAuth getFirebaseAuth(){
-//        if( firebaseAuth == null ){
-//            firebaseAuth = FirebaseAuth.getInstance(); //new Firebase("https://padellog-b49b1.firebaseio.com");
-//        }
-//        return( firebaseAuth );
-//    }
 
     static public void saveSP(Context context, String key, String value ){
         SharedPreferences sp = context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
