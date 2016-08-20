@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -47,9 +48,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.MyMapItem;
 import com.renatonunes.padellog.domain.Player;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -57,6 +61,8 @@ public class MainActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+
+    ArrayList<Championship> championships = new ArrayList<Championship>();
 
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
@@ -142,8 +148,6 @@ public class MainActivity extends AppCompatActivity
                     .build();
             mGoogleMapApiClient.connect();
         }
-
-        showMe();
     }
 
     private void updateNavUi(String name){
@@ -293,8 +297,6 @@ public class MainActivity extends AppCompatActivity
         mMap.setOnCameraChangeListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
         */
-
-        showMe();
     }
 
 
@@ -307,7 +309,7 @@ public class MainActivity extends AppCompatActivity
 //        mMap.addPolyline(pOpt);
 //    }
 
-    public void showMe(){ //fakegps - simular gps
+//    public void showMe(){ //fakegps - simular gps
         //ultima localizacao que ele conseguiu ler, não quer dizer que é a atual
 //        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
 //                mGoogleApiClient);
@@ -315,34 +317,34 @@ public class MainActivity extends AppCompatActivity
 //        updateCamera(mLastLocation);
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
+//        LatLng sydney = new LatLng(-34, 151);
+//
+//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//    }
 
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
-
-    private void updateCamera(Location LastLocation) {
-        //antes de usar isso, se o gps estiver desligado, teria que pedir pra ligar
-        if (LastLocation != null) {
-            LatLng eu = new LatLng(LastLocation.getLatitude(), LastLocation.getLongitude());
-
-            if (markerMyLocation == null){
-                markerMyLocation = mMap.addMarker(new MarkerOptions().position(eu).title("Estou aqui")); //adicioana um novo marcador no mapa
-            }else{
-                markerMyLocation.setPosition(eu); //adiciona um novo marcador no mapa
-            }
-
-            //ver pq nao ta bombando
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(eu, 16));
-        }
-    };
+//    private void updateCamera(Location LastLocation) {
+//        //antes de usar isso, se o gps estiver desligado, teria que pedir pra ligar
+//        if (LastLocation != null) {
+//            LatLng eu = new LatLng(LastLocation.getLatitude(), LastLocation.getLongitude());
+//
+//            if (markerMyLocation == null){
+//                markerMyLocation = mMap.addMarker(new MarkerOptions().position(eu).title("Estou aqui")); //adicioana um novo marcador no mapa
+//            }else{
+//                markerMyLocation.setPosition(eu); //adiciona um novo marcador no mapa
+//            }
+//
+//            //ver pq nao ta bombando
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(eu, 16));
+//        }
+//    };
 
     //resposta da permisao, sabe qual permisao e se respondeu sim ou nao
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1){
             if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
-                showMe();
+                getChampionships();
             }
         }
     }
@@ -359,7 +361,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLocationChanged(Location location) {
-        updateCamera(location);
+        //updateCamera(location);
     }
 
     class OwnIconRendered extends DefaultClusterRenderer<MyMapItem> {
@@ -378,5 +380,95 @@ public class MainActivity extends AppCompatActivity
             markerOptions.title(item.getmTitle());
             super.onBeforeClusterItemRendered(item, markerOptions);
         }
+    }
+
+    public void getChampionships(){
+        championships.clear();
+        clearMap();
+
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String userId = user.getUid();
+
+        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+                getUpdates(dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+                getUpdates(dataSnapshot);
+            }
+
+            @Override
+            public void onChildRemoved(com.google.firebase.database.DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
+        Championship championship = new Championship();
+        championship.setId(dataSnapshot.getKey());
+        championship.setName(dataSnapshot.getValue(Championship.class).getName());
+
+        String owner = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        championship.setOwner(owner);
+        championship.setPartner(dataSnapshot.getValue(Championship.class).getPartner());
+        championship.setPlace(dataSnapshot.getValue(Championship.class).getPlace());
+        championship.setResult(dataSnapshot.getValue(Championship.class).getResult());
+        championship.setImageStr(dataSnapshot.getValue(Championship.class).getImageStr());
+        championship.setLat(dataSnapshot.getValue(Championship.class).getLat());
+        championship.setLng(dataSnapshot.getValue(Championship.class).getLng());
+        championship.setInitialDate(dataSnapshot.getValue(Championship.class).getInitialDate());
+        championship.setFinalDate(dataSnapshot.getValue(Championship.class).getFinalDate());
+        championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
+        championship.setContext(this);
+
+        championships.add(championship);//        }
+
+        markChampionshipOnMap(championship);
+
+//        if (championships.size() > 0){
+//            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships);
+//            recyclerView.setAdapter(adapter);
+//        }else{
+//            Toast.makeText(ChampionshipListActivity.this, "Sem dados", Toast.LENGTH_SHORT).show();
+    }
+
+    private void markChampionshipOnMap(Championship championship){
+        if (mMap != null) {
+            LatLng marker = null;
+
+            marker = new LatLng(championship.getLat(), championship.getLng());
+
+            mMap.addMarker(new MarkerOptions().position(marker).title(championship.getName()));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
+
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker, 5));
+        }
+    }
+
+    private void clearMap(){
+        if (mMap != null) {
+            mMap.clear();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getChampionships();
     }
 }

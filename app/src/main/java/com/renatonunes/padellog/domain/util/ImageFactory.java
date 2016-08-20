@@ -2,6 +2,7 @@ package com.renatonunes.padellog.domain.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Base64;
 
@@ -49,5 +50,15 @@ public class ImageFactory {
         byte[] imageAsBytes = Base64.decode(imgStr.getBytes(), Base64.DEFAULT);
 
         return BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+    }
+
+    public static Boolean imgIsLarge(Uri photoUri){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(new File(photoUri.getPath()).getAbsolutePath(), options);
+        int imageHeight = options.outHeight;
+        int imageWidth = options.outWidth;
+
+        return (imageHeight > 600) || (imageHeight > 600);
     }
 }

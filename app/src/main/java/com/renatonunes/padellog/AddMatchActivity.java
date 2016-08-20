@@ -80,7 +80,6 @@ public class AddMatchActivity extends AppCompatActivity {
     private Uri mCurrentPhotoUri;
     private static Championship currentChampionship = null;
     private PhotoTaker mPhotoTaker;
-    private Boolean compressImg = true;
 
     private ArrayAdapter<String> dataAdapter;
 
@@ -175,7 +174,6 @@ public class AddMatchActivity extends AppCompatActivity {
     }
 
     public void TakePhoto(View view){
-        compressImg = true;
         //tem que verificar a permissao pro android 6
 
         File placeholderFile = ImageFactory.newFile();
@@ -187,7 +185,6 @@ public class AddMatchActivity extends AppCompatActivity {
     }
 
     public void PickPhoto(View view){
-        compressImg = false;
         //tem que verificar a permissao pro android 6
         File placeholderFile = ImageFactory.newFile();
 
@@ -342,6 +339,12 @@ public class AddMatchActivity extends AppCompatActivity {
         }
     }
 
+    protected void onDestroy() {
+        super.onDestroy();
+        currentChampionship = null;
+        mCurrentMatch = null;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -360,7 +363,7 @@ public class AddMatchActivity extends AppCompatActivity {
         if (mCurrentPhotoUri != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
 
-            if (compressImg) {
+            if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
                 options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
             }
 
