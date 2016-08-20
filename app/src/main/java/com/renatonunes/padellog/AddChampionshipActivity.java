@@ -353,7 +353,6 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         if (mCurrentPhotoUri != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
 
-//            if (compressImg) {
             if (ImageFactory.imgIsLarge(mCurrentPhotoUri)){
                 options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
             }

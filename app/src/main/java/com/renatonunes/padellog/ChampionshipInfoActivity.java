@@ -20,6 +20,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 
@@ -129,13 +134,60 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 
 				break;
 			case R.id.menuDelete:
-				Toast.makeText(ChampionshipInfoActivity.this, "Deletar", Toast.LENGTH_SHORT).show();
+                deleteMatchesThenChampionship();
+
 				break;
 			default:
 				break;
 		}
 		return super.onContextItemSelected(item);
 	}
+
+    public void deleteMatchesThenChampionship(){
+        FirebaseDatabase.getInstance().getReference()
+                .child("matches")
+                .child(currentChampionship.getId()).runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                mutableData.setValue(null); // This removes the node.
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                deleteChampionship();
+            }
+        });
+
+    }
+
+    public void deleteChampionship(){
+        FirebaseDatabase.getInstance().getReference()
+                .child("championships")
+                .child(currentChampionship.getOwner())
+                .child(currentChampionship.getId()).runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                mutableData.setValue(null); // This removes the node.
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                Toast.makeText(ChampionshipInfoActivity.this,
+                        getResources().getString(R.string.msg_action_deleted),
+                        Toast.LENGTH_SHORT).show();
+
+//                        Snackbar.make(fabAddMatch,
+//								getResources().getString(R.string.msg_action_deleted),
+//								Snackbar.LENGTH_LONG)
+//								.setAction("Action", null).show();
+
+                finish();
+            }
+        });
+    }
 
 	public void callEditChampionship(View v){
 		openContextMenu(v);

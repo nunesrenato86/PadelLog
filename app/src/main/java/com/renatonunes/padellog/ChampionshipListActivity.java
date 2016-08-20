@@ -122,7 +122,7 @@ public class ChampionshipListActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(com.google.firebase.database.DataSnapshot dataSnapshot) {
-
+                getUpdates(dataSnapshot);
             }
 
             @Override
