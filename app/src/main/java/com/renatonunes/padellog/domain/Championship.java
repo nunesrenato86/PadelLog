@@ -162,6 +162,7 @@ public class Championship {
     }
 
     public void updateResult(){
+        initResult();
         //retrieve the max round
         FirebaseDatabase.getInstance().getReference().child("matches").child(this.id).orderByChild("round").limitToLast(1).addChildEventListener(new ChildEventListener() {
             @Override
@@ -216,17 +217,30 @@ public class Championship {
 
         //update the championship result
         if (lastMatch != null) {
-            Map<String, Object> result = new HashMap<String, Object>();
-
             this.result = lastMatch.getResult();
+        }else
+            this.result = -1; //without matches
 
-            result.put("result", this.result);
+        Map<String, Object> result = new HashMap<String, Object>();
 
-            FirebaseDatabase.getInstance().getReference().child("championships")
-                    .child(this.getOwner())
-                    .child(getId())
-                    .updateChildren(result);
-        }
+        result.put("result", this.result);
+
+        FirebaseDatabase.getInstance().getReference().child("championships")
+                .child(this.getOwner())
+                .child(getId())
+                .updateChildren(result);
+    }
+
+
+    private void initResult(){
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        result.put("result", -1);
+
+        FirebaseDatabase.getInstance().getReference().child("championships")
+                .child(this.getOwner())
+                .child(getId())
+                .updateChildren(result);
     }
 
     public void updateDB( DatabaseReference.CompletionListener... completionListener ){

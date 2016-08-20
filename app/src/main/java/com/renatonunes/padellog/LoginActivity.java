@@ -60,11 +60,14 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
             }
 
             @Override
-            public void onCancel() {}
+            public void onCancel() {
+                closeProgressBar();
+            }
 
             @Override
             public void onError(FacebookException error) {
                 //FirebaseCrash.report( error );
+                closeProgressBar();
                 showSnackbar( error.getMessage() );
             }
         });
@@ -160,6 +163,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                         public void onComplete(@NonNull Task<AuthResult> task) {
 
                             if( !task.isSuccessful() ){
+                                closeProgressBar();
                                 showSnackbar("Login social falhou");
                             }
                         }
@@ -167,6 +171,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            closeProgressBar();
                             //FirebaseCrash.report( e );
                         }
                     });
@@ -288,6 +293,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
                         if( !task.isSuccessful() ){
+                            closeProgressBar();
                             showSnackbar("Login falhou");
                             return;
                         }
@@ -295,6 +301,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                closeProgressBar();
 //                FirebaseCrash.report( e );
             }
         });

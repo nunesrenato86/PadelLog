@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
@@ -35,7 +36,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,14 +55,21 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        GoogleMap.OnMapLoadedCallback {
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
+
+    @BindView(R.id.progressBar_maps)
+    ProgressBar progressBar;
 
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
@@ -75,6 +82,20 @@ public class MainActivity extends AppCompatActivity
     private ClusterItem mClusterItemInicio;
     private ClusterItem mClusterItemFim;
 
+    protected void openProgressBar(){
+        progressBar.setVisibility( View.VISIBLE );
+    }
+
+    protected void closeProgressBar(){
+        progressBar.setVisibility( View.INVISIBLE );
+    }
+
+    @Override
+    public void onMapLoaded() {
+        //TODO: Hide your progress indicator
+//        closeProgressBar();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,9 +103,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        ActionBar actionbar = getSupportActionBar();
-//        actionbar.setDisplayHomeAsUpEnabled(true);
-//        actionbar.setTitle("");
+        ButterKnife.bind(this);
+        ButterKnife.setDebug(true);
+
+        openProgressBar();
 
         mContext = this;
 
@@ -138,11 +160,16 @@ public class MainActivity extends AppCompatActivity
 //        String token = FirebaseInstanceId.getInstance().getToken();
 //        Log.e("TESTEMSG", "token no service: " + token);
         //dy7aCLp4u04:APA91bHeqe_pUFatAw41Ra7KU726TuFHXgC36Kn4VUxXBMWXQUAqnUMTwEYVHQIeEX94VwkEk5cbyl2JTGl0yG1D3I8k77ZC5p4i_8kOhAr-CdFO0kUuXFOBhMHSte6cTSwt0bCYoARf
+
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
+
+        mClusterManager.setRenderer(new OwnIconRendered(this, mMap, mClusterManager));
 
         if (mGoogleMapApiClient == null) {
             mGoogleMapApiClient = new GoogleApiClient.Builder(mContext)
@@ -152,6 +179,8 @@ public class MainActivity extends AppCompatActivity
                     .build();
             mGoogleMapApiClient.connect();
         }
+
+//        closeProgressBar();
     }
 
     private void updateNavUi(String name){
@@ -288,9 +317,9 @@ public class MainActivity extends AppCompatActivity
                 mMap.addMarker(mOpt);
             }
             */
-        mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
-
-        mClusterManager.setRenderer(new OwnIconRendered(this, mMap, mClusterManager));
+//        mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
+//
+//        mClusterManager.setRenderer(new OwnIconRendered(this, mMap, mClusterManager));
 
         /* assim eh quando tava fixo
         for (LatLng posicao : posicoes){
@@ -453,15 +482,24 @@ public class MainActivity extends AppCompatActivity
 
     private void markChampionshipOnMap(Championship championship){
         if (mMap != null) {
-            LatLng marker = null;
+//            LatLng marker = null;
 
-            marker = new LatLng(championship.getLat(), championship.getLng());
+//            marker = new LatLng(championship.getLat(), championship.getLng());
 
-            mMap.addMarker(new MarkerOptions().position(marker).title(championship.getName()));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
+//            mMap.addMarker(new MarkerOptions().position(marker).title(championship.getName()));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker, 5));
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker, 5));
+
+            MyMapItem offsetItem = new MyMapItem(championship.getLat(), championship.getLng(), championship.getName());
+            mClusterManager.addItem(offsetItem);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
         }
+
+        closeProgressBar();
+
+        mMap.setOnCameraChangeListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
     }
 
     private void clearMap(){
@@ -473,6 +511,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        openProgressBar();
         getChampionships();
     }
 }

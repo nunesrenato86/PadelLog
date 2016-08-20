@@ -65,6 +65,13 @@ public class MatchListFragment extends Fragment {
 //		mRootView.setAdapter(new MatchListAdapter(20));
 //	}
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
     public static Fragment newInstance(Championship currentChampionship, Context context) {
         mContext = context;
         mCurrentChampionship = currentChampionship;
@@ -96,7 +103,7 @@ public class MatchListFragment extends Fragment {
 
                 @Override
                 public void onChildRemoved(com.google.firebase.database.DataSnapshot dataSnapshot) {
-
+                    getUpdates(dataSnapshot, false);
                 }
 
                 @Override
