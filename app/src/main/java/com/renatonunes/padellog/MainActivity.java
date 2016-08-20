@@ -36,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.progressBar_maps)
     ProgressBar progressBar;
 
+    private CameraPosition mPreviousCameraPosition;
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
     private GoogleMap mMap;
@@ -170,6 +172,21 @@ public class MainActivity extends AppCompatActivity
         mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
 
         mClusterManager.setRenderer(new OwnIconRendered(this, mMap, mClusterManager));
+
+        mMap.setOnCameraChangeListener(mClusterManager);
+
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                CameraPosition position = mMap.getCameraPosition();
+                if (mPreviousCameraPosition == null || mPreviousCameraPosition.zoom != position.zoom) {
+                    mPreviousCameraPosition = mMap.getCameraPosition();
+                    mClusterManager.cluster();
+                }
+            }
+        });
+
+        mMap.setOnMarkerClickListener(mClusterManager);
 
         if (mGoogleMapApiClient == null) {
             mGoogleMapApiClient = new GoogleApiClient.Builder(mContext)
@@ -497,14 +514,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         closeProgressBar();
-
-        mMap.setOnCameraChangeListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
     }
 
     private void clearMap(){
         if (mMap != null) {
             mMap.clear();
+            mClusterManager.clearItems();
         }
     }
 
