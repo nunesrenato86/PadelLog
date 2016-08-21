@@ -36,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -46,11 +47,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.renatonunes.padellog.domain.Championship;
-import com.renatonunes.padellog.domain.MyMapItem;
 import com.renatonunes.padellog.domain.Player;
 import com.squareup.picasso.Picasso;
 
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.progressBar_maps)
     ProgressBar progressBar;
 
-    private CameraPosition mPreviousCameraPosition;
+    private CameraPosition mPreviousCameraPosition = null;
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
     private GoogleMap mMap;
@@ -81,8 +80,6 @@ public class MainActivity extends AppCompatActivity
     private LocationRequest mLocationRequest;
     private Marker markerMyLocation;
     private ClusterManager mClusterManager;
-    private ClusterItem mClusterItemInicio;
-    private ClusterItem mClusterItemFim;
 
     protected void openProgressBar(){
         progressBar.setVisibility( View.VISIBLE );
@@ -169,11 +166,14 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
+//        mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
+        mClusterManager = new ClusterManager<Championship>(this, mMap);
 
         mClusterManager.setRenderer(new OwnIconRendered(this, mMap, mClusterManager));
 
-        mMap.setOnCameraChangeListener(mClusterManager);
+        //mMap.setOnCameraChangeListener(mClusterManager);
+
+        mMap.setOnMarkerClickListener(mClusterManager);
 
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
@@ -186,8 +186,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        mMap.setOnMarkerClickListener(mClusterManager);
-
         if (mGoogleMapApiClient == null) {
             mGoogleMapApiClient = new GoogleApiClient.Builder(mContext)
                     //.addConnectionCallbacks(this)
@@ -196,8 +194,6 @@ public class MainActivity extends AppCompatActivity
                     .build();
             mGoogleMapApiClient.connect();
         }
-
-//        closeProgressBar();
     }
 
     private void updateNavUi(String name){
@@ -414,20 +410,37 @@ public class MainActivity extends AppCompatActivity
         //updateCamera(location);
     }
 
-    class OwnIconRendered extends DefaultClusterRenderer<MyMapItem> {
+    //class OwnIconRendered extends DefaultClusterRenderer<MyMapItem> {
+    class OwnIconRendered extends DefaultClusterRenderer<Championship> {
 
         public OwnIconRendered(Context context, GoogleMap map,
-                               ClusterManager<MyMapItem> clusterManager) {
+//                               ClusterManager<MyMapItem> clusterManager) {
+                               ClusterManager<Championship> clusterManager) {
             super(context, map, clusterManager);
         }
 
         @Override
-        protected void onBeforeClusterItemRendered(MyMapItem item, MarkerOptions markerOptions) {
-            //markerOptions.icon(item.getIcon());
-            //markerOptions.snippet(item.getSnippet());
-            //markerOptions.title(item.getTitle());
-            //markerOptions.title("teste");
-            markerOptions.title(item.getmTitle());
+//        protected void onBeforeClusterItemRendered(MyMapItem item, MarkerOptions markerOptions) {
+        protected void onBeforeClusterItemRendered(Championship item, MarkerOptions markerOptions) {
+//            markerOptions.icon(item.getIcon());
+            //markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+            switch(item.getResult()) {
+                case 8: //champions
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_gold_32));
+
+                    break;
+                case 7: //vice
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_silver_32));
+
+                    break;
+                default:
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_padellog_32));
+                    break;
+            }
+
+            markerOptions.snippet(item.getResultStr());
+            markerOptions.title(item.getName());
             super.onBeforeClusterItemRendered(item, markerOptions);
         }
     }
@@ -435,7 +448,6 @@ public class MainActivity extends AppCompatActivity
     public void getChampionships(){
         championships.clear();
         clearMap();
-
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = user.getUid();
@@ -508,9 +520,11 @@ public class MainActivity extends AppCompatActivity
 
 //            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker, 5));
 
-            MyMapItem offsetItem = new MyMapItem(championship.getLat(), championship.getLng(), championship.getName());
-            mClusterManager.addItem(offsetItem);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
+//            MyMapItem offsetItem = new MyMapItem(championship.getLat(), championship.getLng(), championship.getName());
+//            mClusterManager.addItem(offsetItem);
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
+            mClusterManager.addItem(championship);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(championship.getPosition(), 5));
         }
 
         closeProgressBar();

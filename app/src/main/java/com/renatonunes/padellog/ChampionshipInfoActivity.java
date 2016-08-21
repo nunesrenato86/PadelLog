@@ -13,7 +13,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -127,33 +126,36 @@ public class ChampionshipInfoActivity extends AppCompatActivity
         ButterKnife.bind(this);
 	}
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
+//	@Override
+//	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//		super.onCreateContextMenu(menu, v, menuInfo);
+//
+//		getMenuInflater().inflate(R.menu.context_menu, menu);
+//
+////		if(v.getId() == R.id.btn_menu_championship_info){
+////			getMenuInflater().inflate(R.menu.context_menu, menu);
+////		}
+//	}
 
-		if(v.getId() == R.id.btn_menu_championship_info){
-			getMenuInflater().inflate(R.menu.context_menu, menu);
-		}
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		switch(item.getItemId()){
-			case R.id.menuEdit:
-				AddChampionshipActivity.start(context, currentChampionship);
-
-				break;
-			case R.id.menuDelete:
-                deleteMatchesThenChampionship();
-
-				break;
-			default:
-				break;
-		}
-		return super.onContextItemSelected(item);
-	}
+//	@Override
+//	public boolean onContextItemSelected(MenuItem item) {
+//		switch(item.getItemId()){
+//			case R.id.menuEdit:
+//				AddChampionshipActivity.start(context, currentChampionship);
+//
+//				break;
+//			case R.id.menuDelete:
+//                deleteMatchesThenChampionship();
+//
+//				break;
+//			default:
+//				break;
+//		}
+//		return super.onContextItemSelected(item);
+//	}
 
     public void deleteMatchesThenChampionship(){
+
         FirebaseDatabase.getInstance().getReference()
                 .child("matches")
                 .child(currentChampionship.getId()).runTransaction(new Transaction.Handler() {
@@ -168,7 +170,6 @@ public class ChampionshipInfoActivity extends AppCompatActivity
                 deleteChampionship();
             }
         });
-
     }
 
     public void deleteChampionship(){
@@ -335,6 +336,7 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 
             return true;
         }else if (id == R.id.action_match_delete){
+			deleteMatchesThenChampionship();
             return true;
         }else if (id == android.R.id.home) {
             finish();

@@ -3,12 +3,14 @@ package com.renatonunes.padellog.domain;
 import android.content.Context;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.maps.android.clustering.ClusterItem;
 import com.renatonunes.padellog.R;
 
 import java.util.HashMap;
@@ -18,7 +20,7 @@ import java.util.Map;
  * Created by Renato on 02/08/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Championship {
+public class Championship implements ClusterItem {
 
     private Context context;
     private String id;
@@ -302,5 +304,13 @@ public class Championship {
 //        if( getResult() != null ){
 //            map.put( "result", getResult() );
 //        }
+    }
+
+    @Override
+    public LatLng getPosition() {
+
+        LatLng latLng = new LatLng(this.getLat(), this.getLng());
+
+        return latLng;
     }
 }
