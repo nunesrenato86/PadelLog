@@ -56,7 +56,7 @@ public class MatchListFragment extends Fragment {
     @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        this.refreshData();
+        //this.refreshData();
 
 //		initRecyclerView();
     }

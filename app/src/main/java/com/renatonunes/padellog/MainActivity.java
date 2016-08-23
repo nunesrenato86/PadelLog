@@ -63,8 +63,7 @@ public class MainActivity extends AppCompatActivity
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,
-        GoogleMap.OnMapLoadedCallback {
+        LocationListener {
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
 
@@ -90,12 +89,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapLoaded() {
-        //TODO: Hide your progress indicator
-//        closeProgressBar();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -104,8 +97,6 @@ public class MainActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
         ButterKnife.setDebug(true);
-
-        openProgressBar();
 
         mContext = this;
 
@@ -427,15 +418,15 @@ public class MainActivity extends AppCompatActivity
 
             switch(item.getResult()) {
                 case 8: //champions
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_gold_32));
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_gold_48));
 
                     break;
                 case 7: //vice
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_silver_32));
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_silver_48));
 
                     break;
                 default:
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_padellog_32));
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_padellog_48));
                     break;
             }
 
@@ -446,8 +437,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void getChampionships(){
+//        openProgressBar();
         championships.clear();
         clearMap();
+
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = user.getUid();
@@ -478,6 +471,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
     }
 
     private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
@@ -527,7 +521,7 @@ public class MainActivity extends AppCompatActivity
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(championship.getPosition(), 5));
         }
 
-        closeProgressBar();
+        //closeProgressBar();
     }
 
     private void clearMap(){
@@ -540,7 +534,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        openProgressBar();
         getChampionships();
     }
+
+
+
 }

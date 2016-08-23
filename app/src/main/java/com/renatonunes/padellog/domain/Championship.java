@@ -237,6 +237,7 @@ public class Championship implements ClusterItem {
     private void initResult(){
         Map<String, Object> result = new HashMap<String, Object>();
 
+        this.setResult(-1);
         result.put("result", -1);
 
         FirebaseDatabase.getInstance().getReference().child("championships")

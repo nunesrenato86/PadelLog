@@ -1,4 +1,5 @@
 /*
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -6,16 +7,19 @@
 package com.renatonunes.padellog;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -113,7 +117,8 @@ public class MatchInfoActivity extends AppCompatActivity {
 
 			return true;
 		}else if (id == R.id.action_match_delete){
-            deleteMatch();
+            //deleteMatch();
+			askToDeleteMatch();
 
 			return true;
 		}if (id == android.R.id.home) {
@@ -171,6 +176,8 @@ public class MatchInfoActivity extends AppCompatActivity {
         });
     }
 
+
+
 	private void updateUI(){
 		//setting top image
 		if (mCurrentMatch.getImageStr().isEmpty()){
@@ -199,5 +206,39 @@ public class MatchInfoActivity extends AppCompatActivity {
 
 		//TEAM 2
 		textTeam2.setText(mCurrentMatch.getTeam2());
+	}
+
+
+	private void askToDeleteMatch(){
+
+		AlertDialog dialogo = new AlertDialog.Builder(this)
+				.setTitle("Confirmação de exclusão")
+				.setMessage("A partida será excluída.")
+				.setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						deleteMatch();
+					}
+				})
+				.setNegativeButton("Cancelar", null)
+				.create();
+
+		dialogo.setOnShowListener(new DialogInterface.OnShowListener() {
+			@Override
+			public void onShow(DialogInterface dialog) {
+				Button positiveButton = ((AlertDialog) dialog)
+						.getButton(AlertDialog.BUTTON_POSITIVE);
+
+				positiveButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+
+				Button negativeButton = ((AlertDialog) dialog)
+						.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+				negativeButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+			}
+		});
+
+		dialogo.show();
 	}
 }

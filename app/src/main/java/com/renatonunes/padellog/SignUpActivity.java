@@ -1,8 +1,12 @@
 package com.renatonunes.padellog;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -16,6 +20,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.renatonunes.padellog.domain.Player;
+import com.renatonunes.padellog.domain.util.LibraryClass;
 
 public class SignUpActivity extends CommonActivity  {
 
@@ -26,6 +31,7 @@ public class SignUpActivity extends CommonActivity  {
 
     private Player player;
     private AutoCompleteTextView name;
+    private Resources resources;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +85,31 @@ public class SignUpActivity extends CommonActivity  {
 
     @Override
     protected void initViews() {
+        resources = getResources();
+
         name = (AutoCompleteTextView) findViewById(R.id.name);
         email = (AutoCompleteTextView) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
         progressBar = (ProgressBar) findViewById(R.id.sign_up_progress);
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callClearErrors(s);
+            }
+        };
+
+        name.addTextChangedListener(textWatcher);
+        email.addTextChangedListener(textWatcher);
+        password.addTextChangedListener(textWatcher);
     }
 
     @Override
@@ -105,16 +132,18 @@ public class SignUpActivity extends CommonActivity  {
 //    }
 
     public void sendSignUpData(View view){
-        openProgressBar();
+        if (validateFields()) {
+            openProgressBar();
 
-        initUser();
+            initUser();
 
 //        initPlayer(email.getText().toString(),
 //                password.getText().toString(),
 //                "",
 //                name.getText().toString());
 
-        saveUser();
+            saveUser();
+        }
     }
 
     private void saveUser(){
@@ -133,5 +162,59 @@ public class SignUpActivity extends CommonActivity  {
                         }
                     }
                 });
+    }
+
+    private void callClearErrors(Editable s) {
+        if (!s.toString().isEmpty()) {
+            clearErrorFields(name);
+        }
+    }
+
+    private boolean validateFields() {
+        String login = email.getText().toString().trim();
+        String pass = password.getText().toString().trim();
+        String displayName = name.getText().toString().trim();
+        return (!isEmptyFields(login, pass, displayName) && hasSizeValid(login, pass, displayName));
+    }
+
+    private boolean isEmptyFields(String login, String pass, String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            name.requestFocus();
+            name.setError(resources.getString(R.string.login_display_name_required));
+            return true;
+        } else if (TextUtils.isEmpty(login)) {
+            email.requestFocus();
+            email.setError(resources.getString(R.string.login_user_required));
+            return true;
+        } else if (TextUtils.isEmpty(pass)) {
+            password.requestFocus();
+            password.setError(resources.getString(R.string.login_password_required));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasSizeValid(String login, String pass, String displayName) {
+
+        if (!(displayName.length() > 5)) {
+            name.requestFocus();
+            name.setError(resources.getString(R.string.login_display_name_size_invalid));
+            return false;
+        } else if (!(LibraryClass.isEmailValid(login))) {
+            email.requestFocus();
+            email.setError(resources.getString(R.string.login_invalid));
+            return false;
+        } else if (!(pass.length() > 5)) {
+            password.requestFocus();
+            password.setError(resources.getString(R.string.login_pass_size_invalid));
+            return false;
+        }
+        return true;
+    }
+
+    private void clearErrorFields(EditText... editTexts) {
+        for (EditText editText : editTexts) {
+            editText.setError(null);
+        }
     }
 }

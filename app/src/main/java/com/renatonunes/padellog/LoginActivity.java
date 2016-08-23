@@ -1,10 +1,15 @@
 package com.renatonunes.padellog;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
@@ -31,8 +36,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.renatonunes.padellog.domain.Player;
+import com.renatonunes.padellog.domain.util.LibraryClass;
 
 import java.util.Arrays;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class LoginActivity extends CommonActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -44,11 +53,24 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     private Player player;
     private CallbackManager callbackManager;
     private GoogleApiClient mGoogleApiClient;
+    private Resources resources;
+
+    @BindView(R.id.email)
+    AutoCompleteTextView email;
+
+    @BindView(R.id.password)
+    EditText password;
+
+    @BindView(R.id.email_sign_in_button)
+    Button btnLoginEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        ButterKnife.bind(this);
+        ButterKnife.setDebug(true);
 
         // FACEBOOK
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -216,9 +238,41 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     }
 
     protected void initViews(){
-        email = (AutoCompleteTextView) findViewById(R.id.email);
-        password = (EditText) findViewById(R.id.password);
+        resources = getResources();
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callClearErrors(s);
+            }
+        };
+
+        email.addTextChangedListener(textWatcher);
+
+        password.addTextChangedListener(textWatcher);
+
         progressBar = (ProgressBar) findViewById(R.id.login_progress);
+
+        btnLoginEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendLoginData(view);
+            }
+        });
+    }
+
+    private void callClearErrors(Editable s) {
+        if (!s.toString().isEmpty()) {
+            clearErrorFields(email);
+        }
     }
 
     protected void initUser(){
@@ -237,11 +291,13 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         startActivity(intent);
     }
 
-    public void sendLoginData( View view ){
+    public void sendLoginData(View view){
 //        FirebaseCrash.log("LoginActivity:clickListener:button:sendLoginData()");
-        openProgressBar();
-        initUser();
-        verifyLogin();
+        if (validateFields()) {
+            openProgressBar();
+            initUser();
+            verifyLogin();
+        }
     }
 
     public void sendLoginFacebookData( View view ){
@@ -316,5 +372,44 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 //                        )
 //                );
         showSnackbar( connectionResult.getErrorMessage() );
+    }
+
+    private boolean validateFields() {
+        String user = email.getText().toString().trim();
+        String pass = password.getText().toString().trim();
+        return (!isEmptyFields(user, pass) && hasSizeValid(user, pass));
+    }
+
+    private boolean isEmptyFields(String user, String pass) {
+        if (TextUtils.isEmpty(user)) {
+            email.requestFocus();
+            email.setError(resources.getString(R.string.login_user_required));
+            return true;
+        } else if (TextUtils.isEmpty(pass)) {
+            password.requestFocus();
+            password.setError(resources.getString(R.string.login_password_required));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasSizeValid(String login, String pass) {
+
+        if (!LibraryClass.isEmailValid(login)) {
+            email.requestFocus();
+            email.setError(resources.getString(R.string.login_invalid));
+            return false;
+        } else if (!(pass.length() > 5)) {
+            password.requestFocus();
+            password.setError(resources.getString(R.string.login_pass_size_invalid));
+            return false;
+        }
+        return true;
+    }
+
+    private void clearErrorFields(EditText... editTexts) {
+        for (EditText editText : editTexts) {
+            editText.setError(null);
+        }
     }
 }
