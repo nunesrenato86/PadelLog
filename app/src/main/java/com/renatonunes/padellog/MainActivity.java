@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -70,6 +72,9 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.progressBar_maps)
     ProgressBar progressBar;
 
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
+
     private CameraPosition mPreviousCameraPosition = null;
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
@@ -117,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.inflateHeaderView(R.layout.nav_header_main);
 
@@ -151,6 +156,7 @@ public class MainActivity extends AppCompatActivity
 //        Log.e("TESTEMSG", "token no service: " + token);
         //dy7aCLp4u04:APA91bHeqe_pUFatAw41Ra7KU726TuFHXgC36Kn4VUxXBMWXQUAqnUMTwEYVHQIeEX94VwkEk5cbyl2JTGl0yG1D3I8k77ZC5p4i_8kOhAr-CdFO0kUuXFOBhMHSte6cTSwt0bCYoARf
 
+        new Wait().execute();
     }
 
     @Override
@@ -258,9 +264,9 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, ChampionshipListActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_per_partner) {
-
+            showNotDoneYet();
         } else if (id == R.id.nav_per_year) {
-
+            showNotDoneYet();
         } else if (id == R.id.nav_logout) {
             if (FirebaseAuth.getInstance() != null) {
                 FirebaseAuth.getInstance().signOut();
@@ -444,16 +450,26 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = user.getUid();
+//        final int[] count = {0};
 
         FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//                count[0]++;
                 getUpdates(dataSnapshot);
+
+//                long i = dataSnapshot. getChildrenCount();
+//
+//                if(count[0] >= i){
+//                    closeProgressBar();
+//                }
+                closeProgressBar();
             }
 
             @Override
             public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
                 getUpdates(dataSnapshot);
+                closeProgressBar();
             }
 
             @Override
@@ -519,6 +535,7 @@ public class MainActivity extends AppCompatActivity
 //            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
             mClusterManager.addItem(championship);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(championship.getPosition(), 5));
+            mClusterManager.cluster();
         }
 
         //closeProgressBar();
@@ -537,6 +554,37 @@ public class MainActivity extends AppCompatActivity
         getChampionships();
     }
 
+    private class Wait extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            openProgressBar();
+        }
 
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                Thread.sleep(5000);
+            }
+            catch (InterruptedException ie) {
+                Log.d("RNN2", ie.toString());
+            }
+            return(championships.size() == 0);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean bool) {
+            if (bool) {
+                closeProgressBar();
+            }
+        }
+    }
+
+    private void showNotDoneYet(){
+        Snackbar.make(navigationView,
+                getResources().getString(R.string.msg_not_done_yet),
+                Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+    }
 
 }

@@ -111,4 +111,6 @@
     <string name="login_pass_size_invalid">Senha deve ter entre 6 e 15 caracteres!</string>
     <string name="login_display_name_size_invalid">Nome deve ter entre 6 e 15 caracteres!</string>
 
+    <string name="msg_not_done_yet">Não implementado.</string>
+
 </resources>
