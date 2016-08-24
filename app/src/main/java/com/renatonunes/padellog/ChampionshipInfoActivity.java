@@ -1,6 +1,7 @@
 package com.renatonunes.padellog;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -11,11 +12,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -336,7 +339,7 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 
             return true;
         }else if (id == R.id.action_match_delete){
-			deleteMatchesThenChampionship();
+            askToDeleteChampionship();
             return true;
         }else if (id == android.R.id.home) {
             finish();
@@ -346,4 +349,36 @@ public class ChampionshipInfoActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
+    private void askToDeleteChampionship(){
+
+        AlertDialog dialogo = new AlertDialog.Builder(this)
+                .setTitle("Confirmação de exclusão")
+                .setMessage("O campeonato será excluído.")
+                .setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteMatchesThenChampionship();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .create();
+
+        dialogo.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button positiveButton = ((AlertDialog) dialog)
+                        .getButton(AlertDialog.BUTTON_POSITIVE);
+
+                positiveButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+                Button negativeButton = ((AlertDialog) dialog)
+                        .getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                negativeButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            }
+        });
+
+        dialogo.show();
+    }
 }

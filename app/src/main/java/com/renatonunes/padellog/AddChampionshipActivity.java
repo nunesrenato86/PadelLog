@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,7 +18,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
@@ -96,6 +100,7 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
 
     //google places api
     private GoogleApiClient mGoogleApiClient;
+    private Resources resources;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +112,8 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
+        resources = getResources();
+
         mPhotoTaker = new PhotoTaker(this);
 
         ActionBar actionbar = getSupportActionBar();
@@ -115,7 +122,9 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         fabSaveChampionship.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveChampionship();
+                if (validateFields()) {
+                    saveChampionship();
+                }
             }
         });
 
@@ -161,6 +170,21 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
                 }
             }
         });
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callClearErrors(s);
+            }
+        };
 
         updateUI();
     }
@@ -238,7 +262,7 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
 
     private void displayPhotoError() {
         Snackbar.make(fabSaveChampionship,
-                getResources().getString(R.string.msg_error_img_file),
+                resources.getString(R.string.msg_error_img_file),
                 Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
@@ -288,6 +312,7 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
 
 //            edtPlace.setText(name + " " + address + " " + Html.fromHtml(attributions));
             edtPlace.setText(address + " " + Html.fromHtml(attributions));
+            edtPlace.setError(null);
 
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -446,11 +471,77 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         editText.setText( (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "/" +
                 (monthOfYear + 1 < 10 ? "0" + (monthOfYear + 1) : monthOfYear + 1) + "/" +
                 year);
+
+        editText.setError(null);
     }
 
     public static void start(Context c, Championship championship) {
         currentChampionship = championship;
 
         c.startActivity(new Intent(c, AddChampionshipActivity.class));
+    }
+
+    private void callClearErrors(Editable s) {
+        if (!s.toString().isEmpty()) {
+            clearErrorFields(edtName);
+        }
+    }
+
+    private boolean validateFields() {
+        String name = edtName.getText().toString().trim();
+        String partner = edtPartner.getText().toString().trim();
+        String category = edtCategory.getText().toString().trim();
+        String initalDate = edtInitialDate.getText().toString().trim();
+        String finalDate = edtFinalDate.getText().toString().trim();
+        String place = edtPlace.getText().toString().trim();
+
+        return (!isEmptyFields(name,
+                partner,
+                category,
+                initalDate,
+                finalDate,
+                place));
+//                && hasSizeValid(set1Score1, set1Score2));
+    }
+
+    private boolean isEmptyFields(String name,
+                                  String partner,
+                                  String category,
+                                  String initialDate,
+                                  String finalDate,
+                                  String place) {
+        if (TextUtils.isEmpty(name)) {
+            edtName.requestFocus();
+            edtName.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        } else if (TextUtils.isEmpty(partner)) {
+            edtPartner.requestFocus();
+            edtPartner.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        } else if (TextUtils.isEmpty(category)) {
+            edtCategory.requestFocus();
+            edtCategory.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        } else if (TextUtils.isEmpty(initialDate)) {
+            edtInitialDate.requestFocus();
+            edtInitialDate.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        } else if (TextUtils.isEmpty(finalDate)) {
+            edtFinalDate.requestFocus();
+            edtFinalDate.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        } else if (TextUtils.isEmpty(place)) {
+            edtPlace.requestFocus();
+            edtPlace.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        }
+
+        return false;
+    }
+
+    private void clearErrorFields(EditText... editTexts) {
+        for (EditText editText : editTexts) {
+            editText.setError(null);
+        }
     }
 }

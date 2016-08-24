@@ -3,6 +3,7 @@ package com.renatonunes.padellog;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
@@ -82,6 +86,7 @@ public class AddMatchActivity extends AppCompatActivity {
     private PhotoTaker mPhotoTaker;
 
     private ArrayAdapter<String> dataAdapter;
+    private Resources resources;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +98,8 @@ public class AddMatchActivity extends AppCompatActivity {
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
+        resources = getResources();
+
         mPhotoTaker = new PhotoTaker(this);
 
         ActionBar actionbar = getSupportActionBar();
@@ -101,21 +108,23 @@ public class AddMatchActivity extends AppCompatActivity {
         fabSaveMatch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveMatch();
+                if (validateFields()) {
+                    saveMatch();
+                }
             }
         });
 
         // Spinner element
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
-        categories.add(getResources().getString(R.string.round_draw));
-        categories.add(getResources().getString(R.string.round_64));
-        categories.add(getResources().getString(R.string.round_32));
-        categories.add(getResources().getString(R.string.round_16));
-        categories.add(getResources().getString(R.string.round_8));
-        categories.add(getResources().getString(R.string.round_4));
-        categories.add(getResources().getString(R.string.round_semi));
-        categories.add(getResources().getString(R.string.round_final));
+        categories.add(resources.getString(R.string.round_draw));
+        categories.add(resources.getString(R.string.round_64));
+        categories.add(resources.getString(R.string.round_32));
+        categories.add(resources.getString(R.string.round_16));
+        categories.add(resources.getString(R.string.round_8));
+        categories.add(resources.getString(R.string.round_4));
+        categories.add(resources.getString(R.string.round_semi));
+        categories.add(resources.getString(R.string.round_final));
 
         // Creating adapter for spinner
         dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
@@ -125,6 +134,21 @@ public class AddMatchActivity extends AppCompatActivity {
 
         // attaching data adapter to spinner
         spinnerRound.setAdapter(dataAdapter);
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callClearErrors(s);
+            }
+        };
 
         updateUI();
 
@@ -389,4 +413,47 @@ public class AddMatchActivity extends AppCompatActivity {
         c.startActivity(new Intent(c, AddMatchActivity.class));
     }
 
+    private void callClearErrors(Editable s) {
+        if (!s.toString().isEmpty()) {
+            clearErrorFields(edtOpponentDrive);
+        }
+    }
+
+    private boolean validateFields() {
+        String opponentDrive = edtOpponentDrive.getText().toString().trim();
+        String opponentBackDrive = edtOpponentBackdrive.getText().toString().trim();
+        String set1Score1 = edtSet1Score1.getText().toString().trim();
+        String set1Score2 = edtSet1Score2.getText().toString().trim();
+        return (!isEmptyFields(opponentDrive, opponentBackDrive, set1Score1, set1Score2));
+//                && hasSizeValid(set1Score1, set1Score2));
+    }
+
+    private boolean isEmptyFields(String opponentDrive, String opponentBackDrive,
+                                  String set1Score1, String set1Score2) {
+        if (TextUtils.isEmpty(opponentDrive)) {
+            edtOpponentDrive.requestFocus();
+            edtOpponentDrive.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        } else if (TextUtils.isEmpty(opponentBackDrive)) {
+            edtOpponentBackdrive.requestFocus();
+            edtOpponentBackdrive.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        } else if (TextUtils.isEmpty(set1Score1)) {
+            edtSet1Score1.requestFocus();
+            edtSet1Score1.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        } else if (TextUtils.isEmpty(set1Score2)) {
+            edtSet1Score2.requestFocus();
+            edtSet1Score2.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        }
+
+        return false;
+    }
+
+    private void clearErrorFields(EditText... editTexts) {
+        for (EditText editText : editTexts) {
+            editText.setError(null);
+        }
+    }
 }

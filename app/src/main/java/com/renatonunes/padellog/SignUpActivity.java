@@ -180,15 +180,15 @@ public class SignUpActivity extends CommonActivity  {
     private boolean isEmptyFields(String login, String pass, String displayName) {
         if (TextUtils.isEmpty(displayName)) {
             name.requestFocus();
-            name.setError(resources.getString(R.string.login_display_name_required));
+            name.setError(resources.getString(R.string.msg_field_required));
             return true;
         } else if (TextUtils.isEmpty(login)) {
             email.requestFocus();
-            email.setError(resources.getString(R.string.login_user_required));
+            email.setError(resources.getString(R.string.msg_field_required));
             return true;
         } else if (TextUtils.isEmpty(pass)) {
             password.requestFocus();
-            password.setError(resources.getString(R.string.login_password_required));
+            password.setError(resources.getString(R.string.msg_field_required));
             return true;
         }
         return false;

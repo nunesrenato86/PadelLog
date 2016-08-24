@@ -106,9 +106,7 @@
 
     <string name="msg_action_deleted">Excluído</string>
 
-    <string name="login_user_required">E-mail obrigatório!</string>
-    <string name="login_display_name_required">Nome obrigatório!</string>
-    <string name="login_password_required">Senha obrigatório!</string>
+    <string name="msg_field_required">Campo obrigatório!</string>
     <string name="login_invalid">E-mail inválido!</string>
     <string name="login_pass_size_invalid">Senha deve ter entre 6 e 15 caracteres!</string>
     <string name="login_display_name_size_invalid">Nome deve ter entre 6 e 15 caracteres!</string>

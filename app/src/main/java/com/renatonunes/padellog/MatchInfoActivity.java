@@ -213,7 +213,7 @@ public class MatchInfoActivity extends AppCompatActivity {
 
 		AlertDialog dialogo = new AlertDialog.Builder(this)
 				.setTitle("Confirmação de exclusão")
-				.setMessage("A partida será excluída.")
+				.setMessage("O jogo será excluída.")
 				.setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {

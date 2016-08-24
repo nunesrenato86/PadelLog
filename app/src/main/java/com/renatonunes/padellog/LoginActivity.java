@@ -383,11 +383,11 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     private boolean isEmptyFields(String user, String pass) {
         if (TextUtils.isEmpty(user)) {
             email.requestFocus();
-            email.setError(resources.getString(R.string.login_user_required));
+            email.setError(resources.getString(R.string.msg_field_required));
             return true;
         } else if (TextUtils.isEmpty(pass)) {
             password.requestFocus();
-            password.setError(resources.getString(R.string.login_password_required));
+            password.setError(resources.getString(R.string.msg_field_required));
             return true;
         }
         return false;
