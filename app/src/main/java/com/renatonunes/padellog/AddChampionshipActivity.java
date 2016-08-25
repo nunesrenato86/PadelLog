@@ -1,20 +1,24 @@
 package com.renatonunes.padellog;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -41,6 +45,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.renatonunes.padellog.domain.Championship;
+import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -111,6 +116,18 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
 
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
+
+//        String permissions[] = new String[]{
+//                Manifest.permission.READ_EXTERNAL_STORAGE,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                Manifest.permission.CAMERA,
+//        };
+//
+//        boolean ok = PermissionUtils.validate(this , 0, permissions);
+//
+//        if (ok){
+//            Log.i("RNN", "Permissions OK");
+//        }
 
         resources = getResources();
 
@@ -216,8 +233,21 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     }
 
 
-    public void TakePhoto(View view){
+    public void takePhoto(View view){
         //tem que verificar a permissao pro android 6
+
+        //esse metodo só tem a api leval 23 pra cima, por isso coloca o @targetapi ...
+//        verificar esse teste e o do utils
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, 3);//request code
+
+                return;
+            }
+        }
 
         File placeholderFile = ImageFactory.newFile();
         mCurrentPhotoUri = Uri.fromFile(placeholderFile);
@@ -227,7 +257,7 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
         }
     }
 
-    public void PickPhoto(View view){
+    public void pickPhoto(View view){
         //tem que verificar a permissao pro android 6
         File placeholderFile = ImageFactory.newFile();
 
@@ -544,4 +574,46 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
             editText.setError(null);
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 3){
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                Toast.makeText(AddChampionshipActivity.this, "Liberado a photo", Toast.LENGTH_SHORT).show();
+            }else{
+                AlertUtils.alert(this,
+                        R.string.app_name,
+                        R.string.msg_alert_permission,
+                        R.string.msg_alert_OK,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        });
+            }
+
+        }
+    }
+
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        for (int result : grantResults) {
+//            if (result == getPackageManager().PERMISSION_DENIED) {
+//                AlertUtils.alert(this,
+//                        R.string.app_name,
+//                        R.string.msg_alert_permission,
+//                        R.string.msg_alert_OK,
+//                        new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                finish();
+//                            }
+//                        });
+//                return;
+//            }
+//        }
+//        //OK can use storage and camera
+//    }
 }

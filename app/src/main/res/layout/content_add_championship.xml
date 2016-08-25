@@ -37,7 +37,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnTakeChampionshipPhoto"
-                android:onClick="TakePhoto"
+                android:onClick="takePhoto"
                 android:background="@drawable/ic_camera"/>
             <Button
                 android:layout_weight="0.6"
@@ -52,7 +52,7 @@
                 android:layout_weight="0.2"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnPickChampionshipPhoto"
-                android:onClick="PickPhoto"
+                android:onClick="pickPhoto"
                 android:background="@drawable/ic_folder_image"/>
         </LinearLayout>
     </FrameLayout>

@@ -1,12 +1,15 @@
 package com.renatonunes.padellog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.Manifest;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -36,7 +39,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.renatonunes.padellog.domain.Player;
+import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.LibraryClass;
+import com.renatonunes.padellog.domain.util.PermissionUtils;
 
 import java.util.Arrays;
 
@@ -54,6 +59,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     private CallbackManager callbackManager;
     private GoogleApiClient mGoogleApiClient;
     private Resources resources;
+    private Context context;
 
     @BindView(R.id.email)
     AutoCompleteTextView email;
@@ -68,6 +74,21 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        context = this;
+
+        String permissions[] = new String[]{
+            Manifest.permission.INTERNET,
+            Manifest.permission.GET_ACCOUNTS,
+            //Manifest.permission.READ_CONTACTS,
+            Manifest.permission.ACCESS_NETWORK_STATE
+        };
+
+        boolean ok = PermissionUtils.validate(this, 0, permissions);
+
+        if (ok){
+            Log.i("RNN", "Permissions OK");
+        }
 
         ButterKnife.bind(this);
         ButterKnife.setDebug(true);
@@ -411,5 +432,25 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         for (EditText editText : editTexts) {
             editText.setError(null);
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        for (int result : grantResults){
+            if (result == getPackageManager().PERMISSION_DENIED){
+                AlertUtils.alert(this,
+                        R.string.app_name,
+                        R.string.msg_alert_permission,
+                        R.string.msg_alert_OK,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        });
+                return;
+            }
+        }
+        //OK can login
     }
 }

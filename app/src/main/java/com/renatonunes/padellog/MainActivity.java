@@ -1,10 +1,14 @@
 package com.renatonunes.padellog;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.IntentFilter;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,10 +16,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -53,6 +57,8 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Player;
+import com.renatonunes.padellog.domain.util.AlertUtils;
+import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -80,6 +86,7 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleMapApiClient;
     private GoogleMap mMap;
     private Context mContext;
+    private BroadcastReceiver broadcastReceiver ;
 
     private LocationRequest mLocationRequest;
     private Marker markerMyLocation;
@@ -104,6 +111,17 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.setDebug(true);
 
         mContext = this;
+
+        String permissions[] = new String[]{
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_NETWORK_STATE
+        };
+
+        boolean ok = PermissionUtils.validate(this , 3, permissions);
+
+        if (ok){
+            Log.i("RNN", "Permissions OK");
+        }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -155,6 +173,51 @@ public class MainActivity extends AppCompatActivity
 //        String token = FirebaseInstanceId.getInstance().getToken();
 //        Log.e("TESTEMSG", "token no service: " + token);
         //dy7aCLp4u04:APA91bHeqe_pUFatAw41Ra7KU726TuFHXgC36Kn4VUxXBMWXQUAqnUMTwEYVHQIeEX94VwkEk5cbyl2JTGl0yG1D3I8k77ZC5p4i_8kOhAr-CdFO0kUuXFOBhMHSte6cTSwt0bCYoARf
+
+        broadcastReceiver = new BroadcastReceiver() {
+
+            AlertDialog.Builder builder;
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                ConnectivityManager connectivityManager = (ConnectivityManager) context
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetInfo = connectivityManager
+                        .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                NetworkInfo activeNetWifi = connectivityManager
+                        .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                boolean isConnectedMobile = activeNetInfo != null
+                        && activeNetInfo.isConnectedOrConnecting();
+                boolean isConnectedWifi = activeNetWifi != null
+                        && activeNetWifi.isConnectedOrConnecting();
+                AlertDialog alert = alertNoNetwork();
+                if (isConnectedMobile || isConnectedWifi) {
+                    if (alert != null && alert.isShowing()) {
+                        alert.dismiss();
+                    }
+                } else {
+                    if (alert != null && !alert.isShowing()) {
+                        alert.show();
+                    }
+                }
+
+            }
+
+            public AlertDialog alertNoNetwork() {
+                builder = new AlertDialog.Builder(mContext);
+                builder.setMessage(R.string.msg_alert_no_internet)
+                        .setMessage(R.string.msg_verify_no_internet)
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+
+                                    }
+                                });
+                return builder.create();
+            }
+        };
 
         new Wait().execute();
     }
@@ -292,13 +355,24 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onConnected(Bundle bundle) { //quando o client conectou com o play services
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        String permissions[] = new String[]{
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_NETWORK_STATE
+        };
 
-            //esse metodo só tem a api leval 23 pra cima, por isso coloca o @targetapi ...
-            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);//request code
-            return;
+        boolean ok = PermissionUtils.validate(this , 0, permissions);
+
+        if (ok){
+            Log.i("RNN", "Permissions OK");
         }
+
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//
+//            //esse metodo só tem a api leval 23 pra cima, por isso coloca o @targetapi ...
+//            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);//request code
+//            return;
+//        }
 
         /*
         PolylineOptions pOpt = new PolylineOptions();
@@ -383,13 +457,36 @@ public class MainActivity extends AppCompatActivity
 //    };
 
     //resposta da permisao, sabe qual permisao e se respondeu sim ou nao
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        if (requestCode == 3){
+//            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+//                getChampionships();
+//            }
+//
+//        }
+//    }
+
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 1){
-            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
-                getChampionships();
+        for (int result : grantResults) {
+            if (result == getPackageManager().PERMISSION_DENIED) {
+                AlertUtils.alert(this,
+                        R.string.app_name,
+                        R.string.msg_alert_permission,
+                        R.string.msg_alert_OK,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        });
+                return;
             }
         }
+        //OK can use maps
     }
 
     @Override
@@ -450,26 +547,18 @@ public class MainActivity extends AppCompatActivity
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = user.getUid();
-//        final int[] count = {0};
 
         FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-//                count[0]++;
                 getUpdates(dataSnapshot);
-
-//                long i = dataSnapshot. getChildrenCount();
-//
-//                if(count[0] >= i){
-//                    closeProgressBar();
-//                }
-                closeProgressBar();
+//                closeProgressBar();
             }
 
             @Override
             public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
                 getUpdates(dataSnapshot);
-                closeProgressBar();
+//                closeProgressBar();
             }
 
             @Override
@@ -538,7 +627,7 @@ public class MainActivity extends AppCompatActivity
             mClusterManager.cluster();
         }
 
-        //closeProgressBar();
+        closeProgressBar();
     }
 
     private void clearMap(){
@@ -551,6 +640,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(broadcastReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
         getChampionships();
     }
 
@@ -586,5 +676,7 @@ public class MainActivity extends AppCompatActivity
                 Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
+
+
 
 }

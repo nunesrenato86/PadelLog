@@ -1,14 +1,11 @@
 package com.renatonunes.padellog;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -27,6 +24,7 @@ import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.renatonunes.padellog.domain.MyMapItem;
+import com.renatonunes.padellog.domain.util.AlertUtils;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -51,7 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        showMe();
+        //showMe();
     }
 
 
@@ -84,13 +82,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnected(Bundle bundle) { //quando o client conectou com o play services
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            //esse metodo só tem a api leval 23 pra cima, por isso coloca o @targetapi ...
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);//request code
-            return;
-        }
+
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//
+//            //esse metodo só tem a api leval 23 pra cima, por isso coloca o @targetapi ...
+//            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);//request code
+//            return;
+//        }
 
         /*
         PolylineOptions pOpt = new PolylineOptions();
@@ -141,6 +141,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+
+
 //    public void desenharLinha(LatLng inicio, LatLng fim){
 //        PolylineOptions pOpt = new PolylineOptions();
 //        pOpt.add(inicio); //clica no direito do google maps e add ponto pra saber
@@ -181,13 +183,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     };
 
     //resposta da permisao, sabe qual permisao e se respondeu sim ou nao
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        if (requestCode == 1){
+//            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+//                showMe();
+//            }
+//        }
+//    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 1){
-            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
-                showMe();
+        for (int result : grantResults){
+            if (result == getPackageManager().PERMISSION_DENIED){
+                AlertUtils.alert(this,
+                        R.string.app_name,
+                        R.string.msg_alert_permission,
+                        R.string.msg_alert_OK,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        });
+                return;
             }
         }
+        //OK can use maps
     }
 
     @Override

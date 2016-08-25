@@ -113,4 +113,10 @@
 
     <string name="msg_not_done_yet">Não implementado.</string>
 
+    <string name="msg_alert_permission">Para utilizar o PadelLog, você precisa aceitar as permissões.</string>
+    <string name="msg_alert_OK">OK</string>
+
+    <string name="msg_alert_no_internet">Sem internet</string>
+    <string name="msg_verify_no_internet">Verifique sua conexão de internet.</string>
+
 </resources>
