@@ -8,8 +8,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -19,6 +21,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -29,7 +32,9 @@ import android.widget.Toast;
 
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
+import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
 
 import java.io.ByteArrayOutputStream;
@@ -97,6 +102,20 @@ public class AddMatchActivity extends AppCompatActivity {
 
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String permissions[] = new String[]{
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    android.Manifest.permission.CAMERA,
+            };
+
+            boolean ok = PermissionUtils.validate(this, 0, permissions);
+
+            if (ok) {
+                Log.i("RNN", "Permissions OK");
+            }
+        }
 
         resources = getResources();
 
@@ -455,5 +474,25 @@ public class AddMatchActivity extends AppCompatActivity {
         for (EditText editText : editTexts) {
             editText.setError(null);
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        for (int result : grantResults) {
+            if (result == getPackageManager().PERMISSION_DENIED) {
+                AlertUtils.alert(this,
+                        R.string.app_name,
+                        R.string.msg_alert_permission,
+                        R.string.msg_alert_OK,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        });
+                return;
+            }
+        }
+        //OK can use storage and camera
     }
 }

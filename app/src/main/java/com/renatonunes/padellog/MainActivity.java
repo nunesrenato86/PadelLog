@@ -1,5 +1,6 @@
 package com.renatonunes.padellog;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -112,15 +113,19 @@ public class MainActivity extends AppCompatActivity
 
         mContext = this;
 
-        String permissions[] = new String[]{
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_NETWORK_STATE
-        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String permissions[] = new String[]{
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_NETWORK_STATE,
+                    Manifest.permission.GET_ACCOUNTS,
+                    Manifest.permission.READ_CONTACTS
+            };
 
-        boolean ok = PermissionUtils.validate(this , 3, permissions);
+            boolean ok = PermissionUtils.validate(this, 3, permissions);
 
-        if (ok){
-            Log.i("RNN", "Permissions OK");
+            if (ok) {
+                Log.i("RNN", "Permissions OK");
+            }
         }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -355,16 +360,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onConnected(Bundle bundle) { //quando o client conectou com o play services
 
-        String permissions[] = new String[]{
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_NETWORK_STATE
-        };
-
-        boolean ok = PermissionUtils.validate(this , 0, permissions);
-
-        if (ok){
-            Log.i("RNN", "Permissions OK");
-        }
+//        String permissions[] = new String[]{
+//                android.Manifest.permission.ACCESS_FINE_LOCATION,
+//                android.Manifest.permission.ACCESS_NETWORK_STATE
+//        };
+//
+//        boolean ok = PermissionUtils.validate(this , 0, permissions);
+//
+//        if (ok){
+//            Log.i("RNN", "Permissions OK");
+//        }
 
 //        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
 //                != PackageManager.PERMISSION_GRANTED) {
