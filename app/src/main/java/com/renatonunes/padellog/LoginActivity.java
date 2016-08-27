@@ -1,10 +1,10 @@
 package com.renatonunes.padellog;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.Manifest;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -70,6 +70,9 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     @BindView(R.id.email_sign_in_button)
     Button btnLoginEmail;
 
+    @BindView(R.id.email_sign_in_google_button)
+    Button btnLoginGoogle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +114,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
             public void onError(FacebookException error) {
                 //FirebaseCrash.report( error );
                 closeProgressBar();
-                showSnackbar( error.getMessage() );
+                showSnackbar(btnLoginEmail, error.getMessage() );
             }
         });
 
@@ -126,12 +129,16 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        findViewById(R.id.email_sign_in_google_button).setOnClickListener(new View.OnClickListener() {
+        btnLoginGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Log.d(TAG, "entrou no onClick botao google");
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN_GOOGLE);
+                if (LibraryClass.isNetworkActive(context)){
+                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                    startActivityForResult(signInIntent, RC_SIGN_IN_GOOGLE);
+                }else{
+                    showSnackbar(btnLoginGoogle, getResources().getString(R.string.msg_no_internet));
+                }
             }
         });
 
@@ -151,7 +158,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
             GoogleSignInAccount account = googleSignInResult.getSignInAccount();
 
             if( account == null ){
-                showSnackbar("Google login falhou, tente novamente");
+                showSnackbar(btnLoginEmail, "Google login falhou, tente novamente");
                 return;
             }
 
@@ -207,7 +214,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 
                             if( !task.isSuccessful() ){
                                 closeProgressBar();
-                                showSnackbar("Login social falhou");
+                                showSnackbar(btnLoginEmail, "Login falhou");
                             }
                         }
                     })
@@ -315,20 +322,28 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     public void sendLoginData(View view){
 //        FirebaseCrash.log("LoginActivity:clickListener:button:sendLoginData()");
         if (validateFields()) {
-            openProgressBar();
-            initUser();
-            verifyLogin();
+            if (LibraryClass.isNetworkActive(context)) {
+                openProgressBar();
+                initUser();
+                verifyLogin();
+            }else{
+                showSnackbar(btnLoginEmail, getResources().getString(R.string.msg_no_internet) );
+            }
         }
     }
 
     public void sendLoginFacebookData( View view ){
 //        FirebaseCrash.log("LoginActivity:clickListener:button:sendLoginFacebookData()");
-        LoginManager
-                .getInstance()
-                .logInWithReadPermissions(
-                        this,
-                        Arrays.asList("public_profile", "user_friends", "email")
-                );
+        if (LibraryClass.isNetworkActive(context)) {
+            LoginManager
+                    .getInstance()
+                    .logInWithReadPermissions(
+                            this,
+                            Arrays.asList("public_profile", "user_friends", "email")
+                    );
+        }else{
+            showSnackbar(btnLoginEmail, getResources().getString(R.string.msg_no_internet) );
+        }
     }
 
 //    public void sendLoginGoogleData( View view ){
@@ -371,7 +386,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 
                         if( !task.isSuccessful() ){
                             closeProgressBar();
-                            showSnackbar("Login falhou");
+                            showSnackbar(btnLoginEmail,"Login falhou");
                             return;
                         }
                     }
@@ -392,7 +407,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 //                                connectionResult.getErrorCode()+": "+connectionResult.getErrorMessage()
 //                        )
 //                );
-        showSnackbar( connectionResult.getErrorMessage() );
+        showSnackbar(btnLoginEmail, connectionResult.getErrorMessage() );
     }
 
     private boolean validateFields() {

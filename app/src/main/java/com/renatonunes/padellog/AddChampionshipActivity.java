@@ -18,7 +18,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
@@ -45,6 +44,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -56,7 +56,7 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AddChampionshipActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+public class AddChampionshipActivity extends CommonActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         DatePickerDialog.OnDateSetListener,
         DialogInterface.OnCancelListener{
@@ -351,43 +351,48 @@ public class AddChampionshipActivity extends AppCompatActivity implements Google
     }
 
     public void saveChampionship(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (LibraryClass.isNetworkActive(this)) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (user != null) {
-            Boolean isNewChampionship = false;
+            if (user != null) {
+                Boolean isNewChampionship = false;
 
-            if (currentChampionship == null) { //not editing
-                isNewChampionship = true;
-                currentChampionship = new Championship();
+                if (currentChampionship == null) { //not editing
+                    isNewChampionship = true;
+                    currentChampionship = new Championship();
+                }
+
+                currentChampionship.setName(edtName.getText().toString());
+                currentChampionship.setPartner(edtPartner.getText().toString());
+                currentChampionship.setOwner(user.getUid());
+                currentChampionship.setImageStr(getImageStr());
+                currentChampionship.setInitialDate(edtInitialDate.getText().toString());
+                currentChampionship.setFinalDate(edtFinalDate.getText().toString());
+                currentChampionship.setCategory(edtCategory.getText().toString());
+                currentChampionship.setPlace(edtPlace.getText().toString());
+
+                if (mCurrentLatLng != null){
+                    currentChampionship.setLat(mCurrentLatLng.latitude);
+                    currentChampionship.setLng(mCurrentLatLng.longitude);
+                }
+
+                if (isNewChampionship) {
+                    currentChampionship.setResult(-1); //dont have matches yet
+                    currentChampionship.saveDB();
+                }else{
+                    currentChampionship.updateDB();
+                }
+
+                //ver aqui - tratar erro
+
+                Snackbar.make(fabSaveChampionship,
+                        "Campeonato salvo.",
+                        Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
 
-            currentChampionship.setName(edtName.getText().toString());
-            currentChampionship.setPartner(edtPartner.getText().toString());
-            currentChampionship.setOwner(user.getUid());
-            currentChampionship.setImageStr(getImageStr());
-            currentChampionship.setInitialDate(edtInitialDate.getText().toString());
-            currentChampionship.setFinalDate(edtFinalDate.getText().toString());
-            currentChampionship.setCategory(edtCategory.getText().toString());
-            currentChampionship.setPlace(edtPlace.getText().toString());
-
-            if (mCurrentLatLng != null){
-                currentChampionship.setLat(mCurrentLatLng.latitude);
-                currentChampionship.setLng(mCurrentLatLng.longitude);
-            }
-
-            if (isNewChampionship) {
-                currentChampionship.setResult(-1); //dont have matches yet
-                currentChampionship.saveDB();
-            }else{
-                currentChampionship.updateDB();
-            }
-
-            //ver aqui - tratar erro
-
-            Snackbar.make(fabSaveChampionship,
-                    "Campeonato salvo.",
-                    Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+        }else{
+            showSnackbar(fabSaveChampionship, getResources().getString(R.string.msg_no_internet) );
         }
     }
 

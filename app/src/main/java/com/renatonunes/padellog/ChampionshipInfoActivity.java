@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,11 +30,12 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.renatonunes.padellog.domain.util.LibraryClass;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ChampionshipInfoActivity extends AppCompatActivity
+public class ChampionshipInfoActivity extends CommonActivity
 	implements AppBarLayout.OnOffsetChangedListener {
 
 	private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 20;
@@ -173,6 +173,7 @@ public class ChampionshipInfoActivity extends AppCompatActivity
                 deleteChampionship();
             }
         });
+
     }
 
     public void deleteChampionship(){
@@ -352,33 +353,38 @@ public class ChampionshipInfoActivity extends AppCompatActivity
 
     private void askToDeleteChampionship(){
 
-        AlertDialog dialogo = new AlertDialog.Builder(this)
-                .setTitle("Confirmação de exclusão")
-                .setMessage("O campeonato será excluído.")
-                .setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        deleteMatchesThenChampionship();
-                    }
-                })
-                .setNegativeButton("Cancelar", null)
-                .create();
+        if (LibraryClass.isNetworkActive(this)) {
+            AlertDialog dialogo = new AlertDialog.Builder(this)
+                    .setTitle("Confirmação de exclusão")
+                    .setMessage("O campeonato será excluído.")
+                    .setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            deleteMatchesThenChampionship();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .create();
 
-        dialogo.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button positiveButton = ((AlertDialog) dialog)
-                        .getButton(AlertDialog.BUTTON_POSITIVE);
+            dialogo.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    Button positiveButton = ((AlertDialog) dialog)
+                            .getButton(AlertDialog.BUTTON_POSITIVE);
 
-                positiveButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                    positiveButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
 
-                Button negativeButton = ((AlertDialog) dialog)
-                        .getButton(AlertDialog.BUTTON_NEGATIVE);
+                    Button negativeButton = ((AlertDialog) dialog)
+                            .getButton(AlertDialog.BUTTON_NEGATIVE);
 
-                negativeButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            }
-        });
+                    negativeButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                }
+            });
 
-        dialogo.show();
+            dialogo.show();
+
+        }else{
+            showSnackbar(fabAddMatch, getResources().getString(R.string.msg_no_internet) );
+        }
     }
 }

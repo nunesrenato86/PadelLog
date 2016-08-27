@@ -118,5 +118,6 @@
 
     <string name="msg_alert_no_internet">Sem internet</string>
     <string name="msg_verify_no_internet">Verifique sua conexão de internet.</string>
+    <string name="msg_no_internet">Sem internet.</string>
 
 </resources>

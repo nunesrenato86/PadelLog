@@ -2,6 +2,8 @@ package com.renatonunes.padellog.domain.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,5 +33,20 @@ public class LibraryClass {
         Pattern pattern = Pattern.compile(emailPattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    public static boolean isNetworkActive(Context context){
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetInfo = connectivityManager
+                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo activeNetWifi = connectivityManager
+                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        boolean isConnectedMobile = activeNetInfo != null
+                && activeNetInfo.isConnectedOrConnecting();
+        boolean isConnectedWifi = activeNetWifi != null
+                && activeNetWifi.isConnectedOrConnecting();
+
+        return (isConnectedMobile || isConnectedWifi);
     }
 }

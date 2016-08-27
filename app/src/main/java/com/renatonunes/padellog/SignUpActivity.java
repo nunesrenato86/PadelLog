@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
@@ -22,6 +23,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class SignUpActivity extends CommonActivity  {
 
     private final String TAG = "RNN";
@@ -33,6 +37,15 @@ public class SignUpActivity extends CommonActivity  {
     private AutoCompleteTextView name;
     private Resources resources;
 
+    @BindView(R.id.email)
+    AutoCompleteTextView email;
+
+    @BindView(R.id.password)
+    EditText password;
+
+    @BindView(R.id.email_sign_up_button)
+    Button btnSignUp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +53,9 @@ public class SignUpActivity extends CommonActivity  {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ButterKnife.bind(this);
+        ButterKnife.setDebug(true);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -83,7 +99,6 @@ public class SignUpActivity extends CommonActivity  {
         }
     }
 
-    @Override
     protected void initViews() {
         resources = getResources();
 
@@ -112,7 +127,6 @@ public class SignUpActivity extends CommonActivity  {
         password.addTextChangedListener(textWatcher);
     }
 
-    @Override
     protected void initUser(){
         player = new Player();
         player.setName( name.getText().toString() );
@@ -133,16 +147,20 @@ public class SignUpActivity extends CommonActivity  {
 
     public void sendSignUpData(View view){
         if (validateFields()) {
-            openProgressBar();
+            if (LibraryClass.isNetworkActive(this)){
+                openProgressBar();
 
-            initUser();
+                initUser();
 
 //        initPlayer(email.getText().toString(),
 //                password.getText().toString(),
 //                "",
 //                name.getText().toString());
 
-            saveUser();
+                saveUser();
+            }else{
+                showSnackbar(btnSignUp, getResources().getString(R.string.msg_no_internet));
+            }
         }
     }
 

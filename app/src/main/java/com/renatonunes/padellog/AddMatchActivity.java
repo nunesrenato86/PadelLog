@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -34,6 +33,7 @@ import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
 
@@ -45,7 +45,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AddMatchActivity extends AppCompatActivity {
+public class AddMatchActivity extends CommonActivity {
 
     //fields
     private final Activity mActivity = this;
@@ -92,6 +92,7 @@ public class AddMatchActivity extends AppCompatActivity {
 
     private ArrayAdapter<String> dataAdapter;
     private Resources resources;
+//    private NetworkReceiver mNetworkReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +103,8 @@ public class AddMatchActivity extends AppCompatActivity {
 
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
+
+        //mNetworkReceiver = new NetworkReceiver(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String permissions[] = new String[]{
@@ -303,82 +306,86 @@ public class AddMatchActivity extends AppCompatActivity {
     public void saveMatch(){
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (currentChampionship != null) {
-            Boolean isNewMatch = false;
+        if (LibraryClass.isNetworkActive(this)) {
+            if (currentChampionship != null) {
+                Boolean isNewMatch = false;
 
-            if (mCurrentMatch == null) { //not editing
-                isNewMatch = true;
-                mCurrentMatch = new Match();
+                if (mCurrentMatch == null) { //not editing
+                    isNewMatch = true;
+                    mCurrentMatch = new Match();
+                }
+                mCurrentMatch.setOpponentBackdrive(edtOpponentBackdrive.getText().toString());
+                mCurrentMatch.setOpponentDrive(edtOpponentDrive.getText().toString());
+                mCurrentMatch.setImageStr(getImageStr());
+                mCurrentMatch.setOwner(currentChampionship.getId());
+
+                int value;
+
+                //score 1
+                if (edtSet1Score1.getText().toString().isEmpty()){
+                    value = 0;
+                }else {
+                    value = Integer.valueOf(edtSet1Score1.getText().toString());
+                }
+                mCurrentMatch.setSet1Score1(value);
+
+                if (edtSet1Score2.getText().toString().isEmpty()){
+                    value = 0;
+                }else {
+                    value = Integer.valueOf(edtSet1Score2.getText().toString());
+                }
+                mCurrentMatch.setSet1Score2(value);
+
+                //score 2
+                if (edtSet2Score1.getText().toString().isEmpty()){
+                    value = 0;
+                }else {
+                    value = Integer.valueOf(edtSet2Score1.getText().toString());
+                }
+                mCurrentMatch.setSet2Score1(value);
+
+                if (edtSet2Score2.getText().toString().isEmpty()){
+                    value = 0;
+                }else {
+                    value = Integer.valueOf(edtSet2Score2.getText().toString());
+                }
+                mCurrentMatch.setSet2Score2(value);
+
+                //score 3
+                if (edtSet3Score1.getText().toString().isEmpty()){
+                    value = 0;
+                }else {
+                    value = Integer.valueOf(edtSet3Score1.getText().toString());
+                }
+                mCurrentMatch.setSet3Score1(value);
+
+                if (edtSet3Score2.getText().toString().isEmpty()){
+                    value = 0;
+                }else {
+                    value = Integer.valueOf(edtSet3Score2.getText().toString());
+                }
+                mCurrentMatch.setSet3Score2(value);
+
+                mCurrentMatch.setRound(spinnerRound.getSelectedItemPosition());
+                mCurrentMatch.setContext(this);
+
+                if (isNewMatch) {
+                    mCurrentMatch.saveDB();
+                }else{
+                    mCurrentMatch.updateDB();
+                }
+
+                currentChampionship.updateResult();
+                ChampionshipInfoActivity.currentChampionship = currentChampionship;
+
+                //ver aqui - tratar erro
+                Snackbar.make(fabSaveMatch,
+                        "Partida salva.",
+                        Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
-            mCurrentMatch.setOpponentBackdrive(edtOpponentBackdrive.getText().toString());
-            mCurrentMatch.setOpponentDrive(edtOpponentDrive.getText().toString());
-            mCurrentMatch.setImageStr(getImageStr());
-            mCurrentMatch.setOwner(currentChampionship.getId());
-
-            int value;
-
-            //score 1
-            if (edtSet1Score1.getText().toString().isEmpty()){
-                value = 0;
-            }else {
-                value = Integer.valueOf(edtSet1Score1.getText().toString());
-            }
-            mCurrentMatch.setSet1Score1(value);
-
-            if (edtSet1Score2.getText().toString().isEmpty()){
-                value = 0;
-            }else {
-                value = Integer.valueOf(edtSet1Score2.getText().toString());
-            }
-            mCurrentMatch.setSet1Score2(value);
-
-            //score 2
-            if (edtSet2Score1.getText().toString().isEmpty()){
-                value = 0;
-            }else {
-                value = Integer.valueOf(edtSet2Score1.getText().toString());
-            }
-            mCurrentMatch.setSet2Score1(value);
-
-            if (edtSet2Score2.getText().toString().isEmpty()){
-                value = 0;
-            }else {
-                value = Integer.valueOf(edtSet2Score2.getText().toString());
-            }
-            mCurrentMatch.setSet2Score2(value);
-
-            //score 3
-            if (edtSet3Score1.getText().toString().isEmpty()){
-                value = 0;
-            }else {
-                value = Integer.valueOf(edtSet3Score1.getText().toString());
-            }
-            mCurrentMatch.setSet3Score1(value);
-
-            if (edtSet3Score2.getText().toString().isEmpty()){
-                value = 0;
-            }else {
-                value = Integer.valueOf(edtSet3Score2.getText().toString());
-            }
-            mCurrentMatch.setSet3Score2(value);
-
-            mCurrentMatch.setRound(spinnerRound.getSelectedItemPosition());
-            mCurrentMatch.setContext(this);
-
-            if (isNewMatch) {
-                mCurrentMatch.saveDB();
-            }else{
-                mCurrentMatch.updateDB();
-            }
-
-            currentChampionship.updateResult();
-            ChampionshipInfoActivity.currentChampionship = currentChampionship;
-
-            //ver aqui - tratar erro
-            Snackbar.make(fabSaveMatch,
-                    "Partida salva.",
-                    Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+        }else{
+            showSnackbar(fabSaveMatch, getResources().getString(R.string.msg_no_internet) );
         }
     }
 
@@ -494,5 +501,11 @@ public class AddMatchActivity extends AppCompatActivity {
             }
         }
         //OK can use storage and camera
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        registerReceiver(mNetworkReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
     }
 }

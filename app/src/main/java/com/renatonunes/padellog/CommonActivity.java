@@ -1,24 +1,28 @@
 package com.renatonunes.padellog;
 
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.renatonunes.padellog.receivers.NetworkReceiver;
 
 /**
  * Created by Renato on 26/07/2016.
  */
 abstract public class CommonActivity extends AppCompatActivity {
 
-    protected AutoCompleteTextView email;
-    protected EditText password;
+//    protected AutoCompleteTextView email;
+//    protected EditText password;
     protected ProgressBar progressBar;
+    private NetworkReceiver mNetworkReceiver;
 
-    protected void showSnackbar(String message ){
-        Snackbar.make(progressBar,
+    protected void showSnackbar(View v, String message ){
+        Snackbar.make(v,
                 message,
                 Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
@@ -39,11 +43,24 @@ abstract public class CommonActivity extends AppCompatActivity {
         progressBar.setVisibility( View.GONE );
     }
 
-    abstract protected void initViews();
+//    abstract protected void initViews();
 
 //    abstract protected void initPlayer(String email,
 //                                       String password,
 //                                       String photoUrl,
 //                                       String displayName);
-    abstract protected void initUser();
+//    abstract protected void initUser();
+
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mNetworkReceiver = new NetworkReceiver(this);
+    }
+
+    @Override
+    protected void onResume() {
+        registerReceiver(mNetworkReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
+        super.onResume();
+    }
 }

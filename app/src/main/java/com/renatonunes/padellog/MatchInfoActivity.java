@@ -14,7 +14,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,11 +31,12 @@ import com.google.firebase.database.Transaction;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.renatonunes.padellog.domain.util.LibraryClass;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MatchInfoActivity extends AppCompatActivity {
+public class MatchInfoActivity extends CommonActivity {
 
 	public static Match mCurrentMatch;
 	public static Championship mCurrentChampionship;
@@ -211,34 +211,42 @@ public class MatchInfoActivity extends AppCompatActivity {
 
 	private void askToDeleteMatch(){
 
-		AlertDialog dialogo = new AlertDialog.Builder(this)
-				.setTitle("Confirmação de exclusão")
-				.setMessage("O jogo será excluída.")
-				.setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						deleteMatch();
-					}
-				})
-				.setNegativeButton("Cancelar", null)
-				.create();
+		if (LibraryClass.isNetworkActive(this)) {
 
-		dialogo.setOnShowListener(new DialogInterface.OnShowListener() {
-			@Override
-			public void onShow(DialogInterface dialog) {
-				Button positiveButton = ((AlertDialog) dialog)
-						.getButton(AlertDialog.BUTTON_POSITIVE);
+			AlertDialog dialogo = new AlertDialog.Builder(this)
+					.setTitle("Confirmação de exclusão")
+					.setMessage("O jogo será excluída.")
+					.setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							deleteMatch();
+						}
+					})
+					.setNegativeButton("Cancelar", null)
+					.create();
 
-				positiveButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+			dialogo.setOnShowListener(new DialogInterface.OnShowListener() {
+				@Override
+				public void onShow(DialogInterface dialog) {
+					Button positiveButton = ((AlertDialog) dialog)
+							.getButton(AlertDialog.BUTTON_POSITIVE);
+
+					positiveButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
 
 
-				Button negativeButton = ((AlertDialog) dialog)
-						.getButton(AlertDialog.BUTTON_NEGATIVE);
+					Button negativeButton = ((AlertDialog) dialog)
+							.getButton(AlertDialog.BUTTON_NEGATIVE);
 
-				negativeButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-			}
-		});
+					negativeButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				}
+			});
 
-		dialogo.show();
+			dialogo.show();
+
+		}else{
+			showSnackbar(fabEditMatch, getResources().getString(R.string.msg_no_internet) );
+		}
+
+
 	}
 }

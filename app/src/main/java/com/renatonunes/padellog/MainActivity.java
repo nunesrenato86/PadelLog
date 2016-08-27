@@ -2,14 +2,9 @@ package com.renatonunes.padellog;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,8 +15,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -67,7 +60,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends CommonActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -87,7 +80,6 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleMapApiClient;
     private GoogleMap mMap;
     private Context mContext;
-    private BroadcastReceiver broadcastReceiver ;
 
     private LocationRequest mLocationRequest;
     private Marker markerMyLocation;
@@ -179,50 +171,6 @@ public class MainActivity extends AppCompatActivity
 //        Log.e("TESTEMSG", "token no service: " + token);
         //dy7aCLp4u04:APA91bHeqe_pUFatAw41Ra7KU726TuFHXgC36Kn4VUxXBMWXQUAqnUMTwEYVHQIeEX94VwkEk5cbyl2JTGl0yG1D3I8k77ZC5p4i_8kOhAr-CdFO0kUuXFOBhMHSte6cTSwt0bCYoARf
 
-        broadcastReceiver = new BroadcastReceiver() {
-
-            AlertDialog.Builder builder;
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                ConnectivityManager connectivityManager = (ConnectivityManager) context
-                        .getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo activeNetInfo = connectivityManager
-                        .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-                NetworkInfo activeNetWifi = connectivityManager
-                        .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                boolean isConnectedMobile = activeNetInfo != null
-                        && activeNetInfo.isConnectedOrConnecting();
-                boolean isConnectedWifi = activeNetWifi != null
-                        && activeNetWifi.isConnectedOrConnecting();
-                AlertDialog alert = alertNoNetwork();
-                if (isConnectedMobile || isConnectedWifi) {
-                    if (alert != null && alert.isShowing()) {
-                        alert.dismiss();
-                    }
-                } else {
-                    if (alert != null && !alert.isShowing()) {
-                        alert.show();
-                    }
-                }
-
-            }
-
-            public AlertDialog alertNoNetwork() {
-                builder = new AlertDialog.Builder(mContext);
-                builder.setMessage(R.string.msg_alert_no_internet)
-                        .setMessage(R.string.msg_verify_no_internet)
-                        .setCancelable(false)
-                        .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-
-                                    }
-                                });
-                return builder.create();
-            }
-        };
 
         new Wait().execute();
     }
@@ -645,7 +593,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(broadcastReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
         getChampionships();
     }
 
