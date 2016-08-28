@@ -6,6 +6,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="action_delete">Excluir</string>
+    <string name="action_save">Salvar</string>
     <string name="action_edit">Editar</string>
 
     <string name="title_activity_login">PadelLog</string>
@@ -119,6 +120,11 @@
     <string name="msg_alert_no_internet">Sem internet</string>
     <string name="msg_verify_no_internet">Verifique sua conexão de internet.</string>
     <string name="msg_no_internet">Sem internet.</string>
+
+    <string name="msg_championship_saved">Partida salva.</string>
+    <string name="msg_match_saved">Partida salva.</string>
+
+    <string name="msg_photo_erros">Falha ao capturar imagem.</string>
 
     <string name="nav_user_name">Carregando...</string>
 

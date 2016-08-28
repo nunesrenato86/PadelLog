@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -21,14 +20,14 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionMenu;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.AlertUtils;
@@ -44,6 +43,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class AddMatchActivity extends CommonActivity {
 
@@ -60,8 +60,8 @@ public class AddMatchActivity extends CommonActivity {
     @BindView(R.id.img_match)
     ImageView mThumbnailPreview;
 
-    @BindView(R.id.fab_save_match)
-    FloatingActionButton fabSaveMatch;
+    @BindView(R.id.fab_menu_match_photo)
+    FloatingActionMenu fabMenuMatchPhoto;
 
     @BindView(R.id.spinner_match_round)
     Spinner spinnerRound;
@@ -126,15 +126,6 @@ public class AddMatchActivity extends CommonActivity {
 
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
-
-        fabSaveMatch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validateFields()) {
-                    saveMatch();
-                }
-            }
-        });
 
         // Spinner element
         // Spinner Drop down elements
@@ -202,8 +193,7 @@ public class AddMatchActivity extends CommonActivity {
             if (((mCurrentMatchImageStr != null)) && (mCurrentMatchImageStr != "")){
                 mThumbnailPreview.setImageBitmap(ImageFactory.imgStrToImage(mCurrentMatchImageStr));
             }else {
-                mThumbnailPreview.setImageBitmap(null);
-                mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
+                deletePhoto();
             }
 
             spinnerRound.setSelection(mCurrentMatch.getRound());
@@ -219,8 +209,18 @@ public class AddMatchActivity extends CommonActivity {
         }
     }
 
-    public void TakePhoto(View view){
-        //tem que verificar a permissao pro android 6
+    @OnClick(R.id.fab_delete_match_photo)
+    public void deletePhoto(){
+        fabMenuMatchPhoto.close(false);
+
+        mCurrentMatchImageStr = "";
+        mThumbnailPreview.setImageBitmap(null);
+        mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
+    }
+
+    @OnClick(R.id.fab_camera_match_photo)
+    public void takePhoto(){
+        fabMenuMatchPhoto.close(false);
 
         File placeholderFile = ImageFactory.newFile();
         mCurrentPhotoUri = Uri.fromFile(placeholderFile);
@@ -230,8 +230,10 @@ public class AddMatchActivity extends CommonActivity {
         }
     }
 
-    public void PickPhoto(View view){
-        //tem que verificar a permissao pro android 6
+    @OnClick(R.id.fab_gallery_match_photo)
+    public void PickPhoto(){
+        fabMenuMatchPhoto.close(false);
+
         File placeholderFile = ImageFactory.newFile();
 
         mCurrentPhotoUri = Uri.fromFile(placeholderFile);
@@ -264,7 +266,7 @@ public class AddMatchActivity extends CommonActivity {
     }
 
     private void displayPhotoError() {
-        Snackbar.make(fabSaveMatch,
+        Snackbar.make(fabMenuMatchPhoto,
                 getResources().getString(R.string.msg_error_img_file),
                 Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
@@ -278,25 +280,23 @@ public class AddMatchActivity extends CommonActivity {
                 previewCapturedImage();
                 //storeImageToFirebase();
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(getApplicationContext(),
-                        "User cancelled image capture", Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(getApplicationContext(),
+//                        "User cancelled image capture", Toast.LENGTH_SHORT)
+//                        .show();
             } else {
-                Toast.makeText(getApplicationContext(),
-                        "Sorry! Failed to capture image", Toast.LENGTH_SHORT)
-                        .show();
+                showSnackbar(fabMenuMatchPhoto,
+                        getResources().getString(R.string.msg_photo_erros));
             }
         }else if (requestCode == PhotoTaker.REQUEST_PICK_PHOTO){
             if (resultCode == RESULT_OK) {
                 previewPickedImage(data);
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(getApplicationContext(),
-                        "User cancelled image capture", Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(getApplicationContext(),
+//                        "User cancelled image capture", Toast.LENGTH_SHORT)
+//                        .show();
             } else {
-                Toast.makeText(getApplicationContext(),
-                        "Sorry! Failed to capture image", Toast.LENGTH_SHORT)
-                        .show();
+                showSnackbar(fabMenuMatchPhoto,
+                        getResources().getString(R.string.msg_photo_erros));
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -378,14 +378,13 @@ public class AddMatchActivity extends CommonActivity {
                 currentChampionship.updateResult();
                 ChampionshipInfoActivity.currentChampionship = currentChampionship;
 
-                //ver aqui - tratar erro
-                Snackbar.make(fabSaveMatch,
-                        "Partida salva.",
+                Snackbar.make(fabMenuMatchPhoto,
+                        getResources().getString(R.string.msg_match_saved),
                         Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         }else{
-            showSnackbar(fabSaveMatch, getResources().getString(R.string.msg_no_internet) );
+            showSnackbar(fabMenuMatchPhoto, getResources().getString(R.string.msg_no_internet));
         }
     }
 
@@ -396,17 +395,31 @@ public class AddMatchActivity extends CommonActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_add_activity, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == android.R.id.home) {
+        if (id == R.id.action_save) {
+            if (validateFields()) {
+                saveMatch();
+            }
+
+            return true;
+        }else if (id == android.R.id.home) {
             finish();
             return true;
-        } else  //else if (id == R.id.action_deletar_todos){
-            return super.onOptionsItemSelected(item);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public String getImageStr(){

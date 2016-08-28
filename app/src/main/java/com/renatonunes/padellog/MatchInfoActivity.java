@@ -121,7 +121,7 @@ public class MatchInfoActivity extends CommonActivity {
 			askToDeleteMatch();
 
 			return true;
-		}if (id == android.R.id.home) {
+		}else if (id == android.R.id.home) {
             finish();
             return true;
         }

@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -25,12 +24,13 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -55,6 +55,7 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class AddChampionshipActivity extends CommonActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -82,12 +83,12 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     static final int REQUEST_PLACE_PICKER = 103;
 
-    @BindView(R.id.fab_save_championship_form)
-    FloatingActionButton fabSaveChampionship;
+    @BindView(R.id.fab_menu_championship_photo)
+    FloatingActionMenu fabMenuChampionshipPhoto;
 
     private final Activity mActivity = this;
     private static Championship currentChampionship = null;
-    private String mCurrentMatchImageStr = "";
+    private String mCurrentChampionshipImageStr = "";
 
     //to handle dates
     private int year, month, day;
@@ -104,7 +105,9 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     //google places api
     private GoogleApiClient mGoogleApiClient;
+
     private Resources resources;
+    private Boolean isFabOnScreen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,15 +139,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
-
-        fabSaveChampionship.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validateFields()) {
-                    saveChampionship();
-                }
-            }
-        });
 
         //google places api
         mGoogleApiClient = new GoogleApiClient
@@ -222,33 +216,28 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
             edtFinalDate.setText(currentChampionship.getFinalDate());
             edtPlace.setText(currentChampionship.getPlace());
 
-            mCurrentMatchImageStr = currentChampionship.getImageStr();
+            mCurrentChampionshipImageStr = currentChampionship.getImageStr();
 
-            if (((mCurrentMatchImageStr != null)) && (mCurrentMatchImageStr != "")){
-                mThumbnailPreview.setImageBitmap(ImageFactory.imgStrToImage(mCurrentMatchImageStr));
+            if (((mCurrentChampionshipImageStr != null)) && (mCurrentChampionshipImageStr != "")){
+                mThumbnailPreview.setImageBitmap(ImageFactory.imgStrToImage(mCurrentChampionshipImageStr));
             }else {
-                mThumbnailPreview.setImageBitmap(null);
-                mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
+                deletePhoto();
             }
         }
     }
 
+    @OnClick(R.id.fab_delete_championship_photo)
+    public void deletePhoto(){
+        fabMenuChampionshipPhoto.close(false);
 
+        mCurrentChampionshipImageStr = "";
+        mThumbnailPreview.setImageBitmap(null);
+        mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
+    }
+
+    @OnClick(R.id.fab_camera_championship_photo)
     public void takePhoto(View view){
-        //tem que verificar a permissao pro android 6
-
-        //esse metodo só tem a api leval 23 pra cima, por isso coloca o @targetapi ...
-//        verificar esse teste e o do utils
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//                    != PackageManager.PERMISSION_GRANTED) {
-//
-//                requestPermissions(new String[]{Manifest.permission.CAMERA}, 3);//request code
-//
-//                return;
-//            }
-//        }
+        fabMenuChampionshipPhoto.close(false);
 
         File placeholderFile = ImageFactory.newFile();
         mCurrentPhotoUri = Uri.fromFile(placeholderFile);
@@ -258,8 +247,10 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         }
     }
 
+    @OnClick(R.id.fab_gallery_championship_photo)
     public void pickPhoto(View view){
-        //tem que verificar a permissao pro android 6
+        fabMenuChampionshipPhoto.close(false);
+
         File placeholderFile = ImageFactory.newFile();
 
         mCurrentPhotoUri = Uri.fromFile(placeholderFile);
@@ -292,7 +283,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     }
 
     private void displayPhotoError() {
-        Snackbar.make(fabSaveChampionship,
+        Snackbar.make(fabMenuChampionshipPhoto,
                 resources.getString(R.string.msg_error_img_file),
                 Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
@@ -306,25 +297,23 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                 previewCapturedImage();
                 //storeImageToFirebase();
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(getApplicationContext(),
-                        "User cancelled image capture", Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(getApplicationContext(),
+//                        "User cancelled image capture", Toast.LENGTH_SHORT)
+//                        .show();
             } else {
-                Toast.makeText(getApplicationContext(),
-                        "Sorry! Failed to capture image", Toast.LENGTH_SHORT)
-                        .show();
+                showSnackbar(fabMenuChampionshipPhoto,
+                        getResources().getString(R.string.msg_photo_erros));
             }
         }else if (requestCode == PhotoTaker.REQUEST_PICK_PHOTO){
             if (resultCode == RESULT_OK) {
                 previewPickedImage(data);
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(getApplicationContext(),
-                        "User cancelled image capture", Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(getApplicationContext(),
+//                        "User cancelled image capture", Toast.LENGTH_SHORT)
+//                        .show();
             } else {
-                Toast.makeText(getApplicationContext(),
-                        "Sorry! Failed to capture image", Toast.LENGTH_SHORT)
-                        .show();
+                showSnackbar(fabMenuChampionshipPhoto,
+                        getResources().getString(R.string.msg_photo_erros));
             }
         }else if (requestCode == REQUEST_PLACE_PICKER
                 && resultCode == Activity.RESULT_OK) {
@@ -385,29 +374,15 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
                 //ver aqui - tratar erro
 
-                Snackbar.make(fabSaveChampionship,
-                        "Campeonato salvo.",
+                Snackbar.make(fabMenuChampionshipPhoto,
+                        getResources().getString(R.string.msg_championship_saved),
                         Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
 
         }else{
-            showSnackbar(fabSaveChampionship, getResources().getString(R.string.msg_no_internet) );
+            showSnackbar(fabMenuChampionshipPhoto, getResources().getString(R.string.msg_no_internet) );
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == android.R.id.home) {
-            finish();
-            return true;
-        } else  //else if (id == R.id.action_deletar_todos){
-            return super.onOptionsItemSelected(item);
     }
 
     public String getImageStr(){
@@ -430,7 +405,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
             return base64Image;
         }else
-            return mCurrentMatchImageStr;
+            return mCurrentChampionshipImageStr;
     }
 
     @Override
@@ -621,5 +596,108 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
             }
         }
         //OK can use storage and camera
+    }
+
+//    private void showFab(){
+//        Animation show_fab_delete = AnimationUtils.loadAnimation(this, R.anim.fab_delete_show);
+//        Animation show_fab_gallery = AnimationUtils.loadAnimation(this, R.anim.fab_gallery_show);
+//        Animation show_fab_camera = AnimationUtils.loadAnimation(this, R.anim.fab_camera_show);
+//
+//        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) fabSaveChampionship.getLayoutParams();
+////        layoutParams.rightMargin += (int) (fabSaveChampionship.getWidth());
+////        layoutParams.bottomMargin += (int) (fabDelete.getHeight() * 0.25);
+//        layoutParams.bottomMargin += (int) (fabSaveChampionship.getHeight() * 2);
+//
+//        fabDelete.setLayoutParams(layoutParams);
+//        fabDelete.startAnimation(show_fab_delete);
+//        fabDelete.setClickable(true);
+//
+//        CoordinatorLayout.LayoutParams layoutParams2 = (CoordinatorLayout.LayoutParams) fabSaveChampionship.getLayoutParams();
+////        layoutParams2.rightMargin += (int) (fabGallery.getWidth() * 1.5);
+////        layoutParams.rightMargin += (int) (fabSaveChampionship.getWidth());
+////        layoutParams2.bottomMargin += (int) (fabGallery.getHeight() * 1.5);
+//        layoutParams2.bottomMargin += (int) (fabSaveChampionship.getHeight() * 4);
+//        fabGallery.setLayoutParams(layoutParams2);
+//        fabGallery.startAnimation(show_fab_gallery);
+//        fabGallery.setClickable(true);
+////
+//        CoordinatorLayout.LayoutParams layoutParams3 = (CoordinatorLayout.LayoutParams) fabSaveChampionship.getLayoutParams();
+//        //layoutParams3.rightMargin += (int) (fabCamera.getWidth() * 0.25);
+////        layoutParams.rightMargin += (int) (fabSaveChampionship.getWidth());
+////        layoutParams3.bottomMargin += (int) (fabCamera.getHeight() * 1.7);
+//        layoutParams3.bottomMargin += (int) (fabSaveChampionship.getHeight() * 6);
+//        fabCamera.setLayoutParams(layoutParams3);
+//        fabCamera.startAnimation(show_fab_camera);
+//        fabCamera.setClickable(true);
+//
+//        isFabOnScreen = true;
+//    };
+//
+//    private void hideFab(){
+//        Animation hide_fab_delete = AnimationUtils.loadAnimation(this, R.anim.fab_delete_hide);
+//        Animation hide_fab_gallery = AnimationUtils.loadAnimation(this, R.anim.fab_gallery_hide);
+//        Animation hide_fab_camera = AnimationUtils.loadAnimation(this, R.anim.fab_camera_hide);
+//
+//        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) fabDelete.getLayoutParams();
+////        layoutParams.rightMargin -= (int) (fabDelete.getWidth() * 1.7);
+////        layoutParams.bottomMargin -= (int) (fabDelete.getHeight() * 0.25);
+//        layoutParams.bottomMargin -= (int) (fabDelete.getHeight() * 2);
+//        fabDelete.setLayoutParams(layoutParams);
+//        fabDelete.startAnimation(hide_fab_delete);
+//        fabDelete.setClickable(false);
+//
+//        CoordinatorLayout.LayoutParams layoutParams2 = (CoordinatorLayout.LayoutParams) fabGallery.getLayoutParams();
+////        layoutParams2.rightMargin -= (int) (fabGallery.getWidth() * 1.5);
+////        layoutParams2.bottomMargin -= (int) (fabGallery.getHeight() * 1.5);
+//        layoutParams2.bottomMargin -= (int) (fabGallery.getHeight() * 4);
+//        fabGallery.setLayoutParams(layoutParams2);
+//        fabGallery.startAnimation(hide_fab_gallery);
+//        fabGallery.setClickable(false);
+////
+//        CoordinatorLayout.LayoutParams layoutParams3 = (CoordinatorLayout.LayoutParams) fabCamera.getLayoutParams();
+////        layoutParams3.rightMargin -= (int) (fabCamera.getWidth() * 0.25);
+////        layoutParams3.bottomMargin -= (int) (fabCamera.getHeight() * 1.7);
+//        layoutParams3.bottomMargin -= (int) (fabCamera.getHeight() * 6);
+//        fabCamera.setLayoutParams(layoutParams3);
+//        fabCamera.startAnimation(hide_fab_camera);
+//        fabCamera.setClickable(false);
+//
+//        isFabOnScreen = false;
+//    };
+//
+//    private void controlFab(){
+//        if (isFabOnScreen){
+//            hideFab();
+//        }else{
+//            showFab();
+//        }
+//    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_add_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            if (validateFields()) {
+                saveChampionship();
+            }
+
+            return true;
+        }else if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

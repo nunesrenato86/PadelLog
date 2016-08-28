@@ -51,6 +51,8 @@ dependencies {
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.google.android.gms:play-services:9.4.0'
     compile 'com.google.maps.android:android-maps-utils:0.4.3'
+    //compile 'com.getbase:floatingactionbutton:1.10.0'
+    compile 'com.github.clans:fab:1.6.4'
 }
 
 apply plugin: 'com.google.gms.google-services'
