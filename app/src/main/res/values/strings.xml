@@ -120,4 +120,6 @@
     <string name="msg_verify_no_internet">Verifique sua conexão de internet.</string>
     <string name="msg_no_internet">Sem internet.</string>
 
+    <string name="nav_user_name">Carregando...</string>
+
 </resources>

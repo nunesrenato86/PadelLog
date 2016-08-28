@@ -8,12 +8,14 @@ package com.renatonunes.padellog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,10 +45,19 @@ public class MatchListFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 FloatingActionButton fab = ((FloatingActionButton) getActivity().findViewById(R.id.fab_add_match));
 
-                if (dy > 0)
-                    fab.hide();
-                else if (dy < 0)
-                    fab.show();
+//                if (dy > 0)
+//                    fab.hide();
+//                else if (dy < 0)
+//                    fab.show();
+
+                if (dy > 0) {
+                    CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+                    int fab_bottomMargin = layoutParams.bottomMargin;
+                    fab.animate().translationY(fab.getHeight() + fab_bottomMargin).setInterpolator(new LinearInterpolator()).start();
+                } else if (dy < 0) {
+                    fab.animate().translationY(0).setInterpolator(new LinearInterpolator()).start();
+                }
+
             }
         });
 

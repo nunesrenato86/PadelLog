@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -111,7 +112,10 @@ public class ChampionshipInfoActivity extends CommonActivity
 		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 			@Override
 			public void onTabSelected(TabLayout.Tab tab) {
-				fabAddMatch.show();
+
+                //fabAddMatch.show();
+
+                fabAddMatch.animate().translationY(0).setInterpolator(new LinearInterpolator()).start();
 			}
 
 			@Override

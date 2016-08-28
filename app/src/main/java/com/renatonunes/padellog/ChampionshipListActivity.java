@@ -2,6 +2,7 @@ package com.renatonunes.padellog;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,10 +54,18 @@ public class ChampionshipListActivity extends CommonActivity {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0)
-                    fabAddChampionship.hide();
-                else if (dy < 0)
-                    fabAddChampionship.show();
+//                if (dy > 0)
+//                    fabAddChampionship.hide();
+//                else if (dy < 0)
+//                    fabAddChampionship.show();
+
+                if (dy > 0) {
+                    CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) fabAddChampionship.getLayoutParams();
+                    int fab_bottomMargin = layoutParams.bottomMargin;
+                    fabAddChampionship.animate().translationY(fabAddChampionship.getHeight() + fab_bottomMargin).setInterpolator(new LinearInterpolator()).start();
+                } else if (dy < 0) {
+                    fabAddChampionship.animate().translationY(0).setInterpolator(new LinearInterpolator()).start();
+                }
             }
         });
 
