@@ -276,9 +276,9 @@ public class ChampionshipInfoActivity extends CommonActivity
 		textTitle.setText(currentChampionship.getName());
 
 		//setting championship title
-		textSubtitle.setText(currentChampionship.getInitialDate()
+		textSubtitle.setText(currentChampionship.getInitialDateStr()
 				+ " até "
-				+ currentChampionship.getFinalDate());
+				+ currentChampionship.getFinalDateStr());
 
 		if (currentChampionship.getResult() == 8){
 			mProfileImage.setVisibility(View.VISIBLE);

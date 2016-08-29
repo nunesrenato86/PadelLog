@@ -43,8 +43,8 @@ public class ChampionshipInfoAdapter extends RecyclerView.Adapter<ChampioshipInf
 
         String text = String.format(res.getString(R.string.championship_info),
                 currentChampionship.getPlace(),
-                currentChampionship.getInitialDate(),
-                currentChampionship.getFinalDate(),
+                currentChampionship.getInitialDateStr(),
+                currentChampionship.getFinalDateStr(),
                 currentChampionship.getPartner(),
                 currentChampionship.getCategory(),
                 currentChampionship.getResultStr());

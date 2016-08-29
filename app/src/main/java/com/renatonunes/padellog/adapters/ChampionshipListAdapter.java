@@ -39,9 +39,9 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
         holder.currentChampionship = championships.get(position);
 
         holder.championshipTitle.setText(championships.get(position).getName());
-        holder.championshipDetail.setText(championships.get(position).getInitialDate()
+        holder.championshipDetail.setText(championships.get(position).getInitialDateStr()
                 + " até "
-                + championships.get(position).getFinalDate());
+                + championships.get(position).getFinalDateStr());
 
 //        String name = championships.get(position).getName();
 //        holder.championshipTitle.setText(name);

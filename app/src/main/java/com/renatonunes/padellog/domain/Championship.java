@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.maps.android.clustering.ClusterItem;
 import com.renatonunes.padellog.R;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +29,8 @@ public class Championship implements ClusterItem {
     private String partner;
     private String owner;
     private String imageStr;
-    private String initialDate;
-    private String finalDate;
+    private Long initialDate;
+    private Long finalDate;
     private String category;
     private String place;
     private Double lat;
@@ -71,15 +72,15 @@ public class Championship implements ClusterItem {
         this.imageStr = imageStr;
     }
 
-    public String getInitialDate() {return initialDate;}
+    public Long getInitialDate() {return initialDate;}
 
-    public void setInitialDate(String initialDate) {this.initialDate = initialDate;}
+    public void setInitialDate(Long initialDate) {this.initialDate = initialDate;}
 
-    public String getFinalDate() {
+    public Long getFinalDate() {
         return finalDate;
     }
 
-    public void setFinalDate(String finalDate) {
+    public void setFinalDate(Long finalDate) {
         this.finalDate = finalDate;
     }
 
@@ -152,6 +153,36 @@ public class Championship implements ClusterItem {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Exclude
+    public String getInitialDateStr(){
+        Calendar c = Calendar.getInstance();
+
+        c.setTimeInMillis(initialDate);
+
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        return  (day < 10 ? "0" + day : day) + "/" +
+                (month + 1 < 10 ? "0" + (month + 1) : month + 1) + "/" +
+                year;
+    }
+
+    @Exclude
+    public String getFinalDateStr(){
+        Calendar c = Calendar.getInstance();
+
+        c.setTimeInMillis(-1 * finalDate);
+
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        return  (day < 10 ? "0" + day : day) + "/" +
+                (month + 1 < 10 ? "0" + (month + 1) : month + 1) + "/" +
+                year;
     }
 
     @Exclude

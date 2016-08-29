@@ -121,7 +121,7 @@
     <string name="msg_verify_no_internet">Verifique sua conexão de internet.</string>
     <string name="msg_no_internet">Sem internet.</string>
 
-    <string name="msg_championship_saved">Partida salva.</string>
+    <string name="msg_championship_saved">Campeonato salvo.</string>
     <string name="msg_match_saved">Partida salva.</string>
 
     <string name="msg_photo_erros">Falha ao capturar imagem.</string>

@@ -92,6 +92,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     //to handle dates
     private int year, month, day;
+    private Long mInitialDate = Long.valueOf(0);
+    private Long mFinalDate = Long.valueOf(0);
 
     //to handle place
     private LatLng mCurrentLatLng;
@@ -212,8 +214,13 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
             edtName.setText(currentChampionship.getName());
             edtPartner.setText(currentChampionship.getPartner());
             edtCategory.setText(currentChampionship.getCategory());
-            edtInitialDate.setText(currentChampionship.getInitialDate());
-            edtFinalDate.setText(currentChampionship.getFinalDate());
+
+            mInitialDate = currentChampionship.getInitialDate();
+            edtInitialDate.setText(currentChampionship.getInitialDateStr());
+
+            mFinalDate = currentChampionship.getFinalDate();
+            edtFinalDate.setText(currentChampionship.getFinalDateStr());
+
             edtPlace.setText(currentChampionship.getPlace());
 
             mCurrentChampionshipImageStr = currentChampionship.getImageStr();
@@ -355,8 +362,12 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                 currentChampionship.setPartner(edtPartner.getText().toString());
                 currentChampionship.setOwner(user.getUid());
                 currentChampionship.setImageStr(getImageStr());
-                currentChampionship.setInitialDate(edtInitialDate.getText().toString());
-                currentChampionship.setFinalDate(edtFinalDate.getText().toString());
+//                currentChampionship.setInitialDate(edtInitialDate.getText().toString());
+//                currentChampionship.setFinalDate(edtFinalDate.getText().toString());
+
+                currentChampionship.setInitialDate(mInitialDate);
+                currentChampionship.setFinalDate(mFinalDate);
+
                 currentChampionship.setCategory(edtCategory.getText().toString());
                 currentChampionship.setPlace(edtPlace.getText().toString());
 
@@ -436,7 +447,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     }
 
     private void setDate(Boolean initial){
-        initDate();
+        initDate(initial);
 
         Calendar cDefault = Calendar.getInstance();
         cDefault.set(year, month, day);
@@ -454,18 +465,32 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         datePickerDialog.show( getFragmentManager(), tag );
     }
 
-    private void initDate(){
-        if( year == 0 ){
-            Calendar c = Calendar.getInstance();
+    private void initDate(Boolean initial){
+        Long date = Long.valueOf(0);
+        Calendar c = Calendar.getInstance();
+
+        if (initial){
+            date = mInitialDate;
+        }else{
+            date = - 1 * mFinalDate;
+        }
+
+        if (date != 0){
+            c.setTimeInMillis(date);
+            year = c.get(Calendar.YEAR);
+        }
+
+        //if( year == 0 ){
+
             year = c.get(Calendar.YEAR);
             month = c.get(Calendar.MONTH);
             day = c.get(Calendar.DAY_OF_MONTH);
-        }
+        //}
     }
 
     @Override
     public void onCancel(DialogInterface dialogInterface) {
-        year = month = day = 0;
+        //year = month = day = 0;
         //edtInitialDate.setText("");
     }
 
@@ -473,11 +498,18 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         EditText editText;
 
+        Calendar c = Calendar.getInstance();
+        c.set(year, monthOfYear, dayOfMonth);
+        c.getTimeInMillis();
+
         if (view.getTag() == "initial"){
             editText = edtInitialDate;
+            mInitialDate = c.getTimeInMillis();
         }
-        else
+        else {
+            mFinalDate = - 1 * c.getTimeInMillis();
             editText = edtFinalDate;
+        }
 
         editText.setText( (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth) + "/" +
                 (monthOfYear + 1 < 10 ? "0" + (monthOfYear + 1) : monthOfYear + 1) + "/" +
