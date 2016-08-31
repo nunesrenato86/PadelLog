@@ -31,6 +31,7 @@ public class Championship implements ClusterItem {
     private String imageStr;
     private Long initialDate;
     private Long finalDate;
+    private Long dateSort;
     private String category;
     private String place;
     private Double lat;
@@ -81,7 +82,10 @@ public class Championship implements ClusterItem {
     }
 
     public void setFinalDate(Long finalDate) {
+
         this.finalDate = finalDate;
+        setDateSort(finalDate);
+
     }
 
     public String getCategory() {return category;}
@@ -110,6 +114,14 @@ public class Championship implements ClusterItem {
 
     public void setLng(Double lng) {
         this.lng = lng;
+    }
+
+    public Long getDateSort() {
+        return dateSort;
+    }
+
+    public void setDateSort(Long dateSort) {
+        this.dateSort = - 1 * dateSort;
     }
 
     @Exclude
@@ -174,7 +186,8 @@ public class Championship implements ClusterItem {
     public String getFinalDateStr(){
         Calendar c = Calendar.getInstance();
 
-        c.setTimeInMillis(-1 * finalDate);
+        //c.setTimeInMillis(-1 * finalDate);
+        c.setTimeInMillis(finalDate);
 
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -307,6 +320,10 @@ public class Championship implements ClusterItem {
 
         if( getFinalDate() != null ){
             map.put( "finalDate", getFinalDate() );
+        }
+
+        if( getDateSort() != null ){
+            map.put( "dateSort", getDateSort() );
         }
 
         if( getInitialDate() != null ){

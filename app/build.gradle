@@ -53,6 +53,7 @@ dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.4.3'
     //compile 'com.getbase:floatingactionbutton:1.10.0'
     compile 'com.github.clans:fab:1.6.4'
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
 }
 
 apply plugin: 'com.google.gms.google-services'

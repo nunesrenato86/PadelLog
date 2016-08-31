@@ -66,11 +66,11 @@
     <string name="nav_logout">Logout</string>
     <string name="nav_championships">Campeonatos</string>
     <string name="nav_statistics">Estatísticas</string>
-    <string name="nav_per_year">Por ano</string>
+    <string name="nav_per_result">Por resultados</string>
     <string name="nav_per_partner">Por parceiro</string>
 
     <string name="title_activity_championship_list">Meus campeonatos</string>
-    <string name="title_activity_add_championship">Adicionar campeonato</string>
+    <string name="title_activity_add_championship">Campeonato</string>
     <string name="edt_championship_name">Nome</string>
     <string name="edt_partner_name">Parceiro</string>
     <string name="edt_category">Categoria</string>
@@ -87,7 +87,7 @@
     <string name="championship_info">
         Campeonato disputado em %1$s, de %2$s até %3$s. %4$s e você
         obtiveram o seguinte resultado na %5$s: %6$s.</string>
-    <string name="title_activity_add_match">Adicionar jogos</string>
+    <string name="title_activity_add_match">Jogo</string>
 
     <string name="spinner_title">Fase</string>
     <string name="round_draw">Chave</string>
@@ -127,5 +127,6 @@
     <string name="msg_photo_erros">Falha ao capturar imagem.</string>
 
     <string name="nav_user_name">Carregando...</string>
+    <string name="title_activity_chart">Resultados</string>
 
 </resources>

@@ -472,7 +472,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         if (initial){
             date = mInitialDate;
         }else{
-            date = - 1 * mFinalDate;
+            //date = - 1 * mFinalDate;
+            date = mFinalDate;
         }
 
         if (date != 0){
@@ -507,7 +508,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
             mInitialDate = c.getTimeInMillis();
         }
         else {
-            mFinalDate = - 1 * c.getTimeInMillis();
+            //mFinalDate = - 1 * c.getTimeInMillis();
+            mFinalDate = c.getTimeInMillis();
             editText = edtFinalDate;
         }
 

@@ -37,13 +37,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ChampionshipInfoActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label=""/>
-
+            android:label=""
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MatchInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".SignUpActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -54,7 +52,6 @@
             android:name=".UpdateActivity"
             android:label="@string/title_activity_update"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
@@ -66,7 +63,6 @@
                 <!-- category android:name="android.intent.category.LAUNCHER" / -->
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ChampionshipListActivity"
             android:label="@string/title_activity_championship_list"
@@ -78,12 +74,10 @@
         <activity
             android:name=".AddMatchActivity"
             android:label="@string/title_activity_add_match"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.renatonunes.padellog.MapsActivity"
-            android:label="@string/title_activity_maps">
-        </activity>
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"></activity>
 
         <service android:name=".MyFirebaseInstanceIdService">
             <intent-filter>
@@ -96,5 +90,10 @@
             </intent-filter>
         </service>
 
+        <activity
+            android:name=".ChartActivity"
+            android:label="@string/title_activity_chart"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
+
 </manifest>

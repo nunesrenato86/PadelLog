@@ -17,7 +17,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -42,7 +41,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -248,12 +246,12 @@ public class MainActivity extends CommonActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -282,7 +280,10 @@ public class MainActivity extends CommonActivity
         } else if (id == R.id.nav_per_partner) {
             showNotDoneYet();
         } else if (id == R.id.nav_per_year) {
-            showNotDoneYet();
+            Intent intent = new Intent(this, ChartActivity.class);
+            startActivity(intent);
+
+            //showNotDoneYet();
         } else if (id == R.id.nav_logout) {
             if (FirebaseAuth.getInstance() != null) {
                 FirebaseAuth.getInstance().signOut();
@@ -501,27 +502,10 @@ public class MainActivity extends CommonActivity
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = user.getUid();
 
-        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 getUpdates(dataSnapshot);
-//                closeProgressBar();
-            }
-
-            @Override
-            public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                getUpdates(dataSnapshot);
-//                closeProgressBar();
-            }
-
-            @Override
-            public void onChildRemoved(com.google.firebase.database.DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
@@ -530,35 +514,96 @@ public class MainActivity extends CommonActivity
             }
         });
 
+//        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//                getUpdates(dataSnapshot);
+////                closeProgressBar();
+//            }
+//
+//            @Override
+//            public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//                getUpdates(dataSnapshot);
+////                closeProgressBar();
+//            }
+//
+//            @Override
+//            public void onChildRemoved(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+
     }
 
     private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
-        Championship championship = new Championship();
-        championship.setId(dataSnapshot.getKey());
-        championship.setName(dataSnapshot.getValue(Championship.class).getName());
 
-        String owner = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        championship.setOwner(owner);
-        championship.setPartner(dataSnapshot.getValue(Championship.class).getPartner());
-        championship.setPlace(dataSnapshot.getValue(Championship.class).getPlace());
-        championship.setResult(dataSnapshot.getValue(Championship.class).getResult());
-        championship.setImageStr(dataSnapshot.getValue(Championship.class).getImageStr());
-        championship.setLat(dataSnapshot.getValue(Championship.class).getLat());
-        championship.setLng(dataSnapshot.getValue(Championship.class).getLng());
-        championship.setInitialDate(dataSnapshot.getValue(Championship.class).getInitialDate());
-        championship.setFinalDate(dataSnapshot.getValue(Championship.class).getFinalDate());
-        championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
-        championship.setContext(this);
+        for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()) {
+            Championship championship = new Championship();
+            championship.setId(ds.getKey());
+            championship.setName(ds.getValue(Championship.class).getName());
 
-        championships.add(championship);//        }
+            String owner = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            championship.setOwner(owner);
+            championship.setPartner(ds.getValue(Championship.class).getPartner());
+            championship.setPlace(ds.getValue(Championship.class).getPlace());
+            championship.setResult(ds.getValue(Championship.class).getResult());
+            championship.setImageStr(ds.getValue(Championship.class).getImageStr());
+            championship.setLat(ds.getValue(Championship.class).getLat());
+            championship.setLng(ds.getValue(Championship.class).getLng());
+            championship.setInitialDate(ds.getValue(Championship.class).getInitialDate());
+            championship.setFinalDate(ds.getValue(Championship.class).getFinalDate());
+            championship.setCategory(ds.getValue(Championship.class).getCategory());
+            championship.setContext(this);
 
-        markChampionshipOnMap(championship);
+            championships.add(championship);
+
+            markChampionshipOnMap(championship);
+        }
+
+        closeProgressBar();
 
 //        if (championships.size() > 0){
 //            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships);
 //            recyclerView.setAdapter(adapter);
 //        }else{
 //            Toast.makeText(ChampionshipListActivity.this, "Sem dados", Toast.LENGTH_SHORT).show();
+
+//        Championship championship = new Championship();
+//        championship.setId(dataSnapshot.getKey());
+//        championship.setName(dataSnapshot.getValue(Championship.class).getName());
+//
+//        String owner = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//        championship.setOwner(owner);
+//        championship.setPartner(dataSnapshot.getValue(Championship.class).getPartner());
+//        championship.setPlace(dataSnapshot.getValue(Championship.class).getPlace());
+//        championship.setResult(dataSnapshot.getValue(Championship.class).getResult());
+//        championship.setImageStr(dataSnapshot.getValue(Championship.class).getImageStr());
+//        championship.setLat(dataSnapshot.getValue(Championship.class).getLat());
+//        championship.setLng(dataSnapshot.getValue(Championship.class).getLng());
+//        championship.setInitialDate(dataSnapshot.getValue(Championship.class).getInitialDate());
+//        championship.setFinalDate(dataSnapshot.getValue(Championship.class).getFinalDate());
+//        championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
+//        championship.setContext(this);
+//
+//        championships.add(championship);//        }
+//
+//        markChampionshipOnMap(championship);
+//
+////        if (championships.size() > 0){
+////            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships);
+////            recyclerView.setAdapter(adapter);
+////        }else{
+////            Toast.makeText(ChampionshipListActivity.this, "Sem dados", Toast.LENGTH_SHORT).show();
     }
 
     private void markChampionshipOnMap(Championship championship){
@@ -573,14 +618,14 @@ public class MainActivity extends CommonActivity
 //            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker, 5));
 
 //            MyMapItem offsetItem = new MyMapItem(championship.getLat(), championship.getLng(), championship.getName());
-//            mClusterManager.addItem(offsetItem);
+//            mClusterManager.addItem(offsetItem)
 //            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
             mClusterManager.addItem(championship);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(championship.getPosition(), 5));
             mClusterManager.cluster();
         }
 
-        closeProgressBar();
+//        closeProgressBar();
     }
 
     private void clearMap(){

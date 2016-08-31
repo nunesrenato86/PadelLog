@@ -114,7 +114,7 @@ public class ChampionshipListActivity extends CommonActivity {
         //ver aqui um modo de filtar melhor
 //        FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
         //FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
-        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).orderByChild("finalDate").addChildEventListener(new ChildEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).orderByChild("dateSort").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
                 //if (dataSnapshot.getKey().equals(userId)) { //ver aqui um modo de filtar melhor
