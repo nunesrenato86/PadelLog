@@ -78,6 +78,9 @@ public class ChartActivity extends CommonActivity implements OnChartValueSelecte
         ButterKnife.bind(this);
         ButterKnife.setDebug(true);
 
+        mChart.setNoDataText(getResources().getString(R.string.msg_chart_no_data));
+        mChart.setNoDataTextColor(getResources().getColor(R.color.colorAccent));
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_chart);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,6 +187,7 @@ public class ChartActivity extends CommonActivity implements OnChartValueSelecte
         //data.setValueTextColor(Color.WHITE);
         data.setValueTextColor(Color.BLACK);
         data.setValueTypeface(mTfLight);
+
         mChart.setData(data);
 
         // undo all highlights
@@ -194,7 +198,7 @@ public class ChartActivity extends CommonActivity implements OnChartValueSelecte
 
     private SpannableString generateCenterSpannableText() {
 
-        SpannableString s = new SpannableString("Por resultado");//\ndeveloped by Philipp Jahoda");
+        SpannableString s = new SpannableString("Resultados\npor PadelLog");//\ndeveloped by Philipp Jahoda");
 //        SpannableString s = new SpannableString("MPAndroidChart\ndeveloped by Philipp Jahoda");
 //        s.setSpan(new RelativeSizeSpan(1.7f), 0, 14, 0);
 //        s.setSpan(new StyleSpan(Typeface.NORMAL), 14, s.length() - 15, 0);
