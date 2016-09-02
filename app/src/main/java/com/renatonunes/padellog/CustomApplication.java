@@ -1,6 +1,8 @@
 package com.renatonunes.padellog;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -19,5 +21,11 @@ public class CustomApplication extends Application {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //para trabalhar offline tb
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }

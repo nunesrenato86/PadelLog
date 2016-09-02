@@ -17,10 +17,16 @@
 
     antiga
     AIzaSyB3ae8wt65A-rBBcFKGManixntl9JaVpww
+
+    tava aqui
+    AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk
+
+    tava no release
+    AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc
     -->
     <string name="google_maps_key"
         templateMergeStrategy="preserve"
         translatable="false">
-        AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk
+        AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc
     </string>
 </resources>
