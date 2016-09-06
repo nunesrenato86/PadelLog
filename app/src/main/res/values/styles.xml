@@ -37,7 +37,7 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="EditTextHint" parent="TextAppearance.AppCompat">
+    <style name="EditTextHint" parent="Theme.AppCompat">
         <item name="android:textColorHint">@color/colorFacebookButtonText</item>
         <item name="colorControlHighlight">@color/colorFacebookButtonText</item>
         <item name="colorControlActivated">@color/colorFacebookButtonText</item>

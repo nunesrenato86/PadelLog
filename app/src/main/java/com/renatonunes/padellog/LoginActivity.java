@@ -61,10 +61,10 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     private Resources resources;
     private Context context;
 
-    @BindView(R.id.email)
+    @BindView(R.id.edt_email_login)
     AutoCompleteTextView email;
 
-    @BindView(R.id.password)
+    @BindView(R.id.edt_password_login)
     EditText password;
 
     @BindView(R.id.email_sign_in_button)
@@ -80,6 +80,9 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 
         context = this;
 
+        ButterKnife.bind(this);
+        ButterKnife.setDebug(true);
+
         String permissions[] = new String[]{
             Manifest.permission.INTERNET,
             Manifest.permission.GET_ACCOUNTS,
@@ -92,9 +95,6 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         if (ok){
             Log.i("RNN", "Permissions OK");
         }
-
-        ButterKnife.bind(this);
-        ButterKnife.setDebug(true);
 
         // FACEBOOK
         FacebookSdk.sdkInitialize(getApplicationContext());
