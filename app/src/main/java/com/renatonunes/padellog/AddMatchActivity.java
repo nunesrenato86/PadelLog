@@ -92,7 +92,7 @@ public class AddMatchActivity extends CommonActivity {
 
     private ArrayAdapter<String> dataAdapter;
     private Resources resources;
-//    private NetworkReceiver mNetworkReceiver;
+//    private NetworkChangeReceiver mNetworkReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +104,7 @@ public class AddMatchActivity extends CommonActivity {
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
-        //mNetworkReceiver = new NetworkReceiver(this);
+        //mNetworkReceiver = new NetworkChangeReceiver(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String permissions[] = new String[]{

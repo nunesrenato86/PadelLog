@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.renatonunes.padellog.receivers.NetworkReceiver;
+import com.renatonunes.padellog.receivers.NetworkChangeReceiver;
 
 /**
  * Created by Renato on 26/07/2016.
@@ -19,7 +19,7 @@ abstract public class CommonActivity extends AppCompatActivity {
 //    protected AutoCompleteTextView email;
 //    protected EditText password;
     protected ProgressBar progressBar;
-    private NetworkReceiver mNetworkReceiver;
+    private NetworkChangeReceiver mNetworkChangeReceiver;
 
     protected void showSnackbar(View v, String message ){
         Snackbar.make(v,
@@ -55,12 +55,12 @@ abstract public class CommonActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mNetworkReceiver = new NetworkReceiver(this);
+        mNetworkChangeReceiver = new NetworkChangeReceiver(this);
     }
 
     @Override
     protected void onResume() {
-        registerReceiver(mNetworkReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
+        registerReceiver(mNetworkChangeReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
         super.onResume();
     }
 }

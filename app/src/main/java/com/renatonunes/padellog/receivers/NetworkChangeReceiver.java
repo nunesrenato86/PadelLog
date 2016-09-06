@@ -13,13 +13,13 @@ import com.renatonunes.padellog.domain.util.LibraryClass;
  * Created by Renato on 27/08/2016.
  */
 
-public class NetworkReceiver extends BroadcastReceiver {
+public class NetworkChangeReceiver extends BroadcastReceiver {
 
     private Context mContext;
     private AlertDialog.Builder builder;
     private AlertDialog alert;
 
-    public NetworkReceiver(Context context) {
+    public NetworkChangeReceiver(Context context) {
         mContext = context;
     }
 
