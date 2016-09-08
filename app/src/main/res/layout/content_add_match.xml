@@ -22,7 +22,7 @@
 
         <ImageView
             android:layout_height="0dp"
-            android:layout_weight="0.43"
+            android:layout_weight="0.4"
             android:layout_width="match_parent"
             android:id="@+id/img_match"
             android:layout_alignParentLeft="true"
@@ -33,7 +33,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.57"
+            android:layout_weight="0.6"
             android:orientation="vertical"
             android:layout_gravity="bottom"
             android:paddingLeft="@dimen/activity_vertical_margin"
@@ -281,51 +281,63 @@
 
     </LinearLayout>
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fab_menu_match_photo"
-        android:layout_width="wrap_content"
+    <FrameLayout
         android:layout_height="wrap_content"
-        app:fab_colorNormal="@color/colorAccent"
-        app:fab_colorPressed="@color/colorAccent"
-        android:paddingBottom="200dp"
-        android:paddingRight="8dp"
-        app:menu_openDirection="up"
-        app:menu_icon="@drawable/fab_add"
-        app:menu_colorNormal="@color/colorAccent"
-        app:menu_colorPressed="@color/colorPrimaryDark"
+        android:layout_width="wrap_content"
         app:layout_anchor="@id/img_match"
         app:layout_anchorGravity="bottom|right|end">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_camera_match_photo"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/colorAccent"
-            fab:fab_colorPressed="@color/colorAccent"
-            android:src="@drawable/ic_camera_white"
-            fab:fab_size="mini"/>
+            android:orientation="vertical">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_gallery_match_photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/colorAccent"
-            fab:fab_colorPressed="@color/colorAccent"
-            android:src="@drawable/ic_folder_image_white"
-            fab:fab_size="mini" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_match_photo_gallery"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:src="@drawable/ic_folder_image_white"
+                android:visibility="visible"
+                />
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_delete_match_photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/colorAccent"
-            fab:fab_colorPressed="@color/colorAccent"
-            android:src="@drawable/ic_delete"
-            fab:fab_size="mini"/>
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_match_photo_camera"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:src="@drawable/ic_camera_white"
+                />
 
-    </com.github.clans.fab.FloatingActionMenu>
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_match_photo_add"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:src="@drawable/ic_fab_plus"
+                android:visibility="visible"
+                />
 
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_match_photo_delete"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:src="@drawable/ic_delete"
+                android:visibility="visible"
+                />
 
+            <android.support.design.widget.FloatingActionButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:src="@drawable/ic_delete"
+                android:visibility="invisible"
+                />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout >
 

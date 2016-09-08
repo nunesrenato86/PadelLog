@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -27,10 +28,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -83,8 +85,19 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     static final int REQUEST_PLACE_PICKER = 103;
 
-    @BindView(R.id.fab_menu_championship_photo)
-    FloatingActionMenu fabMenuChampionshipPhoto;
+    @BindView(R.id.fab_championship_photo_camera)
+    FloatingActionButton fabMenuChampionshipPhoto;
+
+    @BindView(R.id.fab_championship_photo_gallery)
+    FloatingActionButton fabMenuChampionshipPhotoGallery;
+
+    @BindView(R.id.fab_championship_photo_delete)
+    FloatingActionButton fabMenuChampionshipPhotoDelete;
+
+    @BindView(R.id.fab_championship_photo_add)
+    FloatingActionButton fabMenuChampionshipPhotoAdd;
+
+    private Boolean isVisible = false;
 
     private final Activity mActivity = this;
     private static Championship currentChampionship = null;
@@ -110,6 +123,9 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     private Resources resources;
     private Boolean isFabOnScreen = false;
+
+    Animation fabRotateClockwise;
+    Animation fabRotateAntiClockwise;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,7 +216,33 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
             }
         };
 
+        fabRotateClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
+        fabRotateAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
+
         updateUI();
+    }
+
+    @OnClick(R.id.fab_championship_photo_add)
+    public void toggleFabs(){
+        if (isVisible){
+            fabMenuChampionshipPhotoDelete.animate().scaleY(0).scaleX(0).setDuration(200).start();
+            fabMenuChampionshipPhotoGallery.animate().scaleY(0).scaleX(0).setDuration(200).start();
+            fabMenuChampionshipPhoto.animate().scaleY(0).scaleX(0).setDuration(200).start();
+
+            fabMenuChampionshipPhotoAdd.startAnimation(fabRotateAntiClockwise);
+            //fabMenuChampionshipPhotoAdd.animate().rotationY(25).setDuration(200).start();
+        }else{
+            fabMenuChampionshipPhotoDelete.animate().scaleY(1).scaleX(1).setDuration(200).start();
+            fabMenuChampionshipPhotoGallery.animate().scaleY(1).scaleX(1).setDuration(200).start();
+            fabMenuChampionshipPhoto.animate().scaleY(1).scaleX(1).setDuration(200).start();
+
+            fabMenuChampionshipPhotoAdd.startAnimation(fabRotateClockwise);
+
+            //fabMenuChampionshipPhotoAdd.animate().rotationY(0).setDuration(200).start();
+        }
+
+        isVisible = !isVisible;
+
     }
 
     @Override
@@ -210,6 +252,10 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     }
 
     private void updateUI(){
+        fabMenuChampionshipPhotoDelete.animate().scaleY(0).scaleX(0).setDuration(0).start();
+        fabMenuChampionshipPhotoGallery.animate().scaleY(0).scaleX(0).setDuration(0).start();
+        fabMenuChampionshipPhoto.animate().scaleY(0).scaleX(0).setDuration(0).start();
+
         if (currentChampionship != null){
             edtName.setText(currentChampionship.getName());
             edtPartner.setText(currentChampionship.getPartner());
@@ -233,30 +279,32 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         }
     }
 
-    @OnClick(R.id.fab_delete_championship_photo)
+    @OnClick(R.id.fab_championship_photo_delete)
     public void deletePhoto(){
-        fabMenuChampionshipPhoto.close(false);
+        toggleFabs();
 
         mCurrentChampionshipImageStr = "";
         mThumbnailPreview.setImageBitmap(null);
         mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
     }
 
-    @OnClick(R.id.fab_camera_championship_photo)
+    @OnClick(R.id.fab_championship_photo_camera)
     public void takePhoto(View view){
-        fabMenuChampionshipPhoto.close(false);
+        if (isVisible){
+            File placeholderFile = ImageFactory.newFile();
+            mCurrentPhotoUri = Uri.fromFile(placeholderFile);
 
-        File placeholderFile = ImageFactory.newFile();
-        mCurrentPhotoUri = Uri.fromFile(placeholderFile);
+            if (!mPhotoTaker.takePhoto(placeholderFile)) {
+                displayPhotoError();
+            }
+        };
 
-        if (!mPhotoTaker.takePhoto(placeholderFile)) {
-            displayPhotoError();
-        }
+        toggleFabs();
     }
 
-    @OnClick(R.id.fab_gallery_championship_photo)
+    @OnClick(R.id.fab_championship_photo_gallery)
     public void pickPhoto(View view){
-        fabMenuChampionshipPhoto.close(false);
+        toggleFabs();
 
         File placeholderFile = ImageFactory.newFile();
 

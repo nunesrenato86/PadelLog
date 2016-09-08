@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -22,12 +23,13 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
-import com.github.clans.fab.FloatingActionMenu;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.AlertUtils;
@@ -47,6 +49,9 @@ import butterknife.OnClick;
 
 public class AddMatchActivity extends CommonActivity {
 
+    Animation fabRotateClockwise;
+    Animation fabRotateAntiClockwise;
+
     //fields
     private final Activity mActivity = this;
 
@@ -60,8 +65,19 @@ public class AddMatchActivity extends CommonActivity {
     @BindView(R.id.img_match)
     ImageView mThumbnailPreview;
 
-    @BindView(R.id.fab_menu_match_photo)
-    FloatingActionMenu fabMenuMatchPhoto;
+    @BindView(R.id.fab_match_photo_camera)
+    FloatingActionButton fabMatchPhoto;
+
+    @BindView(R.id.fab_match_photo_gallery)
+    FloatingActionButton fabMatchPhotoGallery;
+
+    @BindView(R.id.fab_match_photo_delete)
+    FloatingActionButton fabMatchPhotoDelete;
+
+    @BindView(R.id.fab_match_photo_add)
+    FloatingActionButton fabMatchPhotoAdd;
+
+    private Boolean isVisible = false;
 
     @BindView(R.id.spinner_match_round)
     Spinner spinnerRound;
@@ -163,6 +179,9 @@ public class AddMatchActivity extends CommonActivity {
             }
         };
 
+        fabRotateClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
+        fabRotateAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
+
         updateUI();
 
 //        spinnerRound.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -182,7 +201,32 @@ public class AddMatchActivity extends CommonActivity {
 //        });
     }
 
+    @OnClick(R.id.fab_match_photo_add)
+    public void toggleFabs(){
+        if (isVisible){
+            fabMatchPhotoDelete.animate().scaleY(0).scaleX(0).setDuration(200).start();
+            fabMatchPhotoGallery.animate().scaleY(0).scaleX(0).setDuration(200).start();
+            fabMatchPhoto.animate().scaleY(0).scaleX(0).setDuration(200).start();
+
+            fabMatchPhotoAdd.startAnimation(fabRotateAntiClockwise);
+        }else{
+            fabMatchPhotoDelete.animate().scaleY(1).scaleX(1).setDuration(200).start();
+            fabMatchPhotoGallery.animate().scaleY(1).scaleX(1).setDuration(200).start();
+            fabMatchPhoto.animate().scaleY(1).scaleX(1).setDuration(200).start();
+
+            fabMatchPhotoAdd.startAnimation(fabRotateClockwise);
+        }
+        isVisible = !isVisible;
+    }
+
     private void updateUI(){
+        fabMatchPhotoDelete.animate().scaleY(0).scaleX(0).setDuration(0).start();
+        fabMatchPhotoGallery.animate().scaleY(0).scaleX(0).setDuration(0).start();
+        fabMatchPhoto.animate().scaleY(0).scaleX(0).setDuration(0).start();
+
+//        fabMatchPhotoDelete.setVisibility(View.VISIBLE);
+//        fabMatchPhotoGallery.setVisibility(View.VISIBLE);
+
         if (mCurrentMatch != null){
             edtOpponentDrive.setText(mCurrentMatch.getOpponentDrive());
 
@@ -209,30 +253,33 @@ public class AddMatchActivity extends CommonActivity {
         }
     }
 
-    @OnClick(R.id.fab_delete_match_photo)
+    @OnClick(R.id.fab_match_photo_delete)
     public void deletePhoto(){
-        fabMenuMatchPhoto.close(false);
+        toggleFabs();
 
         mCurrentMatchImageStr = "";
         mThumbnailPreview.setImageBitmap(null);
         mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
     }
 
-    @OnClick(R.id.fab_camera_match_photo)
+    @OnClick(R.id.fab_match_photo_camera)
     public void takePhoto(){
-        fabMenuMatchPhoto.close(false);
+        if (isVisible) {
 
-        File placeholderFile = ImageFactory.newFile();
-        mCurrentPhotoUri = Uri.fromFile(placeholderFile);
+            File placeholderFile = ImageFactory.newFile();
+            mCurrentPhotoUri = Uri.fromFile(placeholderFile);
 
-        if (!mPhotoTaker.takePhoto(placeholderFile)) {
-            displayPhotoError();
+            if (!mPhotoTaker.takePhoto(placeholderFile)) {
+                displayPhotoError();
+            }
         }
+
+        toggleFabs();
     }
 
-    @OnClick(R.id.fab_gallery_match_photo)
+    @OnClick(R.id.fab_match_photo_gallery)
     public void PickPhoto(){
-        fabMenuMatchPhoto.close(false);
+        toggleFabs();
 
         File placeholderFile = ImageFactory.newFile();
 
@@ -266,7 +313,7 @@ public class AddMatchActivity extends CommonActivity {
     }
 
     private void displayPhotoError() {
-        Snackbar.make(fabMenuMatchPhoto,
+        Snackbar.make(fabMatchPhoto,
                 getResources().getString(R.string.msg_error_img_file),
                 Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
@@ -284,7 +331,7 @@ public class AddMatchActivity extends CommonActivity {
 //                        "User cancelled image capture", Toast.LENGTH_SHORT)
 //                        .show();
             } else {
-                showSnackbar(fabMenuMatchPhoto,
+                showSnackbar(fabMatchPhoto,
                         getResources().getString(R.string.msg_photo_erros));
             }
         }else if (requestCode == PhotoTaker.REQUEST_PICK_PHOTO){
@@ -295,7 +342,7 @@ public class AddMatchActivity extends CommonActivity {
 //                        "User cancelled image capture", Toast.LENGTH_SHORT)
 //                        .show();
             } else {
-                showSnackbar(fabMenuMatchPhoto,
+                showSnackbar(fabMatchPhoto,
                         getResources().getString(R.string.msg_photo_erros));
             }
         } else {
@@ -378,13 +425,12 @@ public class AddMatchActivity extends CommonActivity {
                 currentChampionship.updateResult();
                 ChampionshipInfoActivity.currentChampionship = currentChampionship;
 
-                Snackbar.make(fabMenuMatchPhoto,
-                        getResources().getString(R.string.msg_match_saved),
-                        Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                showSnackbar(fabMatchPhoto,
+                        getResources().getString(R.string.msg_match_saved)
+                        );
             }
         }else{
-            showSnackbar(fabMenuMatchPhoto, getResources().getString(R.string.msg_no_internet));
+            showSnackbar(fabMatchPhoto, getResources().getString(R.string.msg_no_internet));
         }
     }
 
