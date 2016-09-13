@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="6dp"
-                    android:text="Fase"
+                    android:text="@string/spinner_round"
                     android:layout_marginBottom="5dp"/>
 
                 <Spinner
@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/spinner_match_round"
                     android:spinnerMode="dialog"
-                    android:prompt="@string/spinner_title"
+                    android:prompt="@string/spinner_round"
                     style="@android:style/Widget.Holo.Light.Spinner"/>
 
             </LinearLayout>

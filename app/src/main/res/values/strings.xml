@@ -97,7 +97,7 @@
         obtiveram o seguinte resultado na %5$s: %6$s.</string>
     <string name="title_activity_add_match">Jogo</string>
 
-    <string name="spinner_title">Fase</string>
+    <string name="spinner_round">Fase</string>
     <string name="round_draw">Chave</string>
     <string name="round_64">64 avos de final</string>
     <string name="round_32">32 avos de final</string>
@@ -109,6 +109,36 @@
     <string name="result_name_vice">Vice-campeões</string>
     <string name="result_name_champion">Campeões</string>
     <string name="result_name_none">Sem jogos</string>
+
+    <string name="spinner_category">Categoria</string>
+    <string name="category_pro">Primeira/Profissional</string>
+    <string name="category_2nd">Segunda</string>
+    <string name="category_3th">Terceira</string>
+    <string name="category_4th">Quarta</string>
+    <string name="category_5th">Quinta</string>
+    <string name="category_6th">Sexta</string>
+    <string name="category_7th">Sétima</string>
+    <string name="category_open">Open</string>
+    <string name="category_3035a">+30/+35 A</string>
+    <string name="category_3035b">+30/+35 B</string>
+    <string name="category_3035c">+30/+35 C</string>
+    <string name="category_4045a">+40/+45 A</string>
+    <string name="category_4045b">+40/+45 B</string>
+    <string name="category_4045c">+40/+45 C</string>
+    <string name="category_5055a">+50/+55 A</string>
+    <string name="category_5055b">+50/+55 B</string>
+    <string name="category_5055c">+50/+55 C</string>
+    <string name="category_mixedA">Mista A</string>
+    <string name="category_mixedB">Mista B</string>
+    <string name="category_mixedC">Mista C</string>
+    <string name="category_mixedD">Mista D</string>
+    <string name="category_sub20">Sub 20</string>
+    <string name="category_sub18">Sub 18</string>
+    <string name="category_sub16">Sub 16</string>
+    <string name="category_sub14">Sub 14</string>
+    <string name="category_sub12">Sub 12</string>
+    <string name="category_other">Outra</string>
+
 
     <string name="msg_chart_no_data">Sem dados para exibir.</string>
 

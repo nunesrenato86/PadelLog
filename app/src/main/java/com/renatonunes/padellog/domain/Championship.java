@@ -32,7 +32,7 @@ public class Championship implements ClusterItem {
     private Long initialDate;
     private Long finalDate;
     private Long dateSort;
-    private String category;
+    private Integer category;
     private String place;
     private Double lat;
     private Double lng;
@@ -88,9 +88,9 @@ public class Championship implements ClusterItem {
 
     }
 
-    public String getCategory() {return category;}
+    public Integer getCategory() {return category;}
 
-    public void setCategory(String category) {this.category = category;}
+    public void setCategory(Integer category) {this.category = category;}
 
     public String getPlace() {
         return place;
@@ -362,5 +362,44 @@ public class Championship implements ClusterItem {
         LatLng latLng = new LatLng(this.getLat(), this.getLng());
 
         return latLng;
+    }
+
+    @Exclude
+    public String getCategoryStr() {
+        switch(this.category) {
+            case 0: return context.getResources().getString(R.string.category_open);
+            case 1: return context.getResources().getString(R.string.category_pro);
+            case 2: return context.getResources().getString(R.string.category_2nd);
+            case 3: return context.getResources().getString(R.string.category_3th);
+            case 4: return context.getResources().getString(R.string.category_4th);
+            case 5: return context.getResources().getString(R.string.category_5th);
+            case 6: return context.getResources().getString(R.string.category_6th);
+            case 7: return context.getResources().getString(R.string.category_7th);
+
+            case 8: return context.getResources().getString(R.string.category_3035a);
+            case 9: return context.getResources().getString(R.string.category_3035b);
+            case 10: return context.getResources().getString(R.string.category_3035c);
+
+            case 11: return context.getResources().getString(R.string.category_4045a);
+            case 12: return context.getResources().getString(R.string.category_4045b);
+            case 13: return context.getResources().getString(R.string.category_4045c);
+
+            case 14: return context.getResources().getString(R.string.category_5055a);
+            case 15: return context.getResources().getString(R.string.category_5055b);
+            case 16: return context.getResources().getString(R.string.category_5055c);
+
+            case 17: return context.getResources().getString(R.string.category_mixedA);
+            case 18: return context.getResources().getString(R.string.category_mixedB);
+            case 19: return context.getResources().getString(R.string.category_mixedC);
+            case 20: return context.getResources().getString(R.string.category_mixedD);
+
+            case 21: return context.getResources().getString(R.string.category_sub12);
+            case 22: return context.getResources().getString(R.string.category_sub14);
+            case 23: return context.getResources().getString(R.string.category_sub16);
+            case 24: return context.getResources().getString(R.string.category_sub18);
+            case 25: return context.getResources().getString(R.string.category_sub20);
+
+        }
+        return context.getResources().getString(R.string.category_other);
     }
 }

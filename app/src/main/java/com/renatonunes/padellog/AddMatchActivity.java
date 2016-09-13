@@ -143,26 +143,7 @@ public class AddMatchActivity extends CommonActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
 
-        // Spinner element
-        // Spinner Drop down elements
-        List<String> categories = new ArrayList<String>();
-        categories.add(resources.getString(R.string.round_draw));
-        categories.add(resources.getString(R.string.round_64));
-        categories.add(resources.getString(R.string.round_32));
-        categories.add(resources.getString(R.string.round_16));
-        categories.add(resources.getString(R.string.round_8));
-        categories.add(resources.getString(R.string.round_4));
-        categories.add(resources.getString(R.string.round_semi));
-        categories.add(resources.getString(R.string.round_final));
-
-        // Creating adapter for spinner
-        dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
-
-        // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource(R.layout.spinner_item);
-
-        // attaching data adapter to spinner
-        spinnerRound.setAdapter(dataAdapter);
+        initSpinner();
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -199,6 +180,29 @@ public class AddMatchActivity extends CommonActivity {
 //
 //            }
 //        });
+    }
+
+    private void initSpinner(){
+        // Spinner element
+        // Spinner Drop down elements
+        List<String> rounds = new ArrayList<String>();
+        rounds.add(resources.getString(R.string.round_draw));
+        rounds.add(resources.getString(R.string.round_64));
+        rounds.add(resources.getString(R.string.round_32));
+        rounds.add(resources.getString(R.string.round_16));
+        rounds.add(resources.getString(R.string.round_8));
+        rounds.add(resources.getString(R.string.round_4));
+        rounds.add(resources.getString(R.string.round_semi));
+        rounds.add(resources.getString(R.string.round_final));
+
+        // Creating adapter for spinner
+        dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, rounds);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(R.layout.spinner_item);
+
+        // attaching data adapter to spinner
+        spinnerRound.setAdapter(dataAdapter);
     }
 
     @OnClick(R.id.fab_match_photo_add)

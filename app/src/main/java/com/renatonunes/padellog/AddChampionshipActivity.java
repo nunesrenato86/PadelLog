@@ -30,8 +30,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -53,7 +55,9 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,6 +72,9 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     @BindView(R.id.edt_add_championship_name)
     EditText edtName;
 
+    @BindView(R.id.spinner_championship_category)
+    Spinner spinnerCategory;
+
     @BindView(R.id.edt_add_partner_name)
     EditText edtPartner;
 
@@ -79,9 +86,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     @BindView(R.id.edt_add_place)
     EditText edtPlace;
-
-    @BindView(R.id.edt_add_category)
-    EditText edtCategory;
 
     static final int REQUEST_PLACE_PICKER = 103;
 
@@ -102,6 +106,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     private final Activity mActivity = this;
     private static Championship currentChampionship = null;
     private String mCurrentChampionshipImageStr = "";
+
+    private ArrayAdapter<String> dataAdapter;
 
     //to handle dates
     private int year, month, day;
@@ -157,6 +163,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
+
+        initSpinner();
 
         //google places api
         mGoogleApiClient = new GoogleApiClient
@@ -222,6 +230,54 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         updateUI();
     }
 
+    private void initSpinner(){
+        // Spinner element
+        // Spinner Drop down elements
+        List<String> categories = new ArrayList<String>();
+        categories.add(resources.getString(R.string.category_pro));
+        categories.add(resources.getString(R.string.category_open));
+        categories.add(resources.getString(R.string.category_2nd));
+        categories.add(resources.getString(R.string.category_3th));
+        categories.add(resources.getString(R.string.category_4th));
+        categories.add(resources.getString(R.string.category_5th));
+        categories.add(resources.getString(R.string.category_6th));
+        categories.add(resources.getString(R.string.category_7th));
+
+        categories.add(resources.getString(R.string.category_3035a));
+        categories.add(resources.getString(R.string.category_3035b));
+        categories.add(resources.getString(R.string.category_3035c));
+
+        categories.add(resources.getString(R.string.category_4045a));
+        categories.add(resources.getString(R.string.category_4045b));
+        categories.add(resources.getString(R.string.category_4045c));
+
+        categories.add(resources.getString(R.string.category_5055a));
+        categories.add(resources.getString(R.string.category_5055b));
+        categories.add(resources.getString(R.string.category_5055c));
+
+        categories.add(resources.getString(R.string.category_mixedA));
+        categories.add(resources.getString(R.string.category_mixedB));
+        categories.add(resources.getString(R.string.category_mixedC));
+        categories.add(resources.getString(R.string.category_mixedD));
+
+        categories.add(resources.getString(R.string.category_sub12));
+        categories.add(resources.getString(R.string.category_sub14));
+        categories.add(resources.getString(R.string.category_sub16));
+        categories.add(resources.getString(R.string.category_sub18));
+        categories.add(resources.getString(R.string.category_sub20));
+
+        categories.add(resources.getString(R.string.category_other));
+
+        // Creating adapter for spinner
+        dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(R.layout.spinner_item);
+
+        // attaching data adapter to spinner
+        spinnerCategory.setAdapter(dataAdapter);
+    }
+
     @OnClick(R.id.fab_championship_photo_add)
     public void toggleFabs(){
         if (isVisible){
@@ -259,7 +315,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         if (currentChampionship != null){
             edtName.setText(currentChampionship.getName());
             edtPartner.setText(currentChampionship.getPartner());
-            edtCategory.setText(currentChampionship.getCategory());
+            spinnerCategory.setSelection(currentChampionship.getCategory());
 
             mInitialDate = currentChampionship.getInitialDate();
             edtInitialDate.setText(currentChampionship.getInitialDateStr());
@@ -416,7 +472,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                 currentChampionship.setInitialDate(mInitialDate);
                 currentChampionship.setFinalDate(mFinalDate);
 
-                currentChampionship.setCategory(edtCategory.getText().toString());
+                currentChampionship.setCategory(spinnerCategory.getSelectedItemPosition());
                 currentChampionship.setPlace(edtPlace.getText().toString());
 
                 if (mCurrentLatLng != null){
@@ -583,14 +639,12 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     private boolean validateFields() {
         String name = edtName.getText().toString().trim();
         String partner = edtPartner.getText().toString().trim();
-        String category = edtCategory.getText().toString().trim();
         String initalDate = edtInitialDate.getText().toString().trim();
         String finalDate = edtFinalDate.getText().toString().trim();
         String place = edtPlace.getText().toString().trim();
 
         return (!isEmptyFields(name,
                 partner,
-                category,
                 initalDate,
                 finalDate,
                 place));
@@ -599,7 +653,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     private boolean isEmptyFields(String name,
                                   String partner,
-                                  String category,
                                   String initialDate,
                                   String finalDate,
                                   String place) {
@@ -610,10 +663,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         } else if (TextUtils.isEmpty(partner)) {
             edtPartner.requestFocus();
             edtPartner.setError(resources.getString(R.string.msg_field_required));
-            return true;
-        } else if (TextUtils.isEmpty(category)) {
-            edtCategory.requestFocus();
-            edtCategory.setError(resources.getString(R.string.msg_field_required));
             return true;
         } else if (TextUtils.isEmpty(initialDate)) {
             edtInitialDate.requestFocus();

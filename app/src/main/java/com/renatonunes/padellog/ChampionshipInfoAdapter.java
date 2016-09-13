@@ -46,7 +46,7 @@ public class ChampionshipInfoAdapter extends RecyclerView.Adapter<ChampioshipInf
                 currentChampionship.getInitialDateStr(),
                 currentChampionship.getFinalDateStr(),
                 currentChampionship.getPartner(),
-                currentChampionship.getCategory(),
+                currentChampionship.getCategoryStr(),
                 currentChampionship.getResultStr());
 
 //        String name = championships.get(position).getName();
