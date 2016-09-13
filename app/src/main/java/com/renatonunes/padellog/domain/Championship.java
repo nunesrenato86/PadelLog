@@ -355,6 +355,7 @@ public class Championship implements ClusterItem {
 //        }
     }
 
+    @Exclude
     @Override
     public LatLng getPosition() {
 

@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -295,6 +296,8 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                 sendLoginData(view);
             }
         });
+
+        hideKeyboard();
     }
 
     private void callClearErrors(Editable s) {
@@ -467,5 +470,22 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
             }
         }
         //OK can login
+    }
+
+    private void hideKeyboard() {
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        if (imm != null) {
+//            if (email != null) {
+//                imm.hideSoftInputFromWindow(email.getWindowToken(), 0);
+//            }
+//
+//            if (password != null) {
+//                imm.hideSoftInputFromWindow(password.getWindowToken(), 0);
+//            }
+//        }
     }
 }

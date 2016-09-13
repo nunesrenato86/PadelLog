@@ -59,7 +59,15 @@
     <string name="edt_final_date">Fim</string>
 
     <string name="facebook_app_id">1748665178734590</string>
+
     <string name="my_google_app_id">AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk</string>
+
+    <!-- release
+    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
+    !-->
+    <!-- debug
+    <string name="my_google_app_id">AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk</string>
+    !-->
 
     <string name="chk_unique_token">Unique token id</string>
 
