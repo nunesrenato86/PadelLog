@@ -25,6 +25,13 @@ public class Player {
     private String photoUrl;
     private String newPassword;
 
+    private Double lat;
+    private Double lng;
+    private Integer category;
+    private String imageStr;
+    private String place;
+    private Boolean isPublic;
+
     public Player(){}
 
     public String getPhotoUrl() {
@@ -33,6 +40,54 @@ public class Player {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public Double getLat() {
+        return this.lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return this.lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public Integer getCategory() {
+        return category;
+    }
+
+    public void setCategory(Integer category) {
+        this.category = category;
+    }
+
+    public String getImageStr() {
+        return imageStr;
+    }
+
+    public void setImageStr(String imageStr) {
+        this.imageStr = imageStr;
+    }
+
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
     }
 
     @Exclude
@@ -70,8 +125,6 @@ public class Player {
         this.password = password;
     }
 
-
-
     @Exclude
     public String getNewPassword() {
         return newPassword;
@@ -88,22 +141,10 @@ public class Player {
         return( LibraryClass.getSP( context, TOKEN) );
     }
 
-    //backup do meu
-//    public void saveDB(){
-//        //Firebase firebase = LibraryClass.getFirebase();
-//        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-//
-//        DatabaseReference myRef = firebaseDatabase.getReference();
-//
-//        String ID = this.getId();
-//        this.setPassword(null);
-//        setId(null);
-//
-//        //firebase.setValue(this);
-//        myRef.child("players").child(ID).setValue(this);
-//    }
-
     public void saveDB( DatabaseReference.CompletionListener... completionListener ){
+
+        initDataAux();
+
         DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("players").child( getId() );
 
         if( completionListener.length == 0 ){
@@ -138,6 +179,36 @@ public class Player {
         }
     }
 
+    private void setLatInMap( Map<String, Object> map ) {
+        if( getLat() != null ){
+            map.put( "lat", getLat() );
+        }
+    }
+
+    private void setLngInMap( Map<String, Object> map ) {
+        if( getLng() != null ){
+            map.put( "lng", getLng() );
+        }
+    }
+
+    private void setImageStrInMap( Map<String, Object> map ) {
+        if( getImageStr() != null ){
+            map.put( "imageStr", getImageStr() );
+        }
+    }
+
+    private void setCategoryInMap( Map<String, Object> map ) {
+        if( getCategory() != null ){
+            map.put( "category", getCategory() );
+        }
+    }
+
+    private void setIsPublicInMap( Map<String, Object> map ) {
+        if( getIsPublic() != null ){
+            map.put( "isPublic", getIsPublic() );
+        }
+    }
+
     public void setNameIfNull(String name) {
         if( this.name == null ){
             this.name = name;
@@ -150,11 +221,61 @@ public class Player {
         }
     }
 
+    private void setPlaceInMap( Map<String, Object> map ) {
+        if( getPlace() != null ){
+            map.put( "place", getPlace() );
+        }
+    }
+
     public void setEmailIfNull(String email) {
         if( this.email == null ){
             this.email = email;
         }
+    }
 
+    private void setIsPublicIfNull() {
+        if( this.isPublic == null ){
+            this.isPublic = false;
+        }
+    }
+
+    private void setCategoryIfNull() {
+        if( this.category == null ){
+            this.category = 26; //other
+        }
+    }
+
+    private void setLatIfNull() {
+        if( this.lat == null ){
+            this.lat = 0.0;
+        }
+    }
+
+    private void setLngIfNull() {
+        if( this.lng == null ){
+            this.lng = 0.0;
+        }
+    }
+
+    private void setImageStrIfNull() {
+        if( this.imageStr == null ){
+            this.imageStr = "";
+        }
+    }
+
+    private void setPlaceIfNull() {
+        if( this.place == null ){
+            this.place = "";
+        }
+    }
+
+    private void initDataAux(){
+        setCategoryIfNull();
+        setLatIfNull();
+        setLngIfNull();
+        setImageStrIfNull();
+        setIsPublicIfNull();
+        setPlaceIfNull();
     }
 
     public void updateDB( DatabaseReference.CompletionListener... completionListener ){
@@ -164,6 +285,12 @@ public class Player {
         Map<String, Object> map = new HashMap<>();
         setNameInMap(map);
         setEmailInMap(map);
+        setLatInMap(map);
+        setLngInMap(map);
+        setImageStrInMap(map);
+        setCategoryInMap(map);
+        setIsPublicInMap(map);
+        setPlaceInMap(map);
 
         if( map.isEmpty() ){
             return;

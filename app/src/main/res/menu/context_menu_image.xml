@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menuImgCamera"
+        android:title="@string/img_camera" />
+    <item android:id="@+id/menuImgGallery"
+        android:title="@string/img_gallery" />
+    <item android:id="@+id/menuImgDelete"
+        android:title="@string/img_delete" />
+</menu>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:id="@+id/edit_profile_layout"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.renatonunes.padellog.EditProfileActivity"
+    tools:showIn="@layout/activity_edit_profile">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/img_edit_profile"
+            android:src="@drawable/com_facebook_profile_picture_blank_square"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center|top"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            app:border_color="@color/colorFacebookButtonText"
+            app:border_width="1dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_profile_picture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            app:layout_anchor="@id/img_edit_profile"
+            app:layout_anchorGravity="bottom|right|end"
+            android:src="@android:drawable/ic_dialog_email" />
+    </android.support.design.widget.CoordinatorLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lbl_profile_display_name"
+        android:text="Player's display name"
+        android:textSize="20sp"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lbl_profile_email"
+        android:text="player@email.com"
+        android:textSize="15sp"
+        android:layout_gravity="center"/>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="6dp"
+            android:text="@string/spinner_category"
+            android:layout_marginBottom="5dp"/>
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner_profile_category"
+            android:spinnerMode="dialog"
+            android:prompt="@string/spinner_category"
+            style="@android:style/Widget.Holo.Light.Spinner"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/edt_profile_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/lbl_edt_place"
+        android:focusable="false"
+        android:imeOptions="actionUnspecified"
+        android:inputType="date"
+        android:paddingTop="@dimen/activity_horizontal_margin"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:paddingTop="@dimen/activity_horizontal_margin"
+        android:text="@string/lbl_switch_public_profile"
+        android:id="@+id/switch_profile_public" />
+
+
+</LinearLayout>

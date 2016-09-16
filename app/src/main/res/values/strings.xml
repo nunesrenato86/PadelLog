@@ -163,10 +163,19 @@
 
     <string name="msg_championship_saved">Campeonato salvo.</string>
     <string name="msg_match_saved">Partida salva.</string>
+    <string name="msg_profile_updated">Perfil atualizado.</string>
 
     <string name="msg_photo_erros">Falha ao capturar imagem.</string>
 
     <string name="nav_user_name">Carregando...</string>
     <string name="title_activity_chart">Resultados</string>
+    <string name="title_activity_edit_profile">Perfil</string>
+
+    <string name="lbl_edt_place">Local</string>
+    <string name="lbl_switch_public_profile">Perfil público</string>
+
+    <string name="img_camera">Câmera</string>
+    <string name="img_gallery">Galeria</string>
+    <string name="img_delete">Remover</string>
 
 </resources>

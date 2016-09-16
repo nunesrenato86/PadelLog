@@ -50,6 +50,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
+import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.squareup.picasso.Picasso;
 
@@ -73,11 +74,18 @@ public class MainActivity extends CommonActivity
     @BindView(R.id.nav_view)
     NavigationView navigationView;
 
+    View headerView;
+    TextView navUsername;
+    TextView navEmail;
+    ImageView navImage;
+
+    public static Boolean playerImageHasChanged = false;
     private CameraPosition mPreviousCameraPosition = null;
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
     private GoogleMap mMap;
     private Context mContext;
+    public static Player mPlayer = null;
 
     private LocationRequest mLocationRequest;
     private Marker markerMyLocation;
@@ -139,17 +147,29 @@ public class MainActivity extends CommonActivity
         navigationView.setNavigationItemSelectedListener(this);
         //navigationView.inflateHeaderView(R.layout.nav_header_main);
 
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        headerView = navigationView.getHeaderView(0);
+        navUsername = (TextView) headerView.findViewById(R.id.textview_nav_name);
+        navEmail = (TextView) headerView.findViewById(R.id.textview_nav_email);
+        navImage = (ImageView) headerView.findViewById(R.id.img_nav_player);
+
+        navImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditProfileActivity.start(mContext, mPlayer);
+            }
+        });
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        /*leio da minha classe player, pois no login por user e password, não tenho o valor
-        * de FirebaseUser user.getDisplayName()*/
         final String userId = user.getUid();
         FirebaseDatabase.getInstance().getReference().child("players").child( userId ).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Player player = dataSnapshot.getValue(Player.class);
-                        updateNavUi(player.getName());
+                        mPlayer = dataSnapshot.getValue(Player.class);
+                        mPlayer.setId(userId);
+                        updateNavUi(mPlayer);
                     }
 
                     @Override
@@ -207,29 +227,26 @@ public class MainActivity extends CommonActivity
         }
     }
 
-    private void updateNavUi(String name){
+    private void updateNavUi(Player player){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View headerView = navigationView.getHeaderView(0);
-        TextView navUsername = (TextView) headerView.findViewById(R.id.textview_nav_name);
-        TextView navEmail = (TextView) headerView.findViewById(R.id.textview_nav_email);
-        ImageView navImage = (ImageView) headerView.findViewById(R.id.imageView);
-
         if (user != null) {
-            if (name != ""){
-                navUsername.setText(name);
+            if (!player.getName().isEmpty()){
+                navUsername.setText(player.getName());
             }else {
                 navUsername.setText(user.getDisplayName());
             }
 
             navEmail.setText(user.getEmail());
 
-            if (user.getPhotoUrl() != null) {
-                Picasso.with(this).load(user.getPhotoUrl()).into(navImage);
+            if (!player.getImageStr().isEmpty()){
+                navImage.setImageBitmap(ImageFactory.imgStrToImage(player.getImageStr()));
+            }else {
+                if (user.getPhotoUrl() != null) {
+                    Picasso.with(this).load(user.getPhotoUrl()).into(navImage);                }
+                else
+                    Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(navImage);
             }
-            else
-                Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(navImage);
         } else {
             navUsername.setText("Não logado");
             navEmail.setText("");
@@ -638,6 +655,11 @@ public class MainActivity extends CommonActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (playerImageHasChanged) {
+            updateNavUi(mPlayer);
+        }
+
         getChampionships();
     }
 
