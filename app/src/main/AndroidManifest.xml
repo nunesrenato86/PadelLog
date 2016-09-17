@@ -70,10 +70,12 @@
         <activity
             android:name=".AddChampionshipActivity"
             android:label="@string/title_activity_add_championship"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddMatchActivity"
             android:label="@string/title_activity_add_match"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MapsActivity"
@@ -97,6 +99,7 @@
         <activity
             android:name=".EditProfileActivity"
             android:label="@string/title_activity_edit_profile"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

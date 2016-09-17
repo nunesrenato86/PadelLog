@@ -22,7 +22,7 @@
 
         <ImageView
             android:layout_height="0dp"
-            android:layout_weight="0.40"
+            android:layout_weight="0.4"
             android:layout_width="match_parent"
             android:id="@+id/img_championship"
             android:layout_alignParentLeft="true"
@@ -35,7 +35,7 @@
         android:id="@+id/linear_layout_bottom_add_championship"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.60"
+        android:layout_weight="0.6"
         android:orientation="vertical"
         android:layout_gravity="bottom"
         android:paddingLeft="@dimen/activity_vertical_margin"
@@ -171,27 +171,32 @@
             android:orientation="vertical">
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab_championship_photo_gallery"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
-                android:src="@drawable/ic_folder_image_white"
-                android:visibility="visible"
-                />
-
-            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_championship_photo_camera"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                app:fabSize="mini"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
                 android:src="@drawable/ic_camera_white"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_championship_photo_gallery"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
+                android:src="@drawable/ic_folder_image_white"
+                app:fabSize="mini"
+                android:visibility="visible"
                 />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_championship_photo_add"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
                 android:src="@drawable/ic_fab_plus"
                 android:visibility="visible"
                 />
@@ -200,18 +205,23 @@
                 android:id="@+id/fab_championship_photo_delete"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
                 android:src="@drawable/ic_delete"
+                app:fabSize="mini"
                 android:visibility="visible"
                 />
 
             <android.support.design.widget.FloatingActionButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
                 android:src="@drawable/ic_delete"
+                app:fabSize="mini"
                 android:visibility="invisible"
                 />
+
 
         </LinearLayout>
 

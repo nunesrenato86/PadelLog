@@ -16,12 +16,17 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -43,6 +48,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
 import com.squareup.picasso.Picasso;
@@ -59,14 +65,26 @@ import butterknife.OnClick;
 public class EditProfileActivity extends CommonActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
 
+    Animation fabRotateClockwise;
+    Animation fabRotateAntiClockwise;
+
     @BindView(R.id.edit_profile_layout)
     LinearLayout linearLayout;
 
     @BindView(R.id.spinner_profile_category)
     Spinner spinnerCategory;
 
-    @BindView(R.id.fab_profile_picture)
-    FloatingActionButton fabProfilePicture;
+    @BindView(R.id.fab_profile_photo_add)
+    FloatingActionButton fabProfilePhotoAdd;
+
+    @BindView(R.id.fab_profile_photo_camera)
+    FloatingActionButton fabProfilePhotoCamera;
+
+    @BindView(R.id.fab_profile_photo_gallery)
+    FloatingActionButton fabProfilePhotoGallery;
+
+    @BindView(R.id.fab_profile_photo_delete)
+    FloatingActionButton fabProfilePhotoDelete;
 
     @BindView(R.id.lbl_profile_display_name)
     TextView lblProfileDisplayName;
@@ -80,6 +98,8 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     @BindView(R.id.switch_profile_public)
     Switch switchProfilePublic;
 
+    private Boolean isVisible = false;
+    private Boolean hasPhoto = false;
     private static Player currentPlayer = null;
     private Boolean playerImageHasChanged = false;
 
@@ -89,7 +109,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     private ArrayAdapter<String> dataAdapter;
     private Resources resources;
 
-    static final int REQUEST_PLACE_PICKER = 103;
+    static final int REQUEST_PLACE_PICKER = 203;
 
     //to handle place
     private LatLng mCurrentLatLng;
@@ -123,6 +143,24 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         mPhotoTaker = new PhotoTaker(this);
 
         initSpinner();
+
+        fabRotateClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
+        fabRotateAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callClearErrors(s);
+            }
+        };
 
         updateUi();
 
@@ -167,11 +205,13 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
                 }
             }
         });
-
-        registerForContextMenu(fabProfilePicture);
     }
 
     private void updateUi(){
+        fabProfilePhotoDelete.animate().scaleY(0).scaleX(0).setDuration(0).start();
+        fabProfilePhotoGallery.animate().scaleY(0).scaleX(0).setDuration(0).start();
+        fabProfilePhotoCamera.animate().scaleY(0).scaleX(0).setDuration(0).start();
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if ((user != null) && (currentPlayer != null)) {
@@ -189,11 +229,15 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             if (!currentPlayer.getImageStr().isEmpty()){
                 mCurrentPlayerImageStr = currentPlayer.getImageStr();
                 imgProfile.setImageBitmap(ImageFactory.imgStrToImage(mCurrentPlayerImageStr));
+                hasPhoto = true;
             }else {
                 if (user.getPhotoUrl() != null) {
                     Picasso.with(this).load(user.getPhotoUrl()).into(imgProfile);
-                } else
+                    hasPhoto = true;
+                } else {
                     Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
+                    hasPhoto = false;
+                }
             }
         }
     }
@@ -308,9 +352,13 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
-//            if (validateFields()) {
-                savePlayer();
-//            }
+            if (validateFields()) {
+                if (canBePublic()) {
+                    savePlayer();
+                }else{
+                    showSnackbar(linearLayout, resources.getString(R.string.msg_profile_cant_be_public));
+                }
+            }
 
             return true;
         }else if (id == android.R.id.home) {
@@ -357,40 +405,45 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
             edtProfilePlace.setText(address + " " + Html.fromHtml(attributions));
             edtProfilePlace.setError(null);
-
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    @OnClick(R.id.fab_profile_photo_delete)
     public void deletePhoto(){
-//        toggleFabs();
+        toggleFabs();
+
         if (currentPlayer.getPhotoUrl() != null) {
+            hasPhoto = true;
             Picasso.with(this).load(currentPlayer.getPhotoUrl()).into(imgProfile);
         }else{
-            imgProfile.setImageBitmap(null);
-            imgProfile.setBackgroundResource(R.drawable.no_photo);
+            hasPhoto = false;
+            Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
+//            imgProfile.setImageBitmap(null);
+//            imgProfile.setBackgroundResource(R.drawable.com_facebook_profile_picture_blank_square);
         }
         mCurrentPlayerImageStr = "";
         playerImageHasChanged = true;
     }
 
+    @OnClick(R.id.fab_profile_photo_camera)
     public void takePhoto(){
-//        if (isVisible){
+        if (isVisible){
             File placeholderFile = ImageFactory.newFile();
             mCurrentPhotoUri = Uri.fromFile(placeholderFile);
 
             if (!mPhotoTaker.takePhoto(placeholderFile)) {
                 displayPhotoError();
             }
-//        };
+        };
 
-//        toggleFabs();
+        toggleFabs();
     }
 
-    @OnClick(R.id.fab_profile_picture)
+    @OnClick(R.id.fab_profile_photo_gallery)
     public void pickPhoto(){
-//        toggleFabs();
+        toggleFabs();
 
         File placeholderFile = ImageFactory.newFile();
 
@@ -403,12 +456,11 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
     private void previewCapturedImage() {
         BitmapFactory.Options options = new BitmapFactory.Options();
-        // downsizing image as it throws OutOfMemory Exception for larger
-        // images
-
+        // downsizing image as it throws OutOfMemory Exception for larger images
         options.inSampleSize = 7;
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
         imgProfile.setImageBitmap(bitmap);
+        hasPhoto = true;
         playerImageHasChanged = true;
     }
 
@@ -422,6 +474,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         cursor.close();
         mCurrentPhotoUri = Uri.parse(picturePath);
         imgProfile.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+        hasPhoto = true;
         playerImageHasChanged = true;
     }
 
@@ -440,24 +493,28 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 //    apos salvar atualizar ja o menu e tal
 
     private void savePlayer(){
-        currentPlayer.setImageStr(this.getImageStr());
+        if (LibraryClass.isNetworkActive(this)) {
+            currentPlayer.setImageStr(this.getImageStr());
 
-        MainActivity.playerImageHasChanged = this.playerImageHasChanged;
+            MainActivity.playerImageHasChanged = this.playerImageHasChanged;
 
-        currentPlayer.setCategory(spinnerCategory.getSelectedItemPosition());
-        currentPlayer.setPlace(edtProfilePlace.getText().toString());
+            currentPlayer.setCategory(spinnerCategory.getSelectedItemPosition());
+            currentPlayer.setPlace(edtProfilePlace.getText().toString());
 
-        currentPlayer.setIsPublic(switchProfilePublic.isChecked());
+            currentPlayer.setIsPublic(switchProfilePublic.isChecked());
 
-        if (mCurrentLatLng != null) {
-            currentPlayer.setLat(mCurrentLatLng.latitude);
-            currentPlayer.setLng(mCurrentLatLng.longitude);
+            if (mCurrentLatLng != null) {
+                currentPlayer.setLat(mCurrentLatLng.latitude);
+                currentPlayer.setLng(mCurrentLatLng.longitude);
+            }
+
+            currentPlayer.updateDB();
+            MainActivity.mPlayer = currentPlayer;
+
+            showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
+        }else{
+            showSnackbar(linearLayout, getResources().getString(R.string.msg_no_internet) );
         }
-
-        currentPlayer.updateDB();
-        MainActivity.mPlayer = currentPlayer;
-
-        showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
     }
 
 
@@ -482,6 +539,61 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             return base64Image;
         }else
             return mCurrentPlayerImageStr;
+    }
+
+    @OnClick(R.id.fab_profile_photo_add)
+    public void toggleFabs(){
+        if (isVisible){
+            fabProfilePhotoDelete.animate().scaleY(0).scaleX(0).setDuration(200).start();
+            fabProfilePhotoGallery.animate().scaleY(0).scaleX(0).setDuration(200).start();
+            fabProfilePhotoCamera.animate().scaleY(0).scaleX(0).setDuration(200).start();
+
+            fabProfilePhotoAdd.startAnimation(fabRotateAntiClockwise);
+        }else{
+            fabProfilePhotoDelete.animate().scaleY(1).scaleX(1).setDuration(200).start();
+            fabProfilePhotoGallery.animate().scaleY(1).scaleX(1).setDuration(200).start();
+            fabProfilePhotoCamera.animate().scaleY(1).scaleX(1).setDuration(200).start();
+
+            fabProfilePhotoAdd.startAnimation(fabRotateClockwise);
+        }
+        isVisible = !isVisible;
+    }
+
+    private void callClearErrors(Editable s) {
+        if (!s.toString().isEmpty()) {
+            clearErrorFields(edtProfilePlace);
+        }
+    }
+
+    private boolean validateFields() {
+        String place = edtProfilePlace.getText().toString().trim();
+
+        return (!isEmptyFields(place));
+//                && hasSizeValid(set1Score1, set1Score2));
+    }
+
+    private boolean isEmptyFields(String place) {
+        if (TextUtils.isEmpty(place)) {
+            edtProfilePlace.requestFocus();
+            edtProfilePlace.setError(resources.getString(R.string.msg_field_required));
+            return true;
+        }
+
+        return false;
+    }
+
+    private void clearErrorFields(EditText... editTexts) {
+        for (EditText editText : editTexts) {
+            editText.setError(null);
+        }
+    }
+
+    private Boolean canBePublic(){
+        if (switchProfilePublic.isChecked()){
+            return hasPhoto;
+        }else{
+            return true;
+        }
     }
 
 }

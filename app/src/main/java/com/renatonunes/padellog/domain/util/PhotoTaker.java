@@ -23,6 +23,8 @@ public class PhotoTaker {
     public boolean takePhoto(File outputFile) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
+        //takePictureIntent.putExtra("crop", "true");
+
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(mActivity.getPackageManager()) != null) {
             // Continue only if the File was successfully created
@@ -38,6 +40,8 @@ public class PhotoTaker {
 
     public boolean pickPhoto(File outputFile) {
         Intent pickPictureIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        //pickPictureIntent.putExtra("crop", "true");
 
         // Ensure that there's a camera activity to handle the intent
         if (pickPictureIntent.resolveActivity(mActivity.getPackageManager()) != null) {

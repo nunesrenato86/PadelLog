@@ -164,6 +164,7 @@
     <string name="msg_championship_saved">Campeonato salvo.</string>
     <string name="msg_match_saved">Partida salva.</string>
     <string name="msg_profile_updated">Perfil atualizado.</string>
+    <string name="msg_profile_cant_be_public">Perfil público deve ter uma foto.</string>
 
     <string name="msg_photo_erros">Falha ao capturar imagem.</string>
 

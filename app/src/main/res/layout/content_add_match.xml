@@ -284,6 +284,7 @@
     <FrameLayout
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_margin="@dimen/activity_horizontal_margin"
         app:layout_anchor="@id/img_match"
         app:layout_anchorGravity="bottom|right|end">
 
@@ -293,27 +294,32 @@
             android:orientation="vertical">
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab_match_photo_gallery"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
-                android:src="@drawable/ic_folder_image_white"
-                android:visibility="visible"
-                />
-
-            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_match_photo_camera"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
+                app:fabSize="mini"
                 android:src="@drawable/ic_camera_white"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_match_photo_gallery"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
+                android:src="@drawable/ic_folder_image_white"
+                app:fabSize="mini"
+                android:visibility="visible"
                 />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_match_photo_add"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
                 android:src="@drawable/ic_fab_plus"
                 android:visibility="visible"
                 />
@@ -322,18 +328,23 @@
                 android:id="@+id/fab_match_photo_delete"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
                 android:src="@drawable/ic_delete"
+                app:fabSize="mini"
                 android:visibility="visible"
                 />
 
             <android.support.design.widget.FloatingActionButton
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
                 android:src="@drawable/ic_delete"
+                app:fabSize="mini"
                 android:visibility="invisible"
                 />
+
 
         </LinearLayout>
 
