@@ -292,8 +292,9 @@ public class MainActivity extends CommonActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_championships) {
-            Intent intent = new Intent(this, ChampionshipListActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(this, ChampionshipListActivity.class);
+//            startActivity(intent);
+            ChampionshipListActivity.start(this, mPlayer.getCategory());
         } else if (id == R.id.nav_per_partner) {
             showNotDoneYet();
         } else if (id == R.id.nav_per_year) {

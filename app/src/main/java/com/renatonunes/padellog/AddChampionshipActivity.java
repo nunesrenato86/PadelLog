@@ -109,8 +109,12 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     private ArrayAdapter<String> dataAdapter;
 
+    private static int mLoggedPlayerDefaultCategory;
+
     //to handle dates
-    private int year, month, day;
+    private int year;
+    private int month;
+    private int day;
     private Long mInitialDate = Long.valueOf(0);
     private Long mFinalDate = Long.valueOf(0);
 
@@ -128,7 +132,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     private GoogleApiClient mGoogleApiClient;
 
     private Resources resources;
-    private Boolean isFabOnScreen = false;
+//    private Boolean isFabOnScreen = false;
 
     Animation fabRotateClockwise;
     Animation fabRotateAntiClockwise;
@@ -276,6 +280,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
         // attaching data adapter to spinner
         spinnerCategory.setAdapter(dataAdapter);
+
+        spinnerCategory.setSelection(mLoggedPlayerDefaultCategory);
     }
 
     @OnClick(R.id.fab_championship_photo_add)
@@ -390,7 +396,14 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         String picturePath = cursor.getString(columnIndex);
         cursor.close();
         mCurrentPhotoUri = Uri.parse(picturePath);
-        mThumbnailPreview.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+
+        if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
+            options.inSampleSize = 8;
+        }
+
+        mThumbnailPreview.setImageBitmap(BitmapFactory.decodeFile(picturePath, options));
     }
 
     private void displayPhotoError() {
@@ -624,8 +637,9 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         editText.setError(null);
     }
 
-    public static void start(Context c, Championship championship) {
+    public static void start(Context c, Championship championship, int loggedPlayerDefaultCategory) {
         currentChampionship = championship;
+        mLoggedPlayerDefaultCategory = loggedPlayerDefaultCategory;
 
         c.startActivity(new Intent(c, AddChampionshipActivity.class));
     }

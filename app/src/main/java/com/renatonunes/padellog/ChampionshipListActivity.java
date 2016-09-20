@@ -1,5 +1,6 @@
 package com.renatonunes.padellog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -33,6 +34,8 @@ public class ChampionshipListActivity extends CommonActivity {
     RecyclerView.Adapter adapter;
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
+
+    private static int mLoggedPlayerDefaultCategory;
 
     @BindView(R.id.fab_add_championship)
     FloatingActionButton fabAddChampionship;
@@ -87,8 +90,10 @@ public class ChampionshipListActivity extends CommonActivity {
     }
 
     public void callAddChampionshipActivity(){
-        Intent intent = new Intent(this, AddChampionshipActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, AddChampionshipActivity.class);
+        //startActivity(intent);
+        AddChampionshipActivity.start(this, null, mLoggedPlayerDefaultCategory);
+
     }
 
     @Override
@@ -182,6 +187,12 @@ public class ChampionshipListActivity extends CommonActivity {
             Toast.makeText(ChampionshipListActivity.this, "Sem dados", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    public static void start(Context c, int loggedPlayerDefaultCategory) {
+        mLoggedPlayerDefaultCategory = loggedPlayerDefaultCategory;
+
+        c.startActivity(new Intent(c, ChampionshipListActivity.class));
     }
 
 

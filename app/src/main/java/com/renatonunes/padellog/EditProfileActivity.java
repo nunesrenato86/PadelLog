@@ -473,7 +473,14 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         String picturePath = cursor.getString(columnIndex);
         cursor.close();
         mCurrentPhotoUri = Uri.parse(picturePath);
-        imgProfile.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+
+        if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
+            options.inSampleSize = 7;
+        }
+
+        imgProfile.setImageBitmap(BitmapFactory.decodeFile(picturePath, options));
         hasPhoto = true;
         playerImageHasChanged = true;
     }

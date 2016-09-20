@@ -313,7 +313,14 @@ public class AddMatchActivity extends CommonActivity {
         String picturePath = cursor.getString(columnIndex);
         cursor.close();
         mCurrentPhotoUri = Uri.parse(picturePath);
-        mThumbnailPreview.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+
+        if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
+            options.inSampleSize = 8;
+        }
+
+        mThumbnailPreview.setImageBitmap(BitmapFactory.decodeFile(picturePath, options));
     }
 
     private void displayPhotoError() {
