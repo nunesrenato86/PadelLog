@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +52,7 @@ import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -414,17 +416,39 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     public void deletePhoto(){
         toggleFabs();
 
-        if (currentPlayer.getPhotoUrl() != null) {
-            hasPhoto = true;
-            Picasso.with(this).load(currentPlayer.getPhotoUrl()).into(imgProfile);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user.getPhotoUrl() != null) {
+
+            Picasso.with(this).load(user.getPhotoUrl().toString()).into(imgProfile, new Callback() {
+                @Override
+                public void onSuccess() {
+                    mCurrentPlayerImageStr = ImageFactory.getBase64Image(((BitmapDrawable) imgProfile.getDrawable()).getBitmap());
+                    hasPhoto = true;
+                    playerImageHasChanged = true;
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
         }else{
             hasPhoto = false;
             Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
+        }
+
+//        if (currentPlayer.getPhotoUrl() != null) {
+//            hasPhoto = true;
+//            Picasso.with(this).load(currentPlayer.getPhotoUrl()).into(imgProfile);
+//        }else{
+//            hasPhoto = false;
+//            Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
 //            imgProfile.setImageBitmap(null);
 //            imgProfile.setBackgroundResource(R.drawable.com_facebook_profile_picture_blank_square);
-        }
-        mCurrentPlayerImageStr = "";
-        playerImageHasChanged = true;
+//        }
+//        mCurrentPlayerImageStr = "";
+//        playerImageHasChanged = true;
     }
 
     @OnClick(R.id.fab_profile_photo_camera)

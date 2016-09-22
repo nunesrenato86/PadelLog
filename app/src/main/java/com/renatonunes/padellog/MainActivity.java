@@ -4,12 +4,13 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -29,7 +30,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,7 +37,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,6 +47,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.renatonunes.padellog.domain.Championship;
+import com.renatonunes.padellog.domain.MyMapItem;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
@@ -58,6 +58,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends CommonActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -67,9 +68,13 @@ public class MainActivity extends CommonActivity
         LocationListener {
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
+    ArrayList<Player> players = new ArrayList<Player>();
 
     @BindView(R.id.progressBar_maps)
     ProgressBar progressBar;
+
+//    @BindView(R.id.fab_main)
+//    FloatingActionButton fabMain;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
@@ -79,6 +84,9 @@ public class MainActivity extends CommonActivity
     TextView navEmail;
     ImageView navImage;
 
+    @BindView(R.id.img_marker)
+    ImageView imgMarker;
+
     public static Boolean playerImageHasChanged = false;
     private CameraPosition mPreviousCameraPosition = null;
     private GoogleApiClient mGoogleApiClient;
@@ -87,8 +95,10 @@ public class MainActivity extends CommonActivity
     private Context mContext;
     public static Player mPlayer = null;
 
-    private LocationRequest mLocationRequest;
-    private Marker markerMyLocation;
+    private Boolean isShowingChampionships = true;
+
+//    private LocationRequest mLocationRequest;
+//    private Marker markerMyLocation;
     private ClusterManager mClusterManager;
 
     protected void openProgressBar(){
@@ -129,13 +139,6 @@ public class MainActivity extends CommonActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_main);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -197,8 +200,8 @@ public class MainActivity extends CommonActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-//        mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
-        mClusterManager = new ClusterManager<Championship>(this, mMap);
+        mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
+        //mClusterManager = new ClusterManager<Championship>(this, mMap);
 
         mClusterManager.setRenderer(new OwnIconRendered(this, mMap, mClusterManager));
 
@@ -242,10 +245,12 @@ public class MainActivity extends CommonActivity
             if (!player.getImageStr().isEmpty()){
                 navImage.setImageBitmap(ImageFactory.imgStrToImage(player.getImageStr()));
             }else {
-                if (user.getPhotoUrl() != null) {
-                    Picasso.with(this).load(user.getPhotoUrl()).into(navImage);                }
-                else
-                    Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(navImage);
+                Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(navImage);
+//                if (user.getPhotoUrl() != null) {
+//                    Picasso.with(this).load(user.getPhotoUrl()).into(navImage);
+//                }
+//                else
+//                    Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(navImage);
             }
         } else {
             navUsername.setText("Não logado");
@@ -291,17 +296,17 @@ public class MainActivity extends CommonActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_championships) {
-//            Intent intent = new Intent(this, ChampionshipListActivity.class);
-//            startActivity(intent);
-            ChampionshipListActivity.start(this, mPlayer.getCategory());
+        if (id == R.id.nav_show_championships) {
+            getChampionships();
+        } else if (id == R.id.nav_my_championships) {
+            callChampionshipList();
+        } else if (id == R.id.nav_show_players) {
+            getPlayers();
         } else if (id == R.id.nav_per_partner) {
             showNotDoneYet();
         } else if (id == R.id.nav_per_year) {
             Intent intent = new Intent(this, ChartActivity.class);
             startActivity(intent);
-
-            //showNotDoneYet();
         } else if (id == R.id.nav_logout) {
             if (FirebaseAuth.getInstance() != null) {
                 FirebaseAuth.getInstance().signOut();
@@ -476,43 +481,120 @@ public class MainActivity extends CommonActivity
         //updateCamera(location);
     }
 
-    //class OwnIconRendered extends DefaultClusterRenderer<MyMapItem> {
-    class OwnIconRendered extends DefaultClusterRenderer<Championship> {
+    class OwnIconRendered extends DefaultClusterRenderer<MyMapItem> {
+//    class OwnIconRendered extends DefaultClusterRenderer<Championship> {
 
         public OwnIconRendered(Context context, GoogleMap map,
-//                               ClusterManager<MyMapItem> clusterManager) {
-                               ClusterManager<Championship> clusterManager) {
+                               ClusterManager<MyMapItem> clusterManager) {
+//                               ClusterManager<Championship> clusterManager) {
             super(context, map, clusterManager);
         }
 
         @Override
-//        protected void onBeforeClusterItemRendered(MyMapItem item, MarkerOptions markerOptions) {
-        protected void onBeforeClusterItemRendered(Championship item, MarkerOptions markerOptions) {
+        protected void onBeforeClusterItemRendered(MyMapItem item, final MarkerOptions markerOptions) {
+//        protected void onBeforeClusterItemRendered(Championship item, MarkerOptions markerOptions) {
 //            markerOptions.icon(item.getIcon());
             //markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
-            switch(item.getResult()) {
-                case 8: //champions
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_gold_48));
+            if (item instanceof Championship){
+                switch(((Championship)item).getResult()) {
+                    case 8: //champions
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_gold_48));
 
-                    break;
-                case 7: //vice
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_silver_48));
+                        break;
+                    case 7: //vice
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.trophy_silver_48));
 
-                    break;
-                default:
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_padellog_48));
-                    break;
+                        break;
+                    default:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_padellog_48));
+                        break;
+                }
+
+                markerOptions.snippet(((Championship)item).getResultStr());
+                markerOptions.title(((Championship)item).getName());
+            }else{
+                markerOptions.snippet(((Player)item).getEmail());
+                markerOptions.title(((Player)item).getName());
+
+                final Player player = ((Player)item);
+//
+                if (!player.getImageStr().isEmpty()){
+                    Bitmap b = ImageFactory.imgStrToImage(player.getImageStr());
+
+                    player.setMarkerBitmap(Bitmap.createScaledBitmap(b, 80, 80, false));
+                }else {
+                    player.setMarkerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_padellog_32));
+                }
+//                    if (player.getPhotoUrl() != null) {
+//                        final Target mTarget = new Target() {
+//                            @Override
+//                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom loadedFrom) {
+//                                Log.d("DEBUG", "onBitmapLoaded");
+//                                Bitmap mBitmap = ((BitmapDrawable)imgMarker.getDrawable()).getBitmap();
+////
+//                                if (mBitmap != null){
+//                                    player.setMarkerBitmap(bitmap);
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onBitmapFailed(Drawable drawable) {
+//                                Log.d("DEBUG", "onBitmapFailed");
+//                            }
+//
+//                            @Override
+//                            public void onPrepareLoad(Drawable drawable) {
+//                                Log.d("DEBUG", "onPrepareLoad");
+//                            }
+//                        };
+////
+//                        Picasso.with(mContext).load(player.getPhotoUrl())
+//                                .resize(80, 80)
+//                                .into(mTarget);
+
+                        //it doesnt work at first time loading images
+//                        Picasso.with(mContext).load(player.getPhotoUrl())
+//                                .resize(80, 80)
+//                                .into(imgMarker, new Callback() {
+//                                    @Override
+//                                    public void onSuccess() {
+//
+////                                        Bitmap bitmap = ((BitmapDrawable)imgMarker.getDrawable()).getBitmap();
+////
+////                                        if (bitmap != null){
+////                                            player.setMarkerBitmap(bitmap);
+////                                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+////                                        }
+//
+//                                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((BitmapDrawable)imgMarker.getDrawable()).getBitmap()));
+//                                        Log.d("RNN", "onSuccess: caiu aqui" + player.getName());
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onError() {
+//
+//                                    }
+//                                });
+//
+//                    } else
+//                        player.setMarkerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_padellog_32));
+//                }
+
+                if (((Player)item).getMarkerBitmap() != null){
+                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((Player)item).getMarkerBitmap()));
+                }
             }
 
-            markerOptions.snippet(item.getResultStr());
-            markerOptions.title(item.getName());
             super.onBeforeClusterItemRendered(item, markerOptions);
+            closeProgressBar();
         }
     }
 
     public void getChampionships(){
 //        openProgressBar();
+        isShowingChampionships = true;
         championships.clear();
         clearMap();
 
@@ -588,8 +670,6 @@ public class MainActivity extends CommonActivity
             markChampionshipOnMap(championship);
         }
 
-        closeProgressBar();
-
 //        if (championships.size() > 0){
 //            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships);
 //            recyclerView.setAdapter(adapter);
@@ -635,7 +715,7 @@ public class MainActivity extends CommonActivity
 
 //            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker, 5));
 
-//            MyMapItem offsetItem = new MyMapItem(championship.getLat(), championship.getLng(), championship.getName());
+//            MyMapItem myMapItem = new MyMapItem(championship.getLat(), championship.getLng(), championship.getName());
 //            mClusterManager.addItem(offsetItem)
 //            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
             mClusterManager.addItem(championship);
@@ -661,7 +741,11 @@ public class MainActivity extends CommonActivity
             updateNavUi(mPlayer);
         }
 
-        getChampionships();
+        if (isShowingChampionships){
+            getChampionships();
+        }else{
+            getPlayers();
+        }
     }
 
     private class Wait extends AsyncTask<Void, Void, Boolean> {
@@ -698,5 +782,79 @@ public class MainActivity extends CommonActivity
     }
 
 
+    public void getPlayers(){
+        openProgressBar();
+        isShowingChampionships = false;
+        players.clear();
+        clearMap();
+
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        final String userId = user.getUid();
+
+        FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                getPlayersUpdates(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getPlayersUpdates(com.google.firebase.database.DataSnapshot dataSnapshot) {
+
+        for (com.google.firebase.database.DataSnapshot ds : dataSnapshot.getChildren()) {
+            Player player = new Player();
+            player.setId(ds.getKey());
+            player.setName(ds.getValue(Player.class).getName());
+
+//            String owner = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//            championship.setOwner(owner);
+//            player.setPhotoUrl(ds.getValue(Player.class).getPhotoUrl());
+            player.setPlace(ds.getValue(Player.class).getPlace());
+            player.setEmail(ds.getValue(Player.class).getEmail());
+            player.setImageStr(ds.getValue(Player.class).getImageStr());
+            player.setLat(ds.getValue(Player.class).getLat());
+            player.setLng(ds.getValue(Player.class).getLng());
+            player.setIsPublic(ds.getValue(Player.class).getIsPublic());
+            player.setCategory(ds.getValue(Player.class).getCategory());
+
+            players.add(player);
+
+            markPlayerOnMap(player);
+        }
+
+//        closeProgressBar();
+    }
+
+    private void markPlayerOnMap(Player player){
+        if (mMap != null) {
+//            LatLng marker = null;
+
+//            marker = new LatLng(championship.getLat(), championship.getLng());
+
+//            mMap.addMarker(new MarkerOptions().position(marker).title(championship.getName()));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
+
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker, 5));
+
+//            MyMapItem myMapItem = new MyMapItem(player.getLat(), player.getLng(), player.getName());
+//            mClusterManager.addItem(offsetItem)
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
+            mClusterManager.addItem(player);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(player.getPosition(), 5));
+            mClusterManager.cluster();
+        }
+
+//        closeProgressBar();
+    }
+
+    @OnClick(R.id.fab_main)
+    public void callChampionshipList(){
+        ChampionshipListActivity.start(this, mPlayer.getCategory());
+    }
 
 }

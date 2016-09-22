@@ -35,6 +35,13 @@
             android:layout_gravity="center"
             android:visibility="invisible"/>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/img_marker"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
 
     </FrameLayout>
 
@@ -45,6 +52,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:visibility="gone"
-        android:src="@android:drawable/ic_dialog_email" />
+        android:src="@drawable/ic_fab_plus" />
 
 </android.support.design.widget.CoordinatorLayout>

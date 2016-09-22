@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.facebook.AccessToken;
@@ -41,8 +43,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
+import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
 
@@ -64,6 +69,9 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 
     @BindView(R.id.edt_email_login)
     AutoCompleteTextView email;
+
+    @BindView(R.id.img_login)
+    ImageView imgLogin;
 
     @BindView(R.id.edt_password_login)
     EditText password;
@@ -249,11 +257,25 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     player.setId( userFirebase.getUid() );
                     player.setNameIfNull( userFirebase.getDisplayName() );
                     player.setEmailIfNull( userFirebase.getEmail() );
-                    player.setPhotoUrl( userFirebase.getPhotoUrl().toString() );
-                    player.saveDB();
+//                    player.setPhotoUrl( userFirebase.getPhotoUrl().toString() );
+
+                    Picasso.with(context).load(userFirebase.getPhotoUrl().toString()).into(imgLogin, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            String img = ImageFactory.getBase64Image(((BitmapDrawable)imgLogin.getDrawable()).getBitmap());
+
+                            player.setImageStr(img);
+                            player.saveDB();
+                            callMainActivity();
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
                 }
 
-                callMainActivity();
             }
         };
         return( callback );
@@ -323,6 +345,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     }
 
     public void sendLoginData(View view){
+        hideKeyboard();
 //        FirebaseCrash.log("LoginActivity:clickListener:button:sendLoginData()");
         if (validateFields()) {
             if (LibraryClass.isNetworkActive(context)) {
@@ -472,20 +495,4 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         //OK can login
     }
 
-    private void hideKeyboard() {
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );
-
-//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        if (imm != null) {
-//            if (email != null) {
-//                imm.hideSoftInputFromWindow(email.getWindowToken(), 0);
-//            }
-//
-//            if (password != null) {
-//                imm.hideSoftInputFromWindow(password.getWindowToken(), 0);
-//            }
-//        }
-    }
 }

@@ -10,7 +10,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.maps.android.clustering.ClusterItem;
 import com.renatonunes.padellog.R;
 
 import java.util.Calendar;
@@ -21,7 +20,7 @@ import java.util.Map;
  * Created by Renato on 02/08/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Championship implements ClusterItem {
+public class Championship extends MyMapItem{//implements ClusterItem {
 
     private Context context;
     private String id;

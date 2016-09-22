@@ -239,7 +239,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //markerOptions.snippet(item.getSnippet());
             //markerOptions.title(item.getTitle());
             //markerOptions.title("teste");
-            markerOptions.title(item.getmTitle());
+            //markerOptions.title(item.getmTitle());
             super.onBeforeClusterItemRendered(item, markerOptions);
         }
     }

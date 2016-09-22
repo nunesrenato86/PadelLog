@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.firebase.client.Firebase;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -29,7 +28,7 @@ import butterknife.ButterKnife;
 public class SignUpActivity extends CommonActivity  {
 
     private final String TAG = "RNN";
-    private Firebase firebase;
+//    private Firebase firebase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -71,7 +70,11 @@ public class SignUpActivity extends CommonActivity  {
                         player.setId(firebaseUser.getUid());
                         player.saveDB();
                         //firebaseAuth.unauth();
-                        showToast("Conta criada com sucesso!");
+                        //showToast("Conta criada com sucesso!");
+
+                        hideKeyboard();
+                        showSnackbar(btnSignUp, getResources().getString(R.string.msg_account_created));
+
                         closeProgressBar();
                         finish();//irá voltar para a activity de login
                     }

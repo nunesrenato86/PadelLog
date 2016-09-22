@@ -1,7 +1,9 @@
 package com.renatonunes.padellog.domain;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
@@ -14,7 +16,7 @@ import java.util.Map;
 /**
  * Created by Renato on 26/07/2016.
  */
-public class Player {
+public class Player extends MyMapItem{ //implements ClusterItem{
     public static String TOKEN = "com.renatonunes.padellog.domain.Player.TOKEN";
     public static String PROVIDER = "com.renatonunes.padellog.domain.Player.PROVIDER";
 
@@ -22,7 +24,7 @@ public class Player {
     private String name;
     private String email;
     private String password;
-    private String photoUrl;
+//    private String photoUrl;
     private String newPassword;
 
     private Double lat;
@@ -32,15 +34,17 @@ public class Player {
     private String place;
     private Boolean isPublic;
 
+    private Bitmap markerBitmap;
+
     public Player(){}
 
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
+//    public String getPhotoUrl() {
+//        return photoUrl;
+//    }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
+//    public void setPhotoUrl(String photoUrl) {
+//        this.photoUrl = photoUrl;
+//    }
 
     public Double getLat() {
         return this.lat;
@@ -95,6 +99,15 @@ public class Player {
         return id;
     }
 
+    @Exclude
+    public Bitmap getMarkerBitmap() {
+        return markerBitmap;
+    }
+
+    public void setMarkerBitmap(Bitmap markerBitmap) {
+        this.markerBitmap = markerBitmap;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -123,6 +136,15 @@ public class Player {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Exclude
+    @Override
+    public LatLng getPosition() {
+
+        LatLng latLng = new LatLng(this.getLat(), this.getLng());
+
+        return latLng;
     }
 
     @Exclude

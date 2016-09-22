@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -62,5 +63,22 @@ abstract public class CommonActivity extends AppCompatActivity {
     protected void onResume() {
         registerReceiver(mNetworkChangeReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
         super.onResume();
+    }
+
+    protected void hideKeyboard() {
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        if (imm != null) {
+//            if (email != null) {
+//                imm.hideSoftInputFromWindow(email.getWindowToken(), 0);
+//            }
+//
+//            if (password != null) {
+//                imm.hideSoftInputFromWindow(password.getWindowToken(), 0);
+//            }
+//        }
     }
 }

@@ -2,11 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single"
-        android:id="@+id/group1">
+        android:id="@+id/group0">
+
         <item
-            android:id="@+id/nav_championships"
-            android:icon="@drawable/ic_menu_trophy"
-            android:title="@string/nav_championships" />
+            android:id="@+id/nav_my_championships"
+            android:icon="@drawable/ic_menu_trophy_outline"
+            android:title="@string/nav_my_championships" />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/group1">
+        <item android:title="@string/nav_show">
+            <menu>
+                <item
+                    android:id="@+id/nav_show_championships"
+                    android:icon="@drawable/ic_menu_trophy"
+                    android:title="@string/nav_championships" />
+                <item
+                    android:id="@+id/nav_show_players"
+                    android:icon="@drawable/ic_players"
+                    android:title="@string/nav_players" />
+            </menu>
+        </item>
     </group>
 
     <group android:checkableBehavior="single"

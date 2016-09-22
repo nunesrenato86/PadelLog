@@ -73,9 +73,13 @@
 
     <string name="nav_logout">Logout</string>
     <string name="nav_championships">Campeonatos</string>
+    <string name="nav_my_championships">Meus campeonatos</string>
+    <string name="nav_players">Jogadores</string>
     <string name="nav_statistics">Estatísticas</string>
+    <string name="nav_show">Mostrar</string>
     <string name="nav_per_result">Por resultados</string>
     <string name="nav_per_partner">Por parceiro</string>
+
 
     <string name="title_activity_championship_list">Meus campeonatos</string>
     <string name="title_activity_add_championship">Campeonato</string>
@@ -146,6 +150,8 @@
     <string name="title_activity_maps">Map</string>
 
     <string name="msg_action_deleted">Excluído</string>
+
+    <string name="msg_account_created">Conta criada com sucesso!</string>
 
     <string name="msg_field_required">Campo obrigatório!</string>
     <string name="login_invalid">E-mail inválido!</string>

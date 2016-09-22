@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Base64;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -61,4 +62,21 @@ public class ImageFactory {
 
         return (imageHeight > 600) || (imageHeight > 600);
     }
+
+
+    public static String getBase64Image(Bitmap bitmap){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+        byte[] bytes = baos.toByteArray();
+
+        String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+
+        return base64Image;
+    }
+
+
+
+
 }
