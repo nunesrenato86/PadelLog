@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,6 +40,10 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
@@ -240,6 +243,68 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         }
     }
 
+    private void createNewPlayerAndCallMainActivity(FirebaseUser userFirebase){
+        //creates a new player
+        initUser();
+
+        if( player.getId() == null
+                && isNameOk( player, userFirebase ) ){
+
+            player.setId( userFirebase.getUid() );
+            player.setNameIfNull( userFirebase.getDisplayName() );
+            player.setEmailIfNull( userFirebase.getEmail() );
+//                    player.setPhotoUrl( userFirebase.getPhotoUrl().toString() );
+
+            Picasso.with(context).load(userFirebase.getPhotoUrl().toString()).into(imgLogin, new Callback() {
+                @Override
+                public void onSuccess() {
+                    String img = ImageFactory.getBase64Image(((BitmapDrawable)imgLogin.getDrawable()).getBitmap());
+
+                    player.setImageStr(img);
+                    player.saveDB();
+                    MainActivity.start(context, player);
+                    finish();
+                    //callMainActivity();
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+        }else{
+            //player is already logged
+//            MainActivity.start(context, player);
+//            finish();
+            //callMainActivity();
+        }
+    }
+
+    private void initPlayerAndCallMainActivity(final FirebaseUser userFirebase){
+        final String playerId = userFirebase.getUid();
+
+        FirebaseDatabase.getInstance().getReference().child("players").child( playerId ).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        player = dataSnapshot.getValue(Player.class);
+
+                        if (player != null) {
+                            player.setId(playerId);
+                            MainActivity.start(context, player);
+                            finish();
+                        }else{
+                            createNewPlayerAndCallMainActivity(userFirebase);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("RNN", "getUser:onCancelled", databaseError.toException());
+                    }
+                });
+    }
+
     private FirebaseAuth.AuthStateListener getFirebaseAuthResultHandler(){
         FirebaseAuth.AuthStateListener callback = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -251,30 +316,38 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     return;
                 }
 
-                if( player.getId() == null
-                        && isNameOk( player, userFirebase ) ){
+                initPlayerAndCallMainActivity(userFirebase);
 
-                    player.setId( userFirebase.getUid() );
-                    player.setNameIfNull( userFirebase.getDisplayName() );
-                    player.setEmailIfNull( userFirebase.getEmail() );
-//                    player.setPhotoUrl( userFirebase.getPhotoUrl().toString() );
-
-                    Picasso.with(context).load(userFirebase.getPhotoUrl().toString()).into(imgLogin, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            String img = ImageFactory.getBase64Image(((BitmapDrawable)imgLogin.getDrawable()).getBitmap());
-
-                            player.setImageStr(img);
-                            player.saveDB();
-                            callMainActivity();
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-                }
+//                //creates a new player
+//                if( player.getId() == null
+//                        && isNameOk( player, userFirebase ) ){
+//
+//                    player.setId( userFirebase.getUid() );
+//                    player.setNameIfNull( userFirebase.getDisplayName() );
+//                    player.setEmailIfNull( userFirebase.getEmail() );
+////                    player.setPhotoUrl( userFirebase.getPhotoUrl().toString() );
+//
+//                    Picasso.with(context).load(userFirebase.getPhotoUrl().toString()).into(imgLogin, new Callback() {
+//                        @Override
+//                        public void onSuccess() {
+//                            String img = ImageFactory.getBase64Image(((BitmapDrawable)imgLogin.getDrawable()).getBitmap());
+//
+//                            player.setImageStr(img);
+//                            player.saveDB();
+//                            MainActivity.start(context, player);
+//                            //callMainActivity();
+//                        }
+//
+//                        @Override
+//                        public void onError() {
+//
+//                        }
+//                    });
+//                }else{
+//                    //player is already logged
+//                    MainActivity.start(context, player);
+//                    //callMainActivity();
+//                }
 
             }
         };
@@ -315,6 +388,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         btnLoginEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard();
                 sendLoginData(view);
             }
         });
@@ -345,7 +419,6 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     }
 
     public void sendLoginData(View view){
-        hideKeyboard();
 //        FirebaseCrash.log("LoginActivity:clickListener:button:sendLoginData()");
         if (validateFields()) {
             if (LibraryClass.isNetworkActive(context)) {

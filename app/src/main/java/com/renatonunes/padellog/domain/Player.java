@@ -171,8 +171,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
 
         if( completionListener.length == 0 ){
             firebase.setValue(this);
-        }
-        else{
+        }else{
             firebase.setValue(this, completionListener[0]);
         }
     }

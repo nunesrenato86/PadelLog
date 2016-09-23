@@ -163,23 +163,27 @@ public class MainActivity extends CommonActivity
             }
         });
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (mPlayer != null) {
+            updateNavUi(mPlayer);
+        }else{
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        final String userId = user.getUid();
-        FirebaseDatabase.getInstance().getReference().child("players").child( userId ).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        mPlayer = dataSnapshot.getValue(Player.class);
-                        mPlayer.setId(userId);
-                        updateNavUi(mPlayer);
-                    }
+            final String userId = user.getUid();
+            FirebaseDatabase.getInstance().getReference().child("players").child(userId).addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            mPlayer = dataSnapshot.getValue(Player.class);
+                            mPlayer.setId(userId);
+                            updateNavUi(mPlayer);
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w("RNN", "getUser:onCancelled", databaseError.toException());
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.w("RNN", "getUser:onCancelled", databaseError.toException());
+                        }
+                    });
+        }
 
         //para poder deslogar do gogle sign in
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
@@ -600,19 +604,22 @@ public class MainActivity extends CommonActivity
 
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String userId = user.getUid();
 
-        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                getUpdates(dataSnapshot);
-            }
+        if (user != null) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            final String userId = user.getUid();
 
-            }
-        });
+            FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    getUpdates(dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
 //        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addChildEventListener(new ChildEventListener() {
 //            @Override
@@ -642,6 +649,7 @@ public class MainActivity extends CommonActivity
 //
 //            }
 //        });
+        }
 
     }
 
@@ -855,6 +863,12 @@ public class MainActivity extends CommonActivity
     @OnClick(R.id.fab_main)
     public void callChampionshipList(){
         ChampionshipListActivity.start(this, mPlayer.getCategory());
+    }
+
+    public static void start(Context c, Player player) {
+        mPlayer = player;
+
+        c.startActivity(new Intent(c, MainActivity.class));
     }
 
 }
