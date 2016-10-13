@@ -316,8 +316,8 @@ public class ChampionshipInfoActivity extends CommonActivity
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch(position) {
-				case 0: return "Informações";
-				case 1: return "Jogos";
+				case 0: return getResources().getString(R.string.tab_info);
+				case 1: return getResources().getString(R.string.tab_matches);
 //				case 2: return "Estatísticas";
 			}
 			return "";
@@ -359,15 +359,15 @@ public class ChampionshipInfoActivity extends CommonActivity
 
         if (LibraryClass.isNetworkActive(this)) {
             AlertDialog dialogo = new AlertDialog.Builder(this)
-                    .setTitle("Confirmação de exclusão")
-                    .setMessage("O campeonato será excluído.")
-                    .setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+                    .setTitle(getResources().getString(R.string.title_dlg_confirm_delete))
+                    .setMessage(getResources().getString(R.string.msg_championship_delete))
+                    .setPositiveButton(getResources().getString(R.string.btn_delete), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             deleteMatchesThenChampionship();
                         }
                     })
-                    .setNegativeButton("Cancelar", null)
+                    .setNegativeButton(getResources().getString(R.string.btn_cancel), null)
                     .create();
 
             dialogo.setOnShowListener(new DialogInterface.OnShowListener() {

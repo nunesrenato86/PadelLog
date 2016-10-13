@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PadelLog</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Configuraciones</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_edit">Editar</string>
+
+    <string name="title_activity_login">PadelLog</string>
+    <string name="title_activity_sign_up">Crear cuenta</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_name">Nombre</string>
+    <string name="prompt_email">E-mail</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="prompt_new_password">Nueva contraseña</string>
+    <string name="action_sign_in">Entrar con e-mail</string>
+    <string name="action_link">Link convencional login</string>
+    <string name="action_unlink">Unlink convencional login</string>
+    <string name="action_sign_in_facebook">Entrar con Facebook</string>
+    <string name="action_link_facebook">Link Facebook login</string>
+    <string name="action_unlink_facebook">Unlink Facebook login</string>
+    <string name="action_sign_in_google">Entrar con Google</string>
+    <string name="action_link_google">Link Google login</string>
+    <string name="action_unlink_google">Unlink Google login</string>
+
+    <string name="action_sign_up">Registrar</string>
+    <string name="action_sign_up_call">Registrar</string>
+    <string name="action_reset_call">Recuperar acceso</string>
+    <string name="action_sign_in_short">Registrarse</string>
+    <string name="action_sign_up_short">Registro</string>
+    <string name="error_invalid_email">Esta direcciуn de correo electrуnico no es vбlido.</string>
+    <string name="error_invalid_password">Contraseсa demasiado corta</string>
+    <string name="error_incorrect_password">La contraseсa es incorrecta</string>
+    <string name="error_field_required">Campo obligatorio</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+    completions."
+    </string>
+    <string name="update_profile">Actualizar su perfil</string>
+    <string name="reset">Recuperar acceso</string>
+    <string name="update_login">Actualizaciуn de login</string>
+    <string name="reset_bt_label">Iniciar recuperación acceso</string>
+    <string name="update_password">Actualizar la contraseсa</string>
+    <string name="link_accounts">Link contas</string>
+    <string name="remove_user">Eliminar cuenta</string>
+    <string name="logout">Logout</string>
+    <string name="title_activity_update">UpdateActivity</string>
+    <string name="title_activity_update_login">UpdateLoginActivity</string>
+    <string name="title_activity_update_password">UpdatePasswordActivity</string>
+    <string name="title_activity_link_accounts">Link contas</string>
+    <string name="title_activity_remove_user">RemoveUserActivity</string>
+    <string name="title_activity_notification">Notifications Firebase</string>
+    <string name="password_info">Para prosseguir com a atualizaзгo informe abaixo sua senha.</string>
+
+    <string name="edt_initial_date">Inicio</string>
+    <string name="edt_final_date">Fin</string>
+
+    <string name="facebook_app_id">1748665178734590</string>
+
+    <string name="my_google_app_id">AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk</string>
+
+    <!-- release
+    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
+    !-->
+    <!-- debug
+    <string name="my_google_app_id">AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk</string>
+    no mac
+    <string name="my_google_app_id">AIzaSyB9Khl6hPjAQ_BOpLTk7cZ1v1l1fq18Jfc</string>
+    !-->
+    <string name="chk_unique_token">Unique token id</string>
+
+    <string name="nav_logout">Logout</string>
+    <string name="nav_championships">Campeonatos</string>
+    <string name="nav_my_championships">Mis campeonatos</string>
+    <string name="nav_players">Jugadores</string>
+    <string name="nav_statistics">Estadísticas</string>
+    <string name="nav_show">Mostrar</string>
+    <string name="nav_per_result">Por resultados</string>
+    <string name="nav_per_partner">Por pareja</string>
+
+
+    <string name="title_activity_championship_list">Mis campeonatos</string>
+    <string name="title_activity_add_championship">Campeonato</string>
+    <string name="edt_championship_name">Nombre</string>
+    <string name="edt_partner_name">Pareja</string>
+    <string name="edt_category">Classe</string>
+
+    <string name="edt_match_round">Fase</string>
+    <string name="edt_match_opponent_drive">Adversario drive</string>
+    <string name="edt_match_opponent_backdrive">Adversario revés</string>
+
+    <string name="menu_save">Guardar</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="championship_info">
+    Campeonato celebrado en %1$s, de %2$s hasta %3$s. %4$s y vos
+    obtuvieron lo siguiente resultado en la %5$s: %6$s.</string>
+    <string name="title_activity_add_match">Juego</string>
+
+    <string name="spinner_round">Fase</string>
+    <string name="round_draw">Draw</string>
+    <string name="round_64">64 de final</string>
+    <string name="round_32">32 de final</string>
+    <string name="round_16">16 de final</string>
+    <string name="round_8">Octavas de final</string>
+    <string name="round_4">Cuartos de final</string>
+    <string name="round_semi">Semifinal</string>
+    <string name="round_final">Final</string>
+    <string name="result_name_vice">Vice-campeones</string>
+    <string name="result_name_champion">Campeones</string>
+    <string name="result_name_none">No hay juegos</string>
+
+    <string name="spinner_category">Classe</string>
+    <string name="category_pro">Primera/Profesional</string>
+    <string name="category_2nd">Segunda</string>
+    <string name="category_3th">Tercera</string>
+    <string name="category_4th">Cuarta</string>
+    <string name="category_5th">Quinta</string>
+    <string name="category_6th">Sexta</string>
+    <string name="category_7th">Sйptima</string>
+    <string name="category_open">Open</string>
+    <string name="category_3035a">+30/+35 A</string>
+    <string name="category_3035b">+30/+35 B</string>
+    <string name="category_3035c">+30/+35 C</string>
+    <string name="category_4045a">+40/+45 A</string>
+    <string name="category_4045b">+40/+45 B</string>
+    <string name="category_4045c">+40/+45 C</string>
+    <string name="category_5055a">+50/+55 A</string>
+    <string name="category_5055b">+50/+55 B</string>
+    <string name="category_5055c">+50/+55 C</string>
+    <string name="category_mixedA">Mixta A</string>
+    <string name="category_mixedB">Mixta B</string>
+    <string name="category_mixedC">Mixta C</string>
+    <string name="category_mixedD">Mixta D</string>
+    <string name="category_sub20">Sub 20</string>
+    <string name="category_sub18">Sub 18</string>
+    <string name="category_sub16">Sub 16</string>
+    <string name="category_sub14">Sub 14</string>
+    <string name="category_sub12">Sub 12</string>
+    <string name="category_other">Otra</string>
+
+
+    <string name="msg_chart_no_data">Ningún dato disponible.</string>
+
+    <string name="msg_error_img_file">No se pudo crear la imagen.</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="msg_action_deleted">Excluido</string>
+
+    <string name="msg_account_created">Cuenta creada!</string>
+
+    <string name="msg_field_required">Campo obligatorio!</string>
+    <string name="login_invalid">E-mail no es válido.!</string>
+    <string name="login_pass_size_invalid">La contraseña debe tener entre 6 y 15 caracteres!</string>
+    <string name="login_display_name_size_invalid">Nombre debe tener entre 6 y 15 caracteres!</string>
+
+    <string name="msg_not_done_yet">No disponible.</string>
+
+    <string name="msg_alert_permission">Para utilizar PadelLog, tiene que aceptar los permisos.</string>
+    <string name="msg_alert_OK">OK</string>
+
+    <string name="msg_alert_no_internet">No hay Internet</string>
+    <string name="msg_verify_no_internet">Revisa tu conexión a Internet.</string>
+    <string name="msg_no_internet">No hay Internet.</string>
+
+    <string name="msg_championship_saved">Campeonato guardado.</string>
+    <string name="msg_match_saved">Juego guardado.</string>
+    <string name="msg_profile_updated">Perfil actualizado.</string>
+    <string name="msg_profile_cant_be_public">Perfil público debe tener una foto.</string>
+
+    <string name="msg_photo_erros">No se pudo capturar la imagen.</string>
+
+    <string name="nav_user_name">Cargando...</string>
+    <string name="title_activity_chart">Resultados</string>
+    <string name="title_activity_edit_profile">Perfil</string>
+
+    <string name="lbl_edt_place">Local</string>
+    <string name="lbl_switch_public_profile">Perfil público</string>
+
+    <string name="img_camera">Cámara</string>
+    <string name="img_gallery">Galería</string>
+    <string name="img_delete">Eliminar</string>
+
+    <string name="title_dlg_confirm_delete">Confirmación de la eliminación</string>
+
+    <string name="msg_game_delete">Se eliminará el partido.</string>
+    <string name="msg_championship_delete">Se eliminará el campeonato.</string>
+    <string name="btn_delete">Excluir</string>
+    <string name="btn_cancel">Cancelar</string>
+
+    <string name="tab_info">Informaciónes</string>
+    <string name="tab_matches">Partidos</string>
+
+
+</resources>

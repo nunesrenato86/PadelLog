@@ -214,15 +214,15 @@ public class MatchInfoActivity extends CommonActivity {
 		if (LibraryClass.isNetworkActive(this)) {
 
 			AlertDialog dialogo = new AlertDialog.Builder(this)
-					.setTitle("Confirmação de exclusão")
-					.setMessage("O jogo será excluída.")
-					.setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+					.setTitle(getResources().getString(R.string.title_dlg_confirm_delete))
+					.setMessage(getResources().getString(R.string.msg_game_delete))
+					.setPositiveButton(getResources().getString(R.string.btn_delete), new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialogInterface, int i) {
 							deleteMatch();
 						}
 					})
-					.setNegativeButton("Cancelar", null)
+					.setNegativeButton(getResources().getString(R.string.btn_cancel), null)
 					.create();
 
 			dialogo.setOnShowListener(new DialogInterface.OnShowListener() {

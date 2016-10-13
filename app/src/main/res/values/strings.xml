@@ -60,7 +60,7 @@
 
     <string name="facebook_app_id">1748665178734590</string>
 
-    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
+    <string name="my_google_app_id">AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk</string>
 
     <!-- release
     <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
@@ -184,5 +184,15 @@
     <string name="img_camera">Câmera</string>
     <string name="img_gallery">Galeria</string>
     <string name="img_delete">Remover</string>
+
+    <string name="title_dlg_confirm_delete">Confirmação de exclusão</string>
+
+    <string name="msg_game_delete">O jogo será excluído.</string>
+    <string name="msg_championship_delete">O campeonato será excluído.</string>
+    <string name="btn_delete">Excluir</string>
+    <string name="btn_cancel">Cancelar</string>
+
+    <string name="tab_info">Informações</string>
+    <string name="tab_matches">Jogos</string>
 
 </resources>

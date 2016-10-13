@@ -81,4 +81,10 @@ abstract public class CommonActivity extends AppCompatActivity {
 //            }
 //        }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //unregisterReceiver(mNetworkChangeReceiver);
+    }
 }
