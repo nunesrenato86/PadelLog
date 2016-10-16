@@ -60,7 +60,7 @@
 
     <string name="facebook_app_id">1748665178734590</string>
 
-    <string name="my_google_app_id">AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk</string>
+    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
 
     <!-- release
     <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
@@ -194,5 +194,10 @@
 
     <string name="tab_info">Informações</string>
     <string name="tab_matches">Jogos</string>
+
+    <string name="msg_google_login_error">Google login falhou, tente novamente</string>
+    <string name="msg_login_error">Login falhou</string>
+
+
 
 </resources>

@@ -201,6 +201,10 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                 try {
                     PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
                     Intent intent = intentBuilder.build(mActivity);
+
+                    //intent.putExtra("primary_color", getResources().getColor(R.color.colorPrimary));
+                    //intent.putExtra("primary_color_dark", getResources().getColor(R.color.colorPrimaryDark));
+
                     // Start the intent by requesting a result,
                     // identified by a request code.
                     startActivityForResult(intent, REQUEST_PLACE_PICKER);
@@ -593,9 +597,15 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
             date = mFinalDate;
         }
 
-        if (date != 0){
+        if (date != 0){ //have some date
             c.setTimeInMillis(date);
             year = c.get(Calendar.YEAR);
+        }else{ //dont have date
+            if (!initial){ //if is the final date
+                //set the final date = to initial date
+                c.setTimeInMillis(mInitialDate);
+                year = c.get(Calendar.YEAR);
+            }
         }
 
         //if( year == 0 ){

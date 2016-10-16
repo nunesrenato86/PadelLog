@@ -148,6 +148,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                 if (LibraryClass.isNetworkActive(context)){
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                     startActivityForResult(signInIntent, RC_SIGN_IN_GOOGLE);
+                    openProgressBar();
                 }else{
                     showSnackbar(btnLoginGoogle, getResources().getString(R.string.msg_no_internet));
                 }
@@ -170,7 +171,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
             GoogleSignInAccount account = googleSignInResult.getSignInAccount();
 
             if( account == null ){
-                showSnackbar(btnLoginEmail, "Google login falhou, tente novamente");
+                showSnackbar(btnLoginEmail, resources.getString(R.string.msg_google_login_error));
                 return;
             }
 
@@ -226,8 +227,9 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 
                             if( !task.isSuccessful() ){
                                 closeProgressBar();
-                                showSnackbar(btnLoginEmail, "Login falhou");
+                                showSnackbar(btnLoginEmail, resources.getString(R.string.msg_login_error));
                             }
+                            closeProgressBar();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -485,7 +487,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 
                         if( !task.isSuccessful() ){
                             closeProgressBar();
-                            showSnackbar(btnLoginEmail,"Login falhou");
+                            showSnackbar(btnLoginEmail, resources.getString(R.string.msg_login_error));
                             return;
                         }
                     }

@@ -94,6 +94,7 @@ public class MainActivity extends CommonActivity
     private GoogleMap mMap;
     private Context mContext;
     public static Player mPlayer = null;
+    private Boolean isLoading = true;
 
     private Boolean isShowingChampionships = true;
 
@@ -159,7 +160,9 @@ public class MainActivity extends CommonActivity
         navImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditProfileActivity.start(mContext, mPlayer);
+                if (!isLoading) {
+                    EditProfileActivity.start(mContext, mPlayer);
+                }
             }
         });
 
@@ -260,6 +263,8 @@ public class MainActivity extends CommonActivity
             navUsername.setText("Não logado");
             navEmail.setText("");
         }
+
+        isLoading = false;
     }
 
     @Override
@@ -300,31 +305,36 @@ public class MainActivity extends CommonActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_show_championships) {
-            getChampionships();
-        } else if (id == R.id.nav_my_championships) {
-            callChampionshipList();
-        } else if (id == R.id.nav_show_players) {
-            getPlayers();
-        } else if (id == R.id.nav_per_partner) {
-            showNotDoneYet();
-        } else if (id == R.id.nav_per_year) {
-            Intent intent = new Intent(this, ChartActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_logout) {
-            if (FirebaseAuth.getInstance() != null) {
-                FirebaseAuth.getInstance().signOut();
-            }
+//        Boolean isLoading = !navUsername.getText().equals(getResources().getString(R.string.nav_user_name));
 
-            if (LoginManager.getInstance() != null) {
-                LoginManager.getInstance().logOut();
-            }
+        if (!isLoading) {
 
-            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()){
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-            }
+            if (id == R.id.nav_show_championships) {
+                getChampionships();
+            } else if (id == R.id.nav_my_championships) {
+                callChampionshipList();
+            } else if (id == R.id.nav_show_players) {
+                getPlayers();
+            } else if (id == R.id.nav_per_partner) {
+                showNotDoneYet();
+            } else if (id == R.id.nav_per_year) {
+                Intent intent = new Intent(this, ChartActivity.class);
+                startActivity(intent);
+            } else if (id == R.id.nav_logout) {
+                if (FirebaseAuth.getInstance() != null) {
+                    FirebaseAuth.getInstance().signOut();
+                }
 
-            finish();
+                if (LoginManager.getInstance() != null) {
+                    LoginManager.getInstance().logOut();
+                }
+
+                if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                }
+
+                finish();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

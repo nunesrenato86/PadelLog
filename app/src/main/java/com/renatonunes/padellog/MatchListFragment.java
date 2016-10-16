@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,11 +31,13 @@ import java.util.ArrayList;
 
 public class MatchListFragment extends Fragment {
     private RecyclerView mRootView;
-    ArrayList<Match> matches = new ArrayList<Match>();
+    public static ArrayList<Match> matches = new ArrayList<Match>();
     RecyclerView.Adapter adapter;
     public static Championship mCurrentChampionship;
     public static Context mContext;
     public static String myName;
+
+    ProgressBar progressBar;
 
     @Nullable @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -160,6 +163,10 @@ public class MatchListFragment extends Fragment {
             Toast.makeText(getActivity().getApplicationContext(), "Sem dados", Toast.LENGTH_SHORT).show();
         }
 
+        ChampionshipInfoActivity.hideProgressDialog();
+
     }
+
+
 
 }

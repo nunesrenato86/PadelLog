@@ -1,8 +1,10 @@
 package com.renatonunes.padellog;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +47,8 @@ public class ChampionshipInfoActivity extends CommonActivity
     private static Context context;
     private boolean mIsAvatarShown = true;
     private boolean mIsTitlesShown = true;
+
+    private static ProgressDialog mProgressDialog;
 
     @BindView(R.id.championship_detail_title)
     TextView textTitle;
@@ -78,6 +83,10 @@ public class ChampionshipInfoActivity extends CommonActivity
 
         ButterKnife.bind(this);
         ButterKnife.setDebug(true);
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(getResources().getString(R.string.nav_user_name));
+        mProgressDialog.setIndeterminate(true);
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.championship_info_toolbar);
         setSupportActionBar(toolbar);
@@ -114,6 +123,10 @@ public class ChampionshipInfoActivity extends CommonActivity
 			public void onTabSelected(TabLayout.Tab tab) {
 
                 //fabAddMatch.show();
+
+                if (tab.getPosition() == 1) {
+                    new Wait().execute();
+                }
 
                 fabAddMatch.animate().translationY(0).setInterpolator(new LinearInterpolator()).start();
 			}
@@ -391,4 +404,71 @@ public class ChampionshipInfoActivity extends CommonActivity
             showSnackbar(fabAddMatch, getResources().getString(R.string.msg_no_internet) );
         }
     }
+
+    private class Wait extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            openProgressBar();
+
+
+
+            if (((MatchListFragment.matches != null)) && (MatchListFragment.matches.size() == 0)) {
+                showProgressDialog();
+            }
+//            Toast.makeText(getActivity().getApplicationContext(), "Carregando", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                Thread.sleep(5000);
+            }
+            catch (InterruptedException ie) {
+                Log.d("RNN2", ie.toString());
+            }
+
+            if (MatchListFragment.matches != null){
+                return(MatchListFragment.matches.size() == 0);
+            }else{
+                return(true);
+            }
+            //return(true);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean bool) {
+            if (bool) {
+                //closeProgressBar();
+                hideProgressDialog();
+//                Toast.makeText(getActivity().getApplicationContext(), "Carregado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    protected void openProgressBar(){
+        progressBar.setVisibility( View.VISIBLE );
+    }
+
+    protected void closeProgressBar(){
+        progressBar.setVisibility( View.INVISIBLE );
+    }
+
+    public void showProgressDialog() {
+//        if (mProgressDialog == null) {
+//            mProgressDialog = new ProgressDialog(this);
+//            mProgressDialog.setMessage(getResources().getString(R.string.nav_user_name));
+//            mProgressDialog.setIndeterminate(true);
+//        }
+
+        mProgressDialog.show();
+    }
+
+    public static void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+
 }
