@@ -299,7 +299,18 @@ public class AddMatchActivity extends CommonActivity {
         // downsizing image as it throws OutOfMemory Exception for larger
         // images
 
-        options.inSampleSize = 8;
+        //options.inSampleSize = 8;
+
+        String picturePath = mCurrentPhotoUri.getPath();
+
+        if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
+            //options.inSampleSize = 8;
+
+            ImageFactory.mContext = this;
+            picturePath = ImageFactory.compressImage(picturePath);
+            mCurrentPhotoUri = Uri.parse(picturePath);
+        }
+
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
         mThumbnailPreview.setImageBitmap(bitmap);
     }
@@ -317,7 +328,11 @@ public class AddMatchActivity extends CommonActivity {
         BitmapFactory.Options options = new BitmapFactory.Options();
 
         if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
-            options.inSampleSize = 8;
+            //options.inSampleSize = 8;
+
+            ImageFactory.mContext = this;
+            picturePath = ImageFactory.compressImage(picturePath);
+            mCurrentPhotoUri = Uri.parse(picturePath);
         }
 
         mThumbnailPreview.setImageBitmap(BitmapFactory.decodeFile(picturePath, options));
