@@ -24,9 +24,7 @@
     tava no release
     AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc
     -->
-    <string name="google_maps_key"
-        templateMergeStrategy="preserve"
-        translatable="false">
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
         AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc
     </string>
 </resources>

@@ -25,7 +25,16 @@
         {
           "client_id": "982799390788-hohuid0jtbrt5on1cmkrl0cdj3jnm9g4.apps.googleusercontent.com",
           "client_type": 3
+        },
+        {
+          "client_id": "982799390788-vass06o66a451omk783stiv4bl0j584a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.renatonunes.padellog",
+            "certificate_hash": "0A2DB177D547E8BA03BF1B2B605EC5F16EAA1D7E"
+          }
         }
+        //982799390788-vass06o66a451omk783stiv4bl0j584a.apps.googleusercontent.com
       ],
       "api_key": [
         {

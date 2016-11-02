@@ -544,9 +544,9 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         if (mCurrentPhotoUri != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
 
-            if (ImageFactory.imgIsLarge(mCurrentPhotoUri)){
-                options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
-            }
+            //if (ImageFactory.imgIsLarge(mCurrentPhotoUri)){
+            //    options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+            //}
 
             Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
 
