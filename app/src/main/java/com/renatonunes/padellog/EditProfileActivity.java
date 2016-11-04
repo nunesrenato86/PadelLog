@@ -100,10 +100,10 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     @BindView(R.id.switch_profile_public)
     Switch switchProfilePublic;
 
-    private Boolean isVisible = false;
-    private Boolean hasPhoto = false;
+    private boolean isVisible = false;
+    private boolean hasPhoto = false;
     private static Player currentPlayer = null;
-    private Boolean playerImageHasChanged = false;
+    private boolean playerImageHasChanged = false;
 
     private final Activity mActivity = this;
     private String mCurrentPlayerImageStr = "";
@@ -619,7 +619,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         }
     }
 
-    private Boolean canBePublic(){
+    private boolean canBePublic(){
         if (switchProfilePublic.isChecked()){
             return hasPhoto;
         }else{

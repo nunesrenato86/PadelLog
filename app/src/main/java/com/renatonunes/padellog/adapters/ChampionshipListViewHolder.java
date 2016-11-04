@@ -24,6 +24,8 @@ public class ChampionshipListViewHolder extends RecyclerView.ViewHolder {
     public ImageView championshipTrophyImage;
     public TextView championshipTitle;
     public TextView championshipDetail;
+    public Boolean isReadOnly;
+    public String playerToListFirstName;
 
     public ChampionshipListViewHolder(View itemView) {
         super(itemView);
@@ -42,7 +44,7 @@ public class ChampionshipListViewHolder extends RecyclerView.ViewHolder {
 //                        Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 
-                ChampionshipInfoActivity.start(context, currentChampionship);
+                ChampionshipInfoActivity.start(context, currentChampionship, isReadOnly, playerToListFirstName);
 
 //                callMaterialUpActivity();
 

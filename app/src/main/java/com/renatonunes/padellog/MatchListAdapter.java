@@ -21,10 +21,12 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> 
 	Context context;
 	ArrayList<Match> matches;
     Championship mCurrentChampionship;
+    boolean mIsReadOnly;
 
-    public MatchListAdapter(Context context, ArrayList<Match> matches, Championship currentChampionship) {
+    public MatchListAdapter(Context context, ArrayList<Match> matches, Championship currentChampionship, Boolean isReadOnly) {
         this.matches = matches;
         this.context = context;
+        this.mIsReadOnly = isReadOnly;
         this.mCurrentChampionship = currentChampionship;
     }
 
@@ -52,6 +54,8 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> 
             holder.matchImage.setImageBitmap(null);
             holder.matchImage.setBackgroundResource(R.drawable.no_photo);
         }
+
+        holder.isReadOnly = mIsReadOnly;
 	}
 
 	@Override public int getItemCount() {

@@ -25,4 +25,5 @@ public abstract class MyMapItem implements ClusterItem {
 //    public String getmTitle() {
 //        return mTitle;
 //    }
+
 }

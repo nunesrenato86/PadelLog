@@ -18,10 +18,14 @@ public class ChampionshipInfoAdapter extends RecyclerView.Adapter<ChampioshipInf
 
 	Context context;
     Championship currentChampionship;
+	Boolean mIsReadOnly;
+	String mFirstName;
 
-	public ChampionshipInfoAdapter(Context context, Championship championship) {
+	public ChampionshipInfoAdapter(Context context, Championship championship, Boolean isReadOnly, String firstName) {
 		this.currentChampionship = championship;
 		this.context = context;
+		this.mIsReadOnly = isReadOnly;
+		this.mFirstName = firstName;
 	}
 
 	@Override public ChampioshipInfoViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -41,11 +45,24 @@ public class ChampionshipInfoAdapter extends RecyclerView.Adapter<ChampioshipInf
 
         Resources res = context.getResources();
 
+		String firstNameToAppear = "";
+		String secondNameToAppear = "";
+
+		if (mIsReadOnly){ //paul and james
+			firstNameToAppear = mFirstName;
+			secondNameToAppear = currentChampionship.getPartner();
+		}else{ //partner and you
+			firstNameToAppear = currentChampionship.getPartner();
+			secondNameToAppear = res.getString(R.string.str_you);
+		}
+
+
         String text = String.format(res.getString(R.string.championship_info),
                 currentChampionship.getPlace(),
                 currentChampionship.getInitialDateStr(),
                 currentChampionship.getFinalDateStr(),
-                currentChampionship.getPartner(),
+                firstNameToAppear,//fulano    ou amadeu
+				secondNameToAppear,//e voce    e kadao
                 currentChampionship.getCategoryStr(),
                 currentChampionship.getResultStr());
 

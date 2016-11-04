@@ -13,6 +13,8 @@ import com.renatonunes.padellog.domain.Championship;
 public class ChampionshipInfoFragment extends Fragment {
     private static Championship currentChampionship;
     private RecyclerView mRootView;
+    private static Boolean mIsReadOnly;
+    private static String mFirstName;
 
     @Nullable
     @Override
@@ -47,12 +49,15 @@ public class ChampionshipInfoFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        mRootView.setAdapter(new ChampionshipInfoAdapter(getActivity().getApplicationContext(), currentChampionship));
+        mRootView.setAdapter(new ChampionshipInfoAdapter(getActivity().getApplicationContext(),
+                currentChampionship, mIsReadOnly, mFirstName));
     }
 
-    public static Fragment newInstance(Championship championship) {
+    public static Fragment newInstance(Championship championship, Boolean isReadOnly, String firstName) {
         
         currentChampionship = championship;
+        mIsReadOnly = isReadOnly;
+        mFirstName = firstName;
 
         return new ChampionshipInfoFragment();
     }

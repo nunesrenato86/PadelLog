@@ -42,6 +42,8 @@ public class MatchInfoActivity extends CommonActivity {
 	public static Championship mCurrentChampionship;
 	public static Context mContext;
 
+	private static boolean mIsReadOnly = false;
+
 	@BindView(R.id.main_collapsing)
 	CollapsingToolbarLayout collapsingToolbarLayout;
 
@@ -95,12 +97,24 @@ public class MatchInfoActivity extends CommonActivity {
                 editMatch();
 			}
 		});
+
+		setUIPermission();
+	}
+
+	private void setUIPermission(){
+		if (mIsReadOnly){
+			fabEditMatch.setVisibility(View.INVISIBLE);
+		}else{
+			fabEditMatch.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_match_info, menu);
+		if (!mIsReadOnly) {
+			getMenuInflater().inflate(R.menu.menu_match_info, menu);
+		}
 		return true;
 	}
 
@@ -135,10 +149,11 @@ public class MatchInfoActivity extends CommonActivity {
 		updateUI();
 	}
 
-	public static void start(Context c, Match currentMatch, Championship currentChampionship) {
+	public static void start(Context c, Match currentMatch, Championship currentChampionship, Boolean isReadOnly) {
 		mContext = c;
 		mCurrentMatch = currentMatch;
 		mCurrentChampionship = currentChampionship;
+		mIsReadOnly = isReadOnly;
 		c.startActivity(new Intent(c, MatchInfoActivity.class));
 	}
 

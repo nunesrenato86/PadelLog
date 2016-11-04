@@ -77,7 +77,7 @@ public class AddMatchActivity extends CommonActivity {
     @BindView(R.id.fab_match_photo_add)
     FloatingActionButton fabMatchPhotoAdd;
 
-    private Boolean isVisible = false;
+    private boolean isVisible = false;
 
     @BindView(R.id.spinner_match_round)
     Spinner spinnerRound;
@@ -381,7 +381,7 @@ public class AddMatchActivity extends CommonActivity {
 
         if (LibraryClass.isNetworkActive(this)) {
             if (currentChampionship != null) {
-                Boolean isNewMatch = false;
+                boolean isNewMatch = false;
 
                 if (mCurrentMatch == null) { //not editing
                     isNewMatch = true;

@@ -218,11 +218,11 @@ public class Match {
     }
 
     @Exclude
-    public Boolean isVictory(){
-        Boolean has3sets = (this.getSet3Score1() != this.getSet3Score2())
+    public boolean isVictory(){
+        boolean has3sets = (this.getSet3Score1() != this.getSet3Score2())
                 && (this.getSet3Score1() > 0 || this.getSet3Score2() > 0);
 
-        Boolean has2sets = (this.getSet2Score1() != this.getSet2Score2())
+        boolean has2sets = (this.getSet2Score1() != this.getSet2Score2())
                 && (this.getSet2Score1() > 0 || this.getSet2Score2() > 0);
 
         if (has3sets) {

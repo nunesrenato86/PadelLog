@@ -61,7 +61,7 @@
 
     <string name="facebook_app_id">1748665178734590</string>
 
-    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
+    <string name="my_google_app_id">AIzaSyB9Khl6hPjAQ_BOpLTk7cZ1v1l1fq18Jfc</string>
 
     <!-- release
     <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
@@ -99,9 +99,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="championship_info">
-    Campeonato celebrado en %1$s, de %2$s hasta %3$s. %4$s y vos
-    obtuvieron lo siguiente resultado en la %5$s: %6$s.</string>
+    Campeonato celebrado en %1$s, de %2$s hasta %3$s. %4$s y %5$s
+    obtuvieron lo siguiente resultado en la %6$s: %7$s.</string>
     <string name="title_activity_add_match">Juego</string>
+
+    <string name="str_you">vos</string>
 
     <string name="spinner_round">Fase</string>
     <string name="round_draw">Draw</string>

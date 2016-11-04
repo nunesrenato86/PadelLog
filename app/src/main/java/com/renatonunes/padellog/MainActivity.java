@@ -37,7 +37,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.plus.model.people.Person;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -55,6 +57,7 @@ import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,10 +68,13 @@ public class MainActivity extends CommonActivity
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        GoogleMap.OnInfoWindowClickListener{
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
     ArrayList<Player> players = new ArrayList<Player>();
+
+    HashMap<String, MyMapItem> mMarkerPlayerMap = new HashMap<String, MyMapItem>();
 
     @BindView(R.id.progressBar_maps)
     ProgressBar progressBar;
@@ -87,16 +93,16 @@ public class MainActivity extends CommonActivity
     @BindView(R.id.img_marker)
     ImageView imgMarker;
 
-    public static Boolean playerImageHasChanged = false;
+    public static boolean playerImageHasChanged = false;
     private CameraPosition mPreviousCameraPosition = null;
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
     private GoogleMap mMap;
     private Context mContext;
     public static Player mPlayer = null;
-    private Boolean isLoading = true;
+    private boolean isLoading = true;
 
-    private Boolean isShowingChampionships = true;
+    private boolean isShowingChampionships = true;
 
 //    private LocationRequest mLocationRequest;
 //    private Marker markerMyLocation;
@@ -215,6 +221,7 @@ public class MainActivity extends CommonActivity
         //mMap.setOnCameraChangeListener(mClusterManager);
 
         mMap.setOnMarkerClickListener(mClusterManager);
+        mMap.setOnInfoWindowClickListener(this);
 
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
@@ -312,7 +319,7 @@ public class MainActivity extends CommonActivity
             if (id == R.id.nav_show_championships) {
                 getChampionships();
             } else if (id == R.id.nav_my_championships) {
-                callChampionshipList();
+                callChampionshipList(mPlayer.getId(), mPlayer.getName());
             } else if (id == R.id.nav_show_players) {
                 getPlayers();
             } else if (id == R.id.nav_per_partner) {
@@ -527,7 +534,7 @@ public class MainActivity extends CommonActivity
 
                 markerOptions.snippet(((Championship)item).getResultStr());
                 markerOptions.title(((Championship)item).getName());
-            }else{
+            }else{ //is a player
                 markerOptions.snippet(((Player)item).getEmail());
                 markerOptions.title(((Player)item).getName());
 
@@ -599,10 +606,20 @@ public class MainActivity extends CommonActivity
                 if (((Player)item).getMarkerBitmap() != null){
                         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((Player)item).getMarkerBitmap()));
                 }
+
             }
 
             super.onBeforeClusterItemRendered(item, markerOptions);
             closeProgressBar();
+        }
+
+        @Override
+        protected void onClusterItemRendered(MyMapItem clusterItem,
+                                             Marker marker) {
+            super.onClusterItemRendered(clusterItem, marker);
+
+            mMarkerPlayerMap.put(marker.getId(), clusterItem);
+
         }
     }
 
@@ -809,8 +826,8 @@ public class MainActivity extends CommonActivity
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //        final String userId = user.getUid();
 
-        //FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
-        FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
+        //FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 getPlayersUpdates(dataSnapshot);
@@ -871,9 +888,9 @@ public class MainActivity extends CommonActivity
         closeProgressBar();
     }
 
-    @OnClick(R.id.fab_main)
-    public void callChampionshipList(){
-        ChampionshipListActivity.start(this, mPlayer.getCategory());
+    //@OnClick(R.id.fab_main)
+    public void callChampionshipList(String userToList, String playerName){
+        ChampionshipListActivity.start(this, mPlayer.getCategory(), userToList, playerName);
     }
 
     public static void start(Context c, Player player) {
@@ -881,5 +898,21 @@ public class MainActivity extends CommonActivity
 
         c.startActivity(new Intent(c, MainActivity.class));
     }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        if (!isShowingChampionships){
+
+            final Player thePlayerOnThisMarker = (Player)mMarkerPlayerMap.get(marker.getId());
+
+            callChampionshipList(thePlayerOnThisMarker.getId(), thePlayerOnThisMarker.getName());
+        }
+    }
+
+
+    //TODO: meus campeonatos tirar o meus qndo eh dos outros
+    //TODO: voce e fulando qndo eh dos outros
+    //TODO: custominfowindow
+    //TODO: MANTER O ZOOM QUE ESTAVA
 
 }

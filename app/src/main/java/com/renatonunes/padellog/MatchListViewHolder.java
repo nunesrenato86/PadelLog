@@ -27,6 +27,7 @@ public class MatchListViewHolder extends RecyclerView.ViewHolder {
     public ImageView matchImage;
     public TextView matchRound;
     public TextView matchScore;
+    public Boolean isReadOnly;
 
     public MatchListViewHolder(View itemView) {
         super(itemView);
@@ -45,7 +46,7 @@ public class MatchListViewHolder extends RecyclerView.ViewHolder {
 //                        Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 
-                MatchInfoActivity.start(context, currentMatch, currentChampionship);
+                MatchInfoActivity.start(context, currentMatch, currentChampionship, isReadOnly);
 
             }
         });

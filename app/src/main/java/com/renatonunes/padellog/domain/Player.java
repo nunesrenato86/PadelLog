@@ -189,7 +189,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         return( LibraryClass.getSP( context, PROVIDER) );
     }
 
-    public boolean isSocialNetworkLogged( Context context ){
+    public Boolean isSocialNetworkLogged( Context context ){
         String token = getProviderSP( context );
         return( token.contains("facebook") || token.contains("google") /*|| token.contains("twitter") || token.contains("github")*/ );
     }

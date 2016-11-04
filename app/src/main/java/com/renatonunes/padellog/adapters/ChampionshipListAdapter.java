@@ -19,10 +19,15 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
 
     Context context;
     ArrayList<Championship> championships;
+    Boolean mIsReadOnly;
+    String mFirstName;
 
-    public ChampionshipListAdapter(Context context, ArrayList<Championship> championships) {
+    public ChampionshipListAdapter(Context context, ArrayList<Championship> championships, Boolean isReadOnly,
+                                   String firstName) {
         this.championships = championships;
         this.context = context;
+        this.mIsReadOnly = isReadOnly;
+        this.mFirstName = firstName;
     }
 
     @Override
@@ -72,6 +77,9 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
             holder.championshipTrophyImage.setImageResource(R.drawable.trophy_silver);
         }else
             holder.championshipTrophyImage.setVisibility(View.INVISIBLE);
+
+        holder.isReadOnly = mIsReadOnly;
+        holder.playerToListFirstName = mFirstName;
     }
 
     @Override

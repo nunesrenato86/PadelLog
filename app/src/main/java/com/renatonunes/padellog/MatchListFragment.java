@@ -36,6 +36,7 @@ public class MatchListFragment extends Fragment {
     public static Championship mCurrentChampionship;
     public static Context mContext;
     public static String myName;
+    private static boolean mIsReadOnly;
 
     ProgressBar progressBar;
 
@@ -86,9 +87,10 @@ public class MatchListFragment extends Fragment {
         refreshData();
     }
 
-    public static Fragment newInstance(Championship currentChampionship, Context context) {
+    public static Fragment newInstance(Championship currentChampionship, Context context, boolean isReadOnly) {
         mContext = context;
         mCurrentChampionship = currentChampionship;
+        mIsReadOnly = isReadOnly;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myName = user.getDisplayName();
@@ -134,7 +136,7 @@ public class MatchListFragment extends Fragment {
     }
 
     private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot,
-                            Boolean isInserting){
+                            boolean isInserting){
 
         Match match = new Match();
         match.setId(dataSnapshot.getKey());
@@ -157,7 +159,7 @@ public class MatchListFragment extends Fragment {
         }
 
         if (matches.size() > 0){
-            adapter = new MatchListAdapter(mContext, matches, mCurrentChampionship);
+            adapter = new MatchListAdapter(mContext, matches, mCurrentChampionship, mIsReadOnly);
             mRootView.setAdapter(adapter);
         }else{
             Toast.makeText(getActivity().getApplicationContext(), "Sem dados", Toast.LENGTH_SHORT).show();

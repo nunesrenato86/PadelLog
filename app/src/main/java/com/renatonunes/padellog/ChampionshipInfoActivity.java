@@ -47,6 +47,9 @@ public class ChampionshipInfoActivity extends CommonActivity
     private static Context context;
     private boolean mIsAvatarShown = true;
     private boolean mIsTitlesShown = true;
+    private static String mFirstName;
+
+    private static Boolean mIsReadOnly = false;
 
     private static ProgressDialog mProgressDialog;
 
@@ -144,7 +147,18 @@ public class ChampionshipInfoActivity extends CommonActivity
 
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
+
+        setUIPermission();
 	}
+
+    private void setUIPermission(){
+        if (mIsReadOnly){
+            fabAddMatch.setVisibility(View.INVISIBLE);
+        }else{
+            fabAddMatch.setVisibility(View.VISIBLE);
+        }
+
+    }
 
 //	@Override
 //	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -225,9 +239,11 @@ public class ChampionshipInfoActivity extends CommonActivity
 		openContextMenu(v);
 	}
 
-	public static void start(Context c, Championship championship) {
+	public static void start(Context c, Championship championship, Boolean isReadOnly, String firstName) {
         context = c;
 		currentChampionship = championship;
+        mIsReadOnly = isReadOnly;
+        mFirstName = firstName;
 
 		c.startActivity(new Intent(c, ChampionshipInfoActivity.class));
 	}
@@ -319,8 +335,8 @@ public class ChampionshipInfoActivity extends CommonActivity
 		@Override
 		public Fragment getItem(int i) {
 			switch(i) {
-				case 0: return ChampionshipInfoFragment.newInstance(currentChampionship);
-				case 1: return MatchListFragment.newInstance(currentChampionship, context);
+				case 0: return ChampionshipInfoFragment.newInstance(currentChampionship, mIsReadOnly, mFirstName);
+				case 1: return MatchListFragment.newInstance(currentChampionship, context, mIsReadOnly);
 //				case 2: return MatchListFragment.newInstance();
 			}
 			return null;
@@ -340,7 +356,9 @@ public class ChampionshipInfoActivity extends CommonActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_match_info, menu);
+        if (!mIsReadOnly) {
+            getMenuInflater().inflate(R.menu.menu_match_info, menu);
+        }
         return true;
     }
 

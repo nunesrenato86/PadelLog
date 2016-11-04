@@ -36,6 +36,8 @@ public class ChampionshipListActivity extends CommonActivity {
     ArrayList<Championship> championships = new ArrayList<Championship>();
 
     private static int mLoggedPlayerDefaultCategory;
+    private static String mUserIdToList;
+    private static String mFirstName;
 
     @BindView(R.id.fab_add_championship)
     FloatingActionButton fabAddChampionship;
@@ -47,8 +49,6 @@ public class ChampionshipListActivity extends CommonActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ActionBar actionbar = getSupportActionBar();
-        actionbar.setDisplayHomeAsUpEnabled(true);
 
         recyclerView = (RecyclerView) findViewById(R.id.reciclerview_championships);
         layoutManager = new LinearLayoutManager(this);
@@ -81,6 +81,25 @@ public class ChampionshipListActivity extends CommonActivity {
                 callAddChampionshipActivity();
             }
         });
+
+        //only for test
+        //mUserIdToList = "Pj4RBjzaiNNcKVOo7FrZipZ93hK2";
+
+        setUIPermission();
+    }
+
+    private void setUIPermission(){
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+
+        if (isModeReadOnly()){
+            fabAddChampionship.setVisibility(View.INVISIBLE);
+            actionbar.setTitle(getResources().getString(R.string.nav_championships));
+        }else{
+            fabAddChampionship.setVisibility(View.VISIBLE);
+            actionbar.setTitle(getResources().getString(R.string.nav_my_championships));
+        }
+
     }
 
     @Override
@@ -113,13 +132,13 @@ public class ChampionshipListActivity extends CommonActivity {
     //retrieve data
     private void refreshData(){
         championships.clear();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String userId = user.getUid();
+        //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        //final String userId = user.getUid();
 
         //ver aqui um modo de filtar melhor
 //        FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
         //FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
-        FirebaseDatabase.getInstance().getReference().child("championships").child(userId).orderByChild("dateSort").addChildEventListener(new ChildEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("championships").child(mUserIdToList).orderByChild("dateSort").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
                 //if (dataSnapshot.getKey().equals(userId)) { //ver aqui um modo de filtar melhor
@@ -181,19 +200,29 @@ public class ChampionshipListActivity extends CommonActivity {
         championships.add(championship);//        }
 
         if (championships.size() > 0){
-            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships);
+            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships, isModeReadOnly(), mFirstName);
             recyclerView.setAdapter(adapter);
         }else{
-            Toast.makeText(ChampionshipListActivity.this, "Sem dados", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ChampionshipListActivity.this, getResources().getString(R.string.msg_chart_no_data), Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    public static void start(Context c, int loggedPlayerDefaultCategory) {
+    public static void start(Context c, int loggedPlayerDefaultCategory, String userIdToList, String playerName) {
         mLoggedPlayerDefaultCategory = loggedPlayerDefaultCategory;
+        mUserIdToList = userIdToList;
+        //mFirstName = playerName.substring(0, playerName.indexOf(' '));
+
+        mFirstName = playerName;
 
         c.startActivity(new Intent(c, ChampionshipListActivity.class));
     }
 
 
+    private boolean isModeReadOnly(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String loggedUserId = user.getUid();
+
+        return !mUserIdToList.equals(loggedUserId);
+    }
 }

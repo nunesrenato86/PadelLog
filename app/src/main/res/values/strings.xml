@@ -60,13 +60,16 @@
 
     <string name="facebook_app_id">1748665178734590</string>
 
-    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
+    <string name="my_google_app_id">AIzaSyB9Khl6hPjAQ_BOpLTk7cZ1v1l1fq18Jfc</string>
 
     <!-- release
     <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
     !-->
     <!-- debug
     <string name="my_google_app_id">AIzaSyDqvs07ODbbYjO8UVHOzJEhuZBBCBNQImk</string>
+
+    no mac
+    <string name="my_google_app_id">AIzaSyB9Khl6hPjAQ_BOpLTk7cZ1v1l1fq18Jfc</string>
     !-->
 
     <string name="chk_unique_token">Unique token id</string>
@@ -97,9 +100,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="championship_info">
-        Campeonato disputado em %1$s, de %2$s até %3$s. %4$s e você
-        obtiveram o seguinte resultado na %5$s: %6$s.</string>
+        Campeonato disputado em %1$s, de %2$s até %3$s. %4$s e %5$s
+        obtiveram o seguinte resultado na %6$s: %7$s.</string>
+
     <string name="title_activity_add_match">Jogo</string>
+
+    <string name="str_you">você</string>
 
     <string name="spinner_round">Fase</string>
     <string name="round_draw">Chave</string>

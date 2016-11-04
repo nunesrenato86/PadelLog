@@ -162,7 +162,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                     Manifest.permission.CAMERA,
             };
 
-            boolean ok = PermissionUtils.validate(this, 0, permissions);
+            Boolean ok = PermissionUtils.validate(this, 0, permissions);
 
             if (ok) {
                 Log.i("RNN", "Permissions OK");
@@ -683,7 +683,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         }
     }
 
-    private boolean validateFields() {
+    private Boolean validateFields() {
         String name = edtName.getText().toString().trim();
         String partner = edtPartner.getText().toString().trim();
         String initalDate = edtInitialDate.getText().toString().trim();
@@ -698,7 +698,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 //                && hasSizeValid(set1Score1, set1Score2));
     }
 
-    private boolean isEmptyFields(String name,
+    private Boolean isEmptyFields(String name,
                                   String partner,
                                   String initialDate,
                                   String finalDate,
