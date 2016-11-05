@@ -100,9 +100,10 @@ public class MainActivity extends CommonActivity
     private GoogleMap mMap;
     private Context mContext;
     public static Player mPlayer = null;
-    private boolean isLoading = true;
+    private Boolean isLoading = true;
+    private Boolean canZoomMap = true;
 
-    private boolean isShowingChampionships = true;
+    private Boolean isShowingChampionships = true;
 
 //    private LocationRequest mLocationRequest;
 //    private Marker markerMyLocation;
@@ -317,10 +318,12 @@ public class MainActivity extends CommonActivity
         if (!isLoading) {
 
             if (id == R.id.nav_show_championships) {
+                canZoomMap = true;
                 getChampionships();
             } else if (id == R.id.nav_my_championships) {
                 callChampionshipList(mPlayer.getId(), mPlayer.getName());
             } else if (id == R.id.nav_show_players) {
+                canZoomMap = true;
                 getPlayers();
             } else if (id == R.id.nav_per_partner) {
                 showNotDoneYet();
@@ -754,7 +757,12 @@ public class MainActivity extends CommonActivity
 //            mClusterManager.addItem(offsetItem)
 //            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
             mClusterManager.addItem(championship);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(championship.getPosition(), 5));
+
+            if (canZoomMap) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(championship.getPosition(), 5));
+                canZoomMap = false;
+            }
+
             mClusterManager.cluster();
         }
 
@@ -881,7 +889,12 @@ public class MainActivity extends CommonActivity
 //            mClusterManager.addItem(offsetItem)
 //            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
             mClusterManager.addItem(player);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(player.getPosition(), 5));
+
+            if (canZoomMap) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(player.getPosition(), 5));
+                canZoomMap = false;
+            }
+
             mClusterManager.cluster();
         }
 
