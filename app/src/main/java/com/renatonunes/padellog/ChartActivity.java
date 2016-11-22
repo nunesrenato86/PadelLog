@@ -283,7 +283,7 @@ public class ChartActivity extends CommonActivity implements OnChartValueSelecte
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = user.getUid();
-        int count = 0;
+        //int count = 0;
 
         //FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addValueEventListener(new ValueEventListener()
         // {

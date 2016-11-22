@@ -2,8 +2,11 @@ package com.renatonunes.padellog.domain;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,6 +37,11 @@ public class Player extends MyMapItem{ //implements ClusterItem{
     private String place;
     private Boolean isPublic;
 
+    //private ChampionshipSummary championshipSummary;
+    private long totalChampionship;
+    private long totalFirstPlace;
+    private long totalSecondPlace;
+
     private Bitmap markerBitmap;
 
     public Player(){}
@@ -45,6 +53,29 @@ public class Player extends MyMapItem{ //implements ClusterItem{
 //    public void setPhotoUrl(String photoUrl) {
 //        this.photoUrl = photoUrl;
 //    }
+
+
+    public long getTotalChampionship(){return this.totalChampionship;}
+
+    public void setTotalChampionship(long totalChampionship) {
+        this.totalChampionship = totalChampionship;
+    }
+
+    @Exclude
+    public long getTotalFirstPlace(){return this.totalFirstPlace;}
+
+    @Exclude
+    public void setTotalFirstPlace(long totalFirstPlace) {
+        this.totalFirstPlace = totalFirstPlace;
+    }
+
+    @Exclude
+    public long getTotalSecondPlace(){return this.totalSecondPlace;}
+
+    @Exclude
+    public void setTotalSecondPlace(long totalSecondPlace) {
+        this.totalSecondPlace = totalSecondPlace;
+    }
 
     public Double getLat() {
         return this.lat;
@@ -324,4 +355,164 @@ public class Player extends MyMapItem{ //implements ClusterItem{
             firebase.updateChildren(map);
         }
     }
+
+//    public void updateChampionshipsCount(Boolean isInsertingMatch, int result){
+//
+//
+//        //fazer isso funcionar
+//
+//        //8 champion
+//        //7 vice
+//        int valor = 0;
+//
+//        if (isInsertingMatch){
+//            valor = 1;
+//        }else{
+//            valor = -1;
+//        }
+//
+//        if (valor != 0) {
+//            Map<String, Object> mResult = new HashMap<String, Object>();
+//
+//            if (result == 8) {
+//                mResult.put("totalFirstPlace", this.getTotalFirstPlace() + valor);
+//            } else if (result == 7) {
+//                mResult.put("totalSecondPlace", this.getTotalSecondPlace() + valor);
+//            }
+//
+//            FirebaseDatabase.getInstance().getReference().child("players")
+//                    .child(getId())
+//                    .updateChildren(mResult);
+//        }
+//
+//    }
+
+    public void incTotalChampionship(){
+        this.totalChampionship = this.totalChampionship + 1;
+
+        updateTotalChampionships();
+    }
+
+    public void decTotalChampionship(){
+        this.totalChampionship = this.totalChampionship - 1;
+
+        updateTotalChampionships();
+    }
+
+    private void updateTotalChampionships(){
+        Map<String, Object> mResult = new HashMap<String, Object>();
+
+        mResult.put("totalChampionship", this.totalChampionship);
+
+        FirebaseDatabase.getInstance().getReference().child("players")
+                .child(getId())
+                .updateChildren(mResult);
+    }
+
+
+//    public void countChamps(){
+//
+//
+//        FirebaseDatabase.getInstance().getReference().child("championships").child(this.id).addListenerForSingleValueEvent(
+//                new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        Log.e("RNN", "Total: " + dataSnapshot.getChildrenCount());
+//
+//                        //count[0] = dataSnapshot.getChildrenCount();
+//                        getPlayersUpdates(dataSnapshot);
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//                        Log.w("RNN", "getUser:onCancelled", databaseError.toException());
+//                    }
+//                });
+//    }
+//
+    public void countFirstPlace(){
+
+// tornar isso privado e usar no metodo updateplayercount, nas properties com exclude, e tirar o que foi
+        //feito pra gravar
+
+
+        FirebaseDatabase.getInstance().getReference().child("championships").child(this.id)
+                .orderByChild("result").startAt(8).endAt(8) //firstplace
+                .addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.e("RNN", "Campeao: " + dataSnapshot.getChildrenCount());
+                        //count[0] = dataSnapshot.getChildrenCount();
+                        updateFirstPlace(dataSnapshot.getChildrenCount());
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("RNN", "getUser:onCancelled", databaseError.toException());
+                    }
+                });
+
+    }
+//
+    public void countSecondPlace(){
+
+// tornar isso privado e usar no metodo updateplayercount, nas properties com exclude, e tirar o que foi
+        //feito pra gravar
+
+        FirebaseDatabase.getInstance().getReference().child("championships").child(this.id)
+                .orderByChild("result").startAt(7).endAt(7) //secondplace
+                .addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Log.e("RNN", "Vice: " + dataSnapshot.getChildrenCount());
+                                updateSecondPlace(dataSnapshot.getChildrenCount());
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.w("RNN", "getUser:onCancelled", databaseError.toException());
+                            }
+                        });
+
+    }
+
+    public void updateChampionshipsCount(){
+
+        //this.countChamps();
+        this.countFirstPlace();
+        this.countSecondPlace();
+    }
+
+
+//    private void getPlayersUpdates(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//        this.setTotalChampionship(dataSnapshot.getChildrenCount());
+//    }
+
+    private void updateFirstPlace(long count){
+        Map<String, Object> mResult = new HashMap<String, Object>();
+
+        mResult.put("totalFirstPlace", count);
+
+        FirebaseDatabase.getInstance().getReference().child("players")
+                .child(getId())
+                .updateChildren(mResult);
+    }
+
+    private void updateSecondPlace(long count){
+        Map<String, Object> mResult = new HashMap<String, Object>();
+
+        mResult.put("totalSecondPlace", count);
+
+        FirebaseDatabase.getInstance().getReference().child("players")
+                .child(getId())
+                .updateChildren(mResult);
+    }
+
+
+
+
 }

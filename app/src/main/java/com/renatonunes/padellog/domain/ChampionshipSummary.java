@@ -19,7 +19,7 @@ public class ChampionshipSummary {
         init();
     }
 
-    public void init(){
+    private void init(){
         this.draw = 0;
         this.round64 = 0;
         this.round32 = 0;
@@ -30,7 +30,7 @@ public class ChampionshipSummary {
         this.vice = 0;
         this.champion = 0;
         this.noResult = 0;
-    };
+    }
 
     private void addDraw(){
         this.draw++;
@@ -145,5 +145,18 @@ public class ChampionshipSummary {
                 this.addNoResult();
 //                break;
         }
+    }
+
+    public int getTotalChampionships(){
+        return (this.draw +
+        this.round64 +
+        this.round32 +
+        this.round16 +
+        this.round8 +
+        this.quarterfinals +
+        this.semifinals +
+        this.vice +
+        this.champion +
+        this.noResult);
     }
 }

@@ -37,6 +37,7 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     private Double lng;
     private Integer result;
     private Match lastMatch;
+    private Player player;
 
     public Championship() {}
 
@@ -198,6 +199,16 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     }
 
     @Exclude
+    public Player getPlayer() {
+        return player;
+    }
+
+    @Exclude
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    @Exclude
     public String getOwner() {
         return owner;
     }
@@ -241,6 +252,8 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         else{
             firebase.setValue(this, completionListener[0]);
         }
+
+        this.getPlayer().incTotalChampionship();
     }
 
     private void getMatchUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
@@ -274,6 +287,11 @@ public class Championship extends MyMapItem{//implements ClusterItem {
                 .child(this.getOwner())
                 .child(getId())
                 .updateChildren(result);
+
+        //if (this.result > 5) { //8 champ, 7 vice, 5 semi to dec one champ or vice
+            this.getPlayer().updateChampionshipsCount();
+        //}
+        //this.getPlayer().updateChampionshipsCount(true, this.result); //ver aqui quando deleto uma partida aqui nao ta inserindo
     }
 
 

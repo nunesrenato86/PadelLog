@@ -37,6 +37,7 @@ public class MatchListFragment extends Fragment {
     public static Context mContext;
     public static String myName;
     private static boolean mIsReadOnly;
+    public static String mFirstName;
 
     ProgressBar progressBar;
 
@@ -87,13 +88,15 @@ public class MatchListFragment extends Fragment {
         refreshData();
     }
 
-    public static Fragment newInstance(Championship currentChampionship, Context context, boolean isReadOnly) {
+    public static Fragment newInstance(Championship currentChampionship, Context context, boolean isReadOnly,
+                                       String firstName) {
         mContext = context;
         mCurrentChampionship = currentChampionship;
         mIsReadOnly = isReadOnly;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         myName = user.getDisplayName();
+        mFirstName = firstName;
 
         return new MatchListFragment();
     }
@@ -159,7 +162,7 @@ public class MatchListFragment extends Fragment {
         }
 
         if (matches.size() > 0){
-            adapter = new MatchListAdapter(mContext, matches, mCurrentChampionship, mIsReadOnly);
+            adapter = new MatchListAdapter(mContext, matches, mCurrentChampionship, mIsReadOnly, mFirstName);
             mRootView.setAdapter(adapter);
         }else{
             Toast.makeText(getActivity().getApplicationContext(), "Sem dados", Toast.LENGTH_SHORT).show();

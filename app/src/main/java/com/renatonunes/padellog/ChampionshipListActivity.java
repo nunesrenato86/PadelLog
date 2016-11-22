@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.renatonunes.padellog.adapters.ChampionshipListAdapter;
 import com.renatonunes.padellog.domain.Championship;
+import com.renatonunes.padellog.domain.Player;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,7 @@ public class ChampionshipListActivity extends CommonActivity {
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
 
-    private static int mLoggedPlayerDefaultCategory;
+    private static Player mPlayer;
     private static String mUserIdToList;
     private static String mFirstName;
 
@@ -111,7 +112,7 @@ public class ChampionshipListActivity extends CommonActivity {
     public void callAddChampionshipActivity(){
         //Intent intent = new Intent(this, AddChampionshipActivity.class);
         //startActivity(intent);
-        AddChampionshipActivity.start(this, null, mLoggedPlayerDefaultCategory);
+        AddChampionshipActivity.start(this, null, mPlayer.getCategory(), mPlayer);
 
     }
 
@@ -195,6 +196,9 @@ public class ChampionshipListActivity extends CommonActivity {
         championship.setInitialDate(dataSnapshot.getValue(Championship.class).getInitialDate());
         championship.setFinalDate(dataSnapshot.getValue(Championship.class).getFinalDate());
         championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
+
+        championship.setPlayer(mPlayer);
+
         championship.setContext(this);
 
         championships.add(championship);//        }
@@ -208,8 +212,8 @@ public class ChampionshipListActivity extends CommonActivity {
 
     }
 
-    public static void start(Context c, int loggedPlayerDefaultCategory, String userIdToList, String playerName) {
-        mLoggedPlayerDefaultCategory = loggedPlayerDefaultCategory;
+    public static void start(Context c, Player player, String userIdToList, String playerName) {
+        mPlayer = player;
         mUserIdToList = userIdToList;
         //mFirstName = playerName.substring(0, playerName.indexOf(' '));
 

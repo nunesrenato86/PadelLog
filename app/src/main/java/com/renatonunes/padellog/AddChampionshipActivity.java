@@ -51,6 +51,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.renatonunes.padellog.domain.Championship;
+import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
@@ -118,6 +119,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     private ArrayAdapter<String> dataAdapter;
 
     private static int mLoggedPlayerDefaultCategory;
+    private static Player mPlayer;
 
     //to handle dates
     private int year;
@@ -522,12 +524,11 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
                 if (isNewChampionship) {
                     currentChampionship.setResult(-1); //dont have matches yet
+                    currentChampionship.setPlayer(mPlayer);
                     currentChampionship.saveDB();
                 }else{
                     currentChampionship.updateDB();
                 }
-
-                //ver aqui - tratar erro
 
                 Snackbar.make(fabMenuChampionshipPhoto,
                         getResources().getString(R.string.msg_championship_saved),
@@ -550,15 +551,20 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
             Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if (bitmap != null) { //when user cancel the action and click in save
 
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            byte[] bytes = baos.toByteArray();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-            String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+                byte[] bytes = baos.toByteArray();
 
-            return base64Image;
+                String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+
+                return base64Image;
+            }else{
+                return mCurrentChampionshipImageStr;
+            }
         }else
             return mCurrentChampionshipImageStr;
     }
@@ -670,8 +676,9 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         editText.setError(null);
     }
 
-    public static void start(Context c, Championship championship, int loggedPlayerDefaultCategory) {
+    public static void start(Context c, Championship championship, int loggedPlayerDefaultCategory, Player player) {
         currentChampionship = championship;
+        mPlayer = player;
         mLoggedPlayerDefaultCategory = loggedPlayerDefaultCategory;
 
         c.startActivity(new Intent(c, AddChampionshipActivity.class));
@@ -734,28 +741,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         }
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        if (requestCode == 3){
-//            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
-//                Toast.makeText(AddChampionshipActivity.this, "Liberado a photo", Toast.LENGTH_SHORT).show();
-//            }else{
-//                AlertUtils.alert(this,
-//                        R.string.app_name,
-//                        R.string.msg_alert_permission,
-//                        R.string.msg_alert_OK,
-//                        new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                finish();
-//                            }
-//                        });
-//            }
-//
-//        }
-//    }
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int result : grantResults) {
@@ -776,81 +761,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         //OK can use storage and camera
     }
 
-//    private void showFab(){
-//        Animation show_fab_delete = AnimationUtils.loadAnimation(this, R.anim.fab_delete_show);
-//        Animation show_fab_gallery = AnimationUtils.loadAnimation(this, R.anim.fab_gallery_show);
-//        Animation show_fab_camera = AnimationUtils.loadAnimation(this, R.anim.fab_camera_show);
-//
-//        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) fabSaveChampionship.getLayoutParams();
-////        layoutParams.rightMargin += (int) (fabSaveChampionship.getWidth());
-////        layoutParams.bottomMargin += (int) (fabDelete.getHeight() * 0.25);
-//        layoutParams.bottomMargin += (int) (fabSaveChampionship.getHeight() * 2);
-//
-//        fabDelete.setLayoutParams(layoutParams);
-//        fabDelete.startAnimation(show_fab_delete);
-//        fabDelete.setClickable(true);
-//
-//        CoordinatorLayout.LayoutParams layoutParams2 = (CoordinatorLayout.LayoutParams) fabSaveChampionship.getLayoutParams();
-////        layoutParams2.rightMargin += (int) (fabGallery.getWidth() * 1.5);
-////        layoutParams.rightMargin += (int) (fabSaveChampionship.getWidth());
-////        layoutParams2.bottomMargin += (int) (fabGallery.getHeight() * 1.5);
-//        layoutParams2.bottomMargin += (int) (fabSaveChampionship.getHeight() * 4);
-//        fabGallery.setLayoutParams(layoutParams2);
-//        fabGallery.startAnimation(show_fab_gallery);
-//        fabGallery.setClickable(true);
-////
-//        CoordinatorLayout.LayoutParams layoutParams3 = (CoordinatorLayout.LayoutParams) fabSaveChampionship.getLayoutParams();
-//        //layoutParams3.rightMargin += (int) (fabCamera.getWidth() * 0.25);
-////        layoutParams.rightMargin += (int) (fabSaveChampionship.getWidth());
-////        layoutParams3.bottomMargin += (int) (fabCamera.getHeight() * 1.7);
-//        layoutParams3.bottomMargin += (int) (fabSaveChampionship.getHeight() * 6);
-//        fabCamera.setLayoutParams(layoutParams3);
-//        fabCamera.startAnimation(show_fab_camera);
-//        fabCamera.setClickable(true);
-//
-//        isFabOnScreen = true;
-//    };
-//
-//    private void hideFab(){
-//        Animation hide_fab_delete = AnimationUtils.loadAnimation(this, R.anim.fab_delete_hide);
-//        Animation hide_fab_gallery = AnimationUtils.loadAnimation(this, R.anim.fab_gallery_hide);
-//        Animation hide_fab_camera = AnimationUtils.loadAnimation(this, R.anim.fab_camera_hide);
-//
-//        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) fabDelete.getLayoutParams();
-////        layoutParams.rightMargin -= (int) (fabDelete.getWidth() * 1.7);
-////        layoutParams.bottomMargin -= (int) (fabDelete.getHeight() * 0.25);
-//        layoutParams.bottomMargin -= (int) (fabDelete.getHeight() * 2);
-//        fabDelete.setLayoutParams(layoutParams);
-//        fabDelete.startAnimation(hide_fab_delete);
-//        fabDelete.setClickable(false);
-//
-//        CoordinatorLayout.LayoutParams layoutParams2 = (CoordinatorLayout.LayoutParams) fabGallery.getLayoutParams();
-////        layoutParams2.rightMargin -= (int) (fabGallery.getWidth() * 1.5);
-////        layoutParams2.bottomMargin -= (int) (fabGallery.getHeight() * 1.5);
-//        layoutParams2.bottomMargin -= (int) (fabGallery.getHeight() * 4);
-//        fabGallery.setLayoutParams(layoutParams2);
-//        fabGallery.startAnimation(hide_fab_gallery);
-//        fabGallery.setClickable(false);
-////
-//        CoordinatorLayout.LayoutParams layoutParams3 = (CoordinatorLayout.LayoutParams) fabCamera.getLayoutParams();
-////        layoutParams3.rightMargin -= (int) (fabCamera.getWidth() * 0.25);
-////        layoutParams3.bottomMargin -= (int) (fabCamera.getHeight() * 1.7);
-//        layoutParams3.bottomMargin -= (int) (fabCamera.getHeight() * 6);
-//        fabCamera.setLayoutParams(layoutParams3);
-//        fabCamera.startAnimation(hide_fab_camera);
-//        fabCamera.setClickable(false);
-//
-//        isFabOnScreen = false;
-//    };
-//
-//    private void controlFab(){
-//        if (isFabOnScreen){
-//            hideFab();
-//        }else{
-//            showFab();
-//        }
-//    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -860,9 +770,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
@@ -878,169 +785,5 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
         return super.onOptionsItemSelected(item);
     }
-
-
-/*
-    public String getFilename() {
-        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        String uriSting = (file.getAbsolutePath() + "/" + System.currentTimeMillis() + ".jpg");
-        return uriSting;
-
-    }
-
-    private String getRealPathFromURI(String contentURI) {
-        Uri contentUri = Uri.parse(contentURI);
-        Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
-        if (cursor == null) {
-            return contentUri.getPath();
-        } else {
-            cursor.moveToFirst();
-            int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            return cursor.getString(index);
-        }
-    }
-
-    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-            final int heightRatio = Math.round((float) height / (float) reqHeight);
-            final int widthRatio = Math.round((float) width / (float) reqWidth);
-            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
-        }
-        final float totalPixels = width * height;
-        final float totalReqPixelsCap = reqWidth * reqHeight * 2;
-        while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
-            inSampleSize++;
-        }
-
-        return inSampleSize;
-    }
-
-    public String compressImage(String imageUri) {
-
-        String filePath = getRealPathFromURI(imageUri);
-        Bitmap scaledBitmap = null;
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-
-//      by setting this field as true, the actual bitmap pixels are not loaded in the memory. Just the bounds are loaded. If
-//      you try the use the bitmap here, you will get null.
-        options.inJustDecodeBounds = true;
-        Bitmap bmp = BitmapFactory.decodeFile(filePath, options);
-
-        int actualHeight = options.outHeight;
-        int actualWidth = options.outWidth;
-
-//      max Height and width values of the compressed image is taken as 816x612
-
-        float maxHeight = 816.0f;
-        float maxWidth = 612.0f;
-        float imgRatio = actualWidth / actualHeight;
-        float maxRatio = maxWidth / maxHeight;
-
-//      width and height values are set maintaining the aspect ratio of the image
-
-        if (actualHeight > maxHeight || actualWidth > maxWidth) {
-            if (imgRatio < maxRatio) {
-                imgRatio = maxHeight / actualHeight;
-                actualWidth = (int) (imgRatio * actualWidth);
-                actualHeight = (int) maxHeight;
-            } else if (imgRatio > maxRatio) {
-                imgRatio = maxWidth / actualWidth;
-                actualHeight = (int) (imgRatio * actualHeight);
-                actualWidth = (int) maxWidth;
-            } else {
-                actualHeight = (int) maxHeight;
-                actualWidth = (int) maxWidth;
-
-            }
-        }
-
-//      setting inSampleSize value allows to load a scaled down version of the original image
-
-        options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight);
-
-//      inJustDecodeBounds set to false to load the actual bitmap
-        options.inJustDecodeBounds = false;
-
-//      this options allow android to claim the bitmap memory if it runs low on memory
-        options.inPurgeable = true;
-        options.inInputShareable = true;
-        options.inTempStorage = new byte[16 * 1024];
-
-        try {
-//          load the bitmap from its path
-            bmp = BitmapFactory.decodeFile(filePath, options);
-        } catch (OutOfMemoryError exception) {
-            exception.printStackTrace();
-
-        }
-        try {
-            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888);
-        } catch (OutOfMemoryError exception) {
-            exception.printStackTrace();
-        }
-
-        float ratioX = actualWidth / (float) options.outWidth;
-        float ratioY = actualHeight / (float) options.outHeight;
-        float middleX = actualWidth / 2.0f;
-        float middleY = actualHeight / 2.0f;
-
-        Matrix scaleMatrix = new Matrix();
-        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
-
-        Canvas canvas = new Canvas(scaledBitmap);
-        canvas.setMatrix(scaleMatrix);
-        canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
-
-//      check the rotation of the image and display it properly
-        ExifInterface exif;
-        try {
-            exif = new ExifInterface(filePath);
-
-            int orientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION, 0);
-            Log.d("EXIF", "Exif: " + orientation);
-            Matrix matrix = new Matrix();
-            if (orientation == 6) {
-                matrix.postRotate(90);
-                Log.d("EXIF", "Exif: " + orientation);
-            } else if (orientation == 3) {
-                matrix.postRotate(180);
-                Log.d("EXIF", "Exif: " + orientation);
-            } else if (orientation == 8) {
-                matrix.postRotate(270);
-                Log.d("EXIF", "Exif: " + orientation);
-            }
-            scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
-                    scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
-                    true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        FileOutputStream out = null;
-        String filename = getFilename();
-        try {
-            out = new FileOutputStream(filename);
-
-//          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        return filename;
-
-    }
-
-    */
 
 }

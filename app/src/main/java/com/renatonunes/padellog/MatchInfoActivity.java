@@ -42,7 +42,8 @@ public class MatchInfoActivity extends CommonActivity {
 	public static Championship mCurrentChampionship;
 	public static Context mContext;
 
-	private static boolean mIsReadOnly = false;
+	private static Boolean mIsReadOnly = false;
+	private static String mPlayerName;
 
 	@BindView(R.id.main_collapsing)
 	CollapsingToolbarLayout collapsingToolbarLayout;
@@ -149,11 +150,13 @@ public class MatchInfoActivity extends CommonActivity {
 		updateUI();
 	}
 
-	public static void start(Context c, Match currentMatch, Championship currentChampionship, Boolean isReadOnly) {
+	public static void start(Context c, Match currentMatch, Championship currentChampionship, Boolean isReadOnly,
+							 String playerName) {
 		mContext = c;
 		mCurrentMatch = currentMatch;
 		mCurrentChampionship = currentChampionship;
 		mIsReadOnly = isReadOnly;
+		mPlayerName = playerName;
 		c.startActivity(new Intent(c, MatchInfoActivity.class));
 	}
 
@@ -217,7 +220,13 @@ public class MatchInfoActivity extends CommonActivity {
 		textSet3Score2.setText(mCurrentMatch.getSet3Score2().toString());
 
 		//TEAM 1
-		textTeam1.setText(mCurrentMatch.getTeam1());
+		if (mIsReadOnly){
+			textTeam1.setText(mPlayerName + " / " + mCurrentChampionship.getPartner());
+
+		}else {
+
+			textTeam1.setText(mCurrentMatch.getTeam1());
+		}
 
 		//TEAM 2
 		textTeam2.setText(mCurrentMatch.getTeam2());

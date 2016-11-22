@@ -208,6 +208,8 @@ public class ChampionshipInfoActivity extends CommonActivity
     }
 
     public void deleteChampionship(){
+        currentChampionship.getPlayer().decTotalChampionship();
+
         FirebaseDatabase.getInstance().getReference()
                 .child("championships")
                 .child(currentChampionship.getOwner())
@@ -336,7 +338,7 @@ public class ChampionshipInfoActivity extends CommonActivity
 		public Fragment getItem(int i) {
 			switch(i) {
 				case 0: return ChampionshipInfoFragment.newInstance(currentChampionship, mIsReadOnly, mFirstName);
-				case 1: return MatchListFragment.newInstance(currentChampionship, context, mIsReadOnly);
+				case 1: return MatchListFragment.newInstance(currentChampionship, context, mIsReadOnly, mFirstName);
 //				case 2: return MatchListFragment.newInstance();
 			}
 			return null;
@@ -371,7 +373,7 @@ public class ChampionshipInfoActivity extends CommonActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_match_edit) {
-            AddChampionshipActivity.start(context, currentChampionship, currentChampionship.getCategory());
+            AddChampionshipActivity.start(context, currentChampionship, currentChampionship.getCategory(), currentChampionship.getPlayer());
 
             return true;
         }else if (id == R.id.action_match_delete){

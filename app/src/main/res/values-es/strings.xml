@@ -61,7 +61,7 @@
 
     <string name="facebook_app_id">1748665178734590</string>
 
-    <string name="my_google_app_id">AIzaSyB9Khl6hPjAQ_BOpLTk7cZ1v1l1fq18Jfc</string>
+    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
 
     <!-- release
     <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
@@ -183,6 +183,7 @@
     <string name="title_activity_edit_profile">Perfil</string>
 
     <string name="lbl_edt_place">Local</string>
+    <string name="lbl_see_championships">%1$s campeonato(s)</string>
     <string name="lbl_switch_public_profile">Perfil público</string>
 
     <string name="img_camera">Cámara</string>

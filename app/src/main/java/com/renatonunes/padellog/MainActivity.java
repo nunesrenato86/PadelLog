@@ -49,6 +49,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.renatonunes.padellog.domain.Championship;
+import com.renatonunes.padellog.domain.ChampionshipSummary;
 import com.renatonunes.padellog.domain.MyMapItem;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
@@ -102,6 +103,8 @@ public class MainActivity extends CommonActivity
     public static Player mPlayer = null;
     private Boolean isLoading = true;
     private Boolean canZoomMap = true;
+
+    Player mPlayerOfTheMap;
 
     private Boolean isShowingChampionships = true;
 
@@ -538,7 +541,11 @@ public class MainActivity extends CommonActivity
                 markerOptions.snippet(((Championship)item).getResultStr());
                 markerOptions.title(((Championship)item).getName());
             }else{ //is a player
-                markerOptions.snippet(((Player)item).getEmail());
+                String text = String.format(getResources().getString(R.string.lbl_see_championships),
+                        String.valueOf(((Player)item).getTotalChampionship()));
+
+                markerOptions.snippet(text);
+
                 markerOptions.title(((Player)item).getName());
 
                 final Player player = ((Player)item);
@@ -701,6 +708,9 @@ public class MainActivity extends CommonActivity
             championship.setInitialDate(ds.getValue(Championship.class).getInitialDate());
             championship.setFinalDate(ds.getValue(Championship.class).getFinalDate());
             championship.setCategory(ds.getValue(Championship.class).getCategory());
+
+            //championship.setPlayer(mPlayer);
+
             championship.setContext(this);
 
             championships.add(championship);
@@ -818,6 +828,11 @@ public class MainActivity extends CommonActivity
     }
 
     private void showNotDoneYet(){
+
+//        mPlayer.countChamps();
+//        mPlayer.countFirstPlace();
+//        mPlayer.countSecondPlacePlace();
+
         Snackbar.make(navigationView,
                 getResources().getString(R.string.msg_not_done_yet),
                 Snackbar.LENGTH_LONG)
@@ -848,6 +863,7 @@ public class MainActivity extends CommonActivity
         });
     }
 
+
     private void getPlayersUpdates(com.google.firebase.database.DataSnapshot dataSnapshot) {
 
         for (com.google.firebase.database.DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -866,28 +882,79 @@ public class MainActivity extends CommonActivity
             player.setIsPublic(ds.getValue(Player.class).getIsPublic());
             player.setCategory(ds.getValue(Player.class).getCategory());
 
+            player.setTotalChampionship(ds.getValue(Player.class).getTotalChampionship());
+            player.setTotalFirstPlace(ds.getValue(Player.class).getTotalFirstPlace());
+            player.setTotalSecondPlace(ds.getValue(Player.class).getTotalSecondPlace());
+
+
+            //player.updateChampionshipsCount();
+
+            //mCheckInforInServer(player, player.getId());
+
             players.add(player);
 
             markPlayerOnMap(player);
         }
 
+
 //        closeProgressBar();
     }
 
+
+//    private void getChampionshipSummaryUpdates(Player player, com.google.firebase.database.DataSnapshot dataSnapshot){
+//        player.setTotalChampionship(dataSnapshot.getChildrenCount());
+//
+//        players.add(player);
+//
+//        markPlayerOnMap(player);
+//    }
+//
+//    public interface OnGetDataListener {
+//
+//        public void onStart();
+//        public void onSuccess(DataSnapshot data);
+//        public void onFailed(DatabaseError databaseError);
+//    }
+//
+//    public void mReadDataOnce(String child, final OnGetDataListener listener) {
+//        listener.onStart();
+//        FirebaseDatabase.getInstance().getReference().child("championships").child(child).addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                listener.onSuccess(dataSnapshot);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                listener.onFailed(databaseError);
+//            }
+//        });
+//    }
+//
+//    private void mCheckInforInServer(final Player player, String child) {
+//        mReadDataOnce(child, new OnGetDataListener() {
+//            @Override
+//            public void onStart() {
+//                //DO SOME THING WHEN START GET DATA HERE
+//            }
+//
+//            @Override
+//            public void onSuccess(DataSnapshot data) {
+//                //DO SOME THING WHEN GET DATA SUCCESS HERE
+//                getChampionshipSummaryUpdates(player, data);
+//
+//            }
+//
+//            @Override
+//            public void onFailed(DatabaseError databaseError) {
+//                //DO SOME THING WHEN GET DATA FAILED HERE
+//            }
+//        });
+//
+//    }
+
     private void markPlayerOnMap(Player player){
         if (mMap != null) {
-//            LatLng marker = null;
-
-//            marker = new LatLng(championship.getLat(), championship.getLng());
-
-//            mMap.addMarker(new MarkerOptions().position(marker).title(championship.getName()));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
-
-//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker, 5));
-
-//            MyMapItem myMapItem = new MyMapItem(player.getLat(), player.getLng(), player.getName());
-//            mClusterManager.addItem(offsetItem)
-//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(offsetItem.getPosition(), 5));
             mClusterManager.addItem(player);
 
             if (canZoomMap) {
@@ -898,12 +965,37 @@ public class MainActivity extends CommonActivity
             mClusterManager.cluster();
         }
 
+        //Log.e("RNN", "adicionar aqui " + player.getName());
+
         closeProgressBar();
     }
 
+//    private void markPlayersOnMap(){
+//        if (mMap != null) {
+//
+//            mMap.clear();
+//
+//            for (Player player: players) {
+//
+//                mClusterManager.addItem(player);
+//
+//                if (canZoomMap) {
+//                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(player.getPosition(), 5));
+//                    canZoomMap = false;
+//                }
+//            }
+//
+//            mClusterManager.cluster();
+//        }
+//
+//        //Log.e("RNN", "adicionar aqui " + player.getName());
+//
+//        closeProgressBar();
+//    }
+
     //@OnClick(R.id.fab_main)
     public void callChampionshipList(String userToList, String playerName){
-        ChampionshipListActivity.start(this, mPlayer.getCategory(), userToList, playerName);
+        ChampionshipListActivity.start(this, mPlayer, userToList, playerName);
     }
 
     public static void start(Context c, Player player) {
@@ -923,9 +1015,7 @@ public class MainActivity extends CommonActivity
     }
 
 
-    //TODO: meus campeonatos tirar o meus qndo eh dos outros
-    //TODO: voce e fulando qndo eh dos outros
     //TODO: custominfowindow
-    //TODO: MANTER O ZOOM QUE ESTAVA
+
 
 }
