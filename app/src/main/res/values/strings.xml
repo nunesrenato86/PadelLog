@@ -204,6 +204,7 @@
 
     <string name="msg_google_login_error">Google login falhou, tente novamente</string>
     <string name="msg_login_error">Login falhou</string>
+    <string name="msg_player_without_chapionships">Jogador sem campeonatos</string>
 
 
 

@@ -1010,7 +1010,11 @@ public class MainActivity extends CommonActivity
 
             final Player thePlayerOnThisMarker = (Player)mMarkerPlayerMap.get(marker.getId());
 
-            callChampionshipList(thePlayerOnThisMarker.getId(), thePlayerOnThisMarker.getName());
+            if (thePlayerOnThisMarker.getTotalChampionship() > 0 ) {
+                callChampionshipList(thePlayerOnThisMarker.getId(), thePlayerOnThisMarker.getName());
+            }else{
+                showSnackbar(navigationView, getResources().getString(R.string.msg_player_without_chapionships));
+            }
         }
     }
 
