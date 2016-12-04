@@ -176,11 +176,11 @@
     <string name="msg_championship_saved">Campeonato salvo.</string>
     <string name="msg_match_saved">Partida salva.</string>
     <string name="msg_profile_updated">Perfil atualizado.</string>
-    <string name="msg_profile_cant_be_public">Perfil público deve ter uma foto.</string>
+    <string name="msg_profile_cant_be_public">Perfil público deve ter uma foto e um local.</string>
 
     <string name="msg_photo_erros">Falha ao capturar imagem.</string>
 
-    <string name="nav_user_name">Carregando...</string>
+    <string name="msg_loading">Carregando...</string>
     <string name="title_activity_chart">Resultados</string>
     <string name="title_activity_edit_profile">Perfil</string>
 
@@ -205,6 +205,14 @@
     <string name="msg_google_login_error">Google login falhou, tente novamente</string>
     <string name="msg_login_error">Login falhou</string>
     <string name="msg_player_without_chapionships">Jogador sem campeonatos</string>
+
+    <string name="msg_player_must_be_public">Seu perfil precisa ser público</string>
+    <string name="lbl_make_public">Tornar público</string>
+
+    <string name="title_dlg_warning">Aviso</string>
+    <string name="msg_profile_incomplete">Seu perfil ainda não está completo.</string>
+    <string name="btn_complete">Completar</string>
+    <string name="btn_later">Mais tarde</string>
 
 
 

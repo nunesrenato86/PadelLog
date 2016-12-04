@@ -559,15 +559,20 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
             Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if (bitmap != null) { //when user cancel the action and click in save
 
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            byte[] bytes = baos.toByteArray();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-            String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+                byte[] bytes = baos.toByteArray();
 
-            return base64Image;
+                String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+
+                return base64Image;
+            }else{
+                return mCurrentPlayerImageStr;
+            }
         }else
             return mCurrentPlayerImageStr;
     }
@@ -621,7 +626,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
     private boolean canBePublic(){
         if (switchProfilePublic.isChecked()){
-            return hasPhoto;
+            return (hasPhoto) && (!edtProfilePlace.getText().equals(""));
         }else{
             return true;
         }

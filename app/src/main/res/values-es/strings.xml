@@ -125,7 +125,7 @@
     <string name="category_4th">Cuarta</string>
     <string name="category_5th">Quinta</string>
     <string name="category_6th">Sexta</string>
-    <string name="category_7th">Sйptima</string>
+    <string name="category_7th">Séptima</string>
     <string name="category_open">Open</string>
     <string name="category_3035a">+30/+35 A</string>
     <string name="category_3035b">+30/+35 B</string>
@@ -178,7 +178,7 @@
 
     <string name="msg_photo_erros">No se pudo capturar la imagen.</string>
 
-    <string name="nav_user_name">Cargando...</string>
+    <string name="msg_loading">Cargando...</string>
     <string name="title_activity_chart">Resultados</string>
     <string name="title_activity_edit_profile">Perfil</string>
 
@@ -203,6 +203,14 @@
     <string name="msg_google_login_error">Error de acceso, vuelva a intentarlo</string>
     <string name="msg_login_error">Error de acceso, vuelva a intentarlo</string>
     <string name="msg_player_without_chapionships">Jugador sin campeonatos</string>
+
+    <string name="msg_player_must_be_public">Tu perfil tiene que ser pública</string>
+    <string name="lbl_make_public">Hacer pública</string>
+
+    <string name="title_dlg_warning">Advertencia</string>
+    <string name="msg_profile_incomplete">Su perfil no es completa.</string>
+    <string name="btn_complete">Completa</string>
+    <string name="btn_later">Más tarde</string>
 
 
 </resources>

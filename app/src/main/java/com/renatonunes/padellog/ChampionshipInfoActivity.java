@@ -88,7 +88,7 @@ public class ChampionshipInfoActivity extends CommonActivity
         ButterKnife.setDebug(true);
 
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(getResources().getString(R.string.nav_user_name));
+        mProgressDialog.setMessage(getResources().getString(R.string.msg_loading));
         mProgressDialog.setIndeterminate(true);
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.championship_info_toolbar);
@@ -477,7 +477,7 @@ public class ChampionshipInfoActivity extends CommonActivity
     public void showProgressDialog() {
 //        if (mProgressDialog == null) {
 //            mProgressDialog = new ProgressDialog(this);
-//            mProgressDialog.setMessage(getResources().getString(R.string.nav_user_name));
+//            mProgressDialog.setMessage(getResources().getString(R.string.msg_loading));
 //            mProgressDialog.setIndeterminate(true);
 //        }
 

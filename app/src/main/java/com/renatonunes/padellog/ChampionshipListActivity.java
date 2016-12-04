@@ -1,7 +1,9 @@
 package com.renatonunes.padellog;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -39,6 +42,9 @@ public class ChampionshipListActivity extends CommonActivity {
     private static Player mPlayer;
     private static String mUserIdToList;
     private static String mFirstName;
+    private Boolean mIsModeReadOnly = false;
+
+    private static ProgressDialog mProgressDialog;
 
     @BindView(R.id.fab_add_championship)
     FloatingActionButton fabAddChampionship;
@@ -49,6 +55,17 @@ public class ChampionshipListActivity extends CommonActivity {
         setContentView(R.layout.activity_championship_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mIsModeReadOnly = isModeReadOnly();
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(getResources().getString(R.string.msg_loading));
+        mProgressDialog.setIndeterminate(true);
+
+        if (mIsModeReadOnly){
+            //new Wait().execute();
+            showProgressDialog();
+        }
 
 
         recyclerView = (RecyclerView) findViewById(R.id.reciclerview_championships);
@@ -76,6 +93,8 @@ public class ChampionshipListActivity extends CommonActivity {
         ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
+
+
         fabAddChampionship.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,7 +112,7 @@ public class ChampionshipListActivity extends CommonActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
 
-        if (isModeReadOnly()){
+        if (mIsModeReadOnly){
             fabAddChampionship.setVisibility(View.INVISIBLE);
             actionbar.setTitle(getResources().getString(R.string.nav_championships));
         }else{
@@ -210,6 +229,8 @@ public class ChampionshipListActivity extends CommonActivity {
             Toast.makeText(ChampionshipListActivity.this, getResources().getString(R.string.msg_chart_no_data), Toast.LENGTH_SHORT).show();
         }
 
+        hideProgressDialog();
+
     }
 
     public static void start(Context c, Player player, String userIdToList, String playerName) {
@@ -229,4 +250,17 @@ public class ChampionshipListActivity extends CommonActivity {
 
         return !mUserIdToList.equals(loggedUserId);
     }
+
+
+    public void showProgressDialog() {
+        mProgressDialog.show();
+    }
+
+    public static void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+
 }

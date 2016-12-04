@@ -512,7 +512,23 @@ public class Player extends MyMapItem{ //implements ClusterItem{
                 .updateChildren(mResult);
     }
 
+    public void makePublic(){
+        Map<String, Object> mResult = new HashMap<String, Object>();
 
+        mResult.put("isPublic", true);
+
+        FirebaseDatabase.getInstance().getReference().child("players")
+                .child(getId())
+                .updateChildren(mResult);
+    }
+
+    public boolean havePlace(){
+        return ((this.getLng() != 0) || (this.getLat() != 0));
+    }
+
+    public boolean canBePublic(){
+        return (this.havePlace() && (!this.imageStr.equals("")));
+    }
 
 
 }

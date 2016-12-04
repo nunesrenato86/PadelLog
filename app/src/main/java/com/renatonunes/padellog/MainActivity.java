@@ -3,6 +3,7 @@ package com.renatonunes.padellog;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,10 +17,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -316,7 +319,7 @@ public class MainActivity extends CommonActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-//        Boolean isLoading = !navUsername.getText().equals(getResources().getString(R.string.nav_user_name));
+//        Boolean isLoading = !navUsername.getText().equals(getResources().getString(R.string.msg_loading));
 
         if (!isLoading) {
 
@@ -718,6 +721,8 @@ public class MainActivity extends CommonActivity
             markChampionshipOnMap(championship);
         }
 
+        verifyPlayerProfile();
+
 //        if (championships.size() > 0){
 //            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships);
 //            recyclerView.setAdapter(adapter);
@@ -823,8 +828,43 @@ public class MainActivity extends CommonActivity
         protected void onPostExecute(Boolean bool) {
             if (bool) {
                 closeProgressBar();
+                verifyPlayerProfile();
             }
         }
+    }
+
+    public void verifyPlayerProfile(){
+        if (!mPlayer.havePlace()){
+            AlertDialog dialogo = new AlertDialog.Builder(mContext)
+                    .setTitle(getResources().getString(R.string.title_dlg_warning))
+                    .setMessage(getResources().getString(R.string.msg_profile_incomplete))
+                    .setPositiveButton(getResources().getString(R.string.btn_complete), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            EditProfileActivity.start(mContext, mPlayer);
+                        }
+                    })
+                    .setNegativeButton(getResources().getString(R.string.btn_later), null)
+                    .create();
+
+            dialogo.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    Button positiveButton = ((AlertDialog) dialog)
+                            .getButton(AlertDialog.BUTTON_POSITIVE);
+
+                    positiveButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+                    Button negativeButton = ((AlertDialog) dialog)
+                            .getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                    negativeButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                }
+            });
+
+            dialogo.show();
+        }
+
     }
 
     private void showNotDoneYet(){
@@ -893,7 +933,9 @@ public class MainActivity extends CommonActivity
 
             players.add(player);
 
-            markPlayerOnMap(player);
+            if (player.havePlace()){
+                markPlayerOnMap(player);
+            }
         }
 
 
@@ -958,7 +1000,9 @@ public class MainActivity extends CommonActivity
             mClusterManager.addItem(player);
 
             if (canZoomMap) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(player.getPosition(), 5));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mPlayer.getPosition(), 10));
+
+                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(player.getPosition(), 5));
                 canZoomMap = false;
             }
 
@@ -1011,7 +1055,41 @@ public class MainActivity extends CommonActivity
             final Player thePlayerOnThisMarker = (Player)mMarkerPlayerMap.get(marker.getId());
 
             if (thePlayerOnThisMarker.getTotalChampionship() > 0 ) {
-                callChampionshipList(thePlayerOnThisMarker.getId(), thePlayerOnThisMarker.getName());
+                if (mPlayer.getIsPublic()){
+                    callChampionshipList(thePlayerOnThisMarker.getId(), thePlayerOnThisMarker.getName());
+                }else{
+                    Snackbar snackbar = Snackbar
+                            .make(navigationView,
+                                    getResources().getString(R.string.msg_player_must_be_public),
+                                    Snackbar.LENGTH_LONG)
+                            .setAction(getResources().getString(R.string.lbl_make_public), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    if (mPlayer.canBePublic()) {
+                                        //mPlayer.makePublic();
+                                        //mPlayer.setIsPublic(true);
+                                        EditProfileActivity.start(mContext, mPlayer);
+                                    }else{
+                                        Snackbar snackbar = Snackbar
+                                                .make(navigationView,
+                                                        getResources().getString(R.string.msg_profile_cant_be_public),
+                                                        Snackbar.LENGTH_LONG)
+                                                .setAction(getResources().getString(R.string.title_activity_edit_profile), new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        EditProfileActivity.start(mContext, mPlayer);
+                                                    }
+                                                });
+
+                                        snackbar.show();
+                                    }
+
+                                }
+                            });
+
+                    snackbar.show();
+                }
             }else{
                 showSnackbar(navigationView, getResources().getString(R.string.msg_player_without_chapionships));
             }
