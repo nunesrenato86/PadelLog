@@ -94,6 +94,12 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     @BindView(R.id.lbl_profile_email)
     TextView lblProfileEmail;
 
+    @BindView(R.id.lbl_champions)
+    TextView lblChampionCount;
+
+    @BindView(R.id.lbl_vices)
+    TextView lblVicesCount;
+
     @BindView(R.id.edt_profile_place)
     EditText edtProfilePlace;
 
@@ -227,6 +233,9 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             spinnerCategory.setSelection(currentPlayer.getCategory());
             edtProfilePlace.setText(currentPlayer.getPlace());
             switchProfilePublic.setChecked(currentPlayer.getIsPublic());
+
+            lblChampionCount.setText( String.valueOf(currentPlayer.getTotalFirstPlace()));
+            lblVicesCount.setText( String.valueOf(currentPlayer.getTotalSecondPlace()));
 
             if (!currentPlayer.getImageStr().isEmpty()){
                 mCurrentPlayerImageStr = currentPlayer.getImageStr();

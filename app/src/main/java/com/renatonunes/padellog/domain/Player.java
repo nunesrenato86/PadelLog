@@ -11,6 +11,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.renatonunes.padellog.MainActivity;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         this.totalChampionship = totalChampionship;
     }
 
-    @Exclude
+    //@Exclude
     public long getTotalFirstPlace(){return this.totalFirstPlace;}
 
     @Exclude
@@ -69,7 +70,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         this.totalFirstPlace = totalFirstPlace;
     }
 
-    @Exclude
+    //@Exclude
     public long getTotalSecondPlace(){return this.totalSecondPlace;}
 
     @Exclude
@@ -497,6 +498,8 @@ public class Player extends MyMapItem{ //implements ClusterItem{
 
         mResult.put("totalFirstPlace", count);
 
+        MainActivity.mPlayer.setTotalFirstPlace(count);
+
         FirebaseDatabase.getInstance().getReference().child("players")
                 .child(getId())
                 .updateChildren(mResult);
@@ -506,6 +509,8 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         Map<String, Object> mResult = new HashMap<String, Object>();
 
         mResult.put("totalSecondPlace", count);
+
+        MainActivity.mPlayer.setTotalSecondPlace(count);
 
         FirebaseDatabase.getInstance().getReference().child("players")
                 .child(getId())

@@ -834,7 +834,7 @@ public class MainActivity extends CommonActivity
     }
 
     public void verifyPlayerProfile(){
-        if (!mPlayer.havePlace()){
+        if ( (mPlayer != null) && (!mPlayer.havePlace()) ){
             AlertDialog dialogo = new AlertDialog.Builder(mContext)
                     .setTitle(getResources().getString(R.string.title_dlg_warning))
                     .setMessage(getResources().getString(R.string.msg_profile_incomplete))
