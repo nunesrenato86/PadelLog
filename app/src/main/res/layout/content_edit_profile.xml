@@ -144,18 +144,27 @@
 
         <ImageView
             android:layout_width="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.34"
             android:layout_height="wrap_content"
-            android:id="@+id/img_champ_championships"
+            android:id="@+id/img_allchampionships_count"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:src="@drawable/all_champs"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.33"
+            android:layout_height="wrap_content"
+            android:id="@+id/img_champion_count"
             android:layout_gravity="center"
             android:visibility="visible"
             android:src="@drawable/trophy_gold_32"/>
 
         <ImageView
             android:layout_width="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.33"
             android:layout_height="wrap_content"
-            android:id="@+id/img_vice_championships"
+            android:id="@+id/img_vice_count"
             android:layout_gravity="center"
             android:visibility="visible"
             android:src="@drawable/trophy_silver_32"/>
@@ -172,7 +181,17 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.34"
+            android:layout_height="wrap_content"
+            android:id="@+id/lbl_all_championships"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:textAlignment="center"
+            android:text="13"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.33"
             android:layout_height="wrap_content"
             android:id="@+id/lbl_champions"
             android:layout_gravity="center"
@@ -182,7 +201,7 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.33"
             android:layout_height="wrap_content"
             android:id="@+id/lbl_vices"
             android:layout_gravity="center"

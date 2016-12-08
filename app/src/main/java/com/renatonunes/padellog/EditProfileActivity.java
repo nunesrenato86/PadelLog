@@ -94,6 +94,9 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     @BindView(R.id.lbl_profile_email)
     TextView lblProfileEmail;
 
+    @BindView(R.id.lbl_all_championships)
+    TextView lblAllChampionshipsCount;
+
     @BindView(R.id.lbl_champions)
     TextView lblChampionCount;
 
@@ -236,6 +239,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
             lblChampionCount.setText( String.valueOf(currentPlayer.getTotalFirstPlace()));
             lblVicesCount.setText( String.valueOf(currentPlayer.getTotalSecondPlace()));
+            lblAllChampionshipsCount.setText( String.valueOf(currentPlayer.getTotalChampionship()));
 
             if (!currentPlayer.getImageStr().isEmpty()){
                 mCurrentPlayerImageStr = currentPlayer.getImageStr();
