@@ -125,11 +125,12 @@ public class MainActivity extends CommonActivity
                     ImageView imgProfile = ((ImageView)myContentsView.findViewById(R.id.img_edit_profile_infowindow));
 
                     imgProfile.setImageBitmap(ImageFactory.imgStrToImage(player.getImageStr()));
-
                 }
 
-            }else{
-                final Championship championship = ((Championship)clickedClusterItem);
+                return myContentsView;
+
+            }else if (clickedClusterItem instanceof Championship) {
+                final Championship championship = ((Championship) clickedClusterItem);
 
                 lblAllChamps.setVisibility(View.GONE);
                 imgAllChamps.setVisibility(View.GONE);
@@ -146,14 +147,16 @@ public class MainActivity extends CommonActivity
 
                 if (!championship.getImageStr().isEmpty()) {
 
-                    ImageView imgProfile = ((ImageView)myContentsView.findViewById(R.id.img_edit_profile_infowindow));
+                    ImageView imgProfile = ((ImageView) myContentsView.findViewById(R.id.img_edit_profile_infowindow));
 
                     imgProfile.setImageBitmap(ImageFactory.imgStrToImage(championship.getImageStr()));
 
                 }
-            }
 
-            return myContentsView;
+                return myContentsView;
+            }else{
+                return null;
+            }
         }
 
         @Override
