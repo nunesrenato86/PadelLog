@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -37,9 +38,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.plus.model.people.Person;
@@ -74,6 +77,130 @@ public class MainActivity extends CommonActivity
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
         GoogleMap.OnInfoWindowClickListener{
+
+    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private final View myContentsView;
+
+        MyInfoWindowAdapter(){
+            myContentsView = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            TextView txtName = ((TextView)myContentsView.findViewById(R.id.lbl_display_name_infowindow));
+            TextView txtEmail = ((TextView)myContentsView.findViewById(R.id.lbl_display_email_infowindow));
+            TextView lblAllChamps = ((TextView)myContentsView.findViewById(R.id.lbl_all_championships_infowindow));
+            TextView lblChampion = ((TextView)myContentsView.findViewById(R.id.lbl_champions_infowindow));
+            TextView lblVice = ((TextView)myContentsView.findViewById(R.id.lbl_vices_infowindow));
+
+            ImageView imgAllChamps = ((ImageView)myContentsView.findViewById(R.id.img_allchampionships_count_infowindow));
+            ImageView imgChampion = ((ImageView)myContentsView.findViewById(R.id.img_champion_count_infowindow));
+            ImageView imgVice = ((ImageView)myContentsView.findViewById(R.id.img_vice_count_infowindow));
+
+            if (clickedClusterItem instanceof Player){
+                //markerOptions.title(((Player)clickedClusterItem).getName());
+
+                final Player player = ((Player)clickedClusterItem);
+
+
+                txtName.setText(player.getName());
+
+                txtEmail.setText(getResources().getString(R.string.title_activity_chart));
+
+                lblAllChamps.setVisibility(View.VISIBLE);
+                lblAllChamps.setText(String.valueOf(player.getTotalChampionship()));
+                imgAllChamps.setVisibility(View.VISIBLE);
+
+                lblChampion.setVisibility(View.VISIBLE);
+                lblChampion.setText(String.valueOf(player.getTotalFirstPlace()));
+                imgChampion.setVisibility(View.VISIBLE);
+
+                lblVice.setVisibility(View.VISIBLE);
+                lblVice.setText(String.valueOf(player.getTotalSecondPlace()));
+                imgVice.setVisibility(View.VISIBLE);
+
+                if (!player.getImageStr().isEmpty()) {
+
+                    ImageView imgProfile = ((ImageView)myContentsView.findViewById(R.id.img_edit_profile_infowindow));
+
+                    imgProfile.setImageBitmap(ImageFactory.imgStrToImage(player.getImageStr()));
+
+                }
+
+            }else{
+                final Championship championship = ((Championship)clickedClusterItem);
+
+                lblAllChamps.setVisibility(View.GONE);
+                imgAllChamps.setVisibility(View.GONE);
+
+                lblChampion.setVisibility(View.GONE);
+                imgChampion.setVisibility(View.GONE);
+
+                lblVice.setVisibility(View.GONE);
+                imgVice.setVisibility(View.GONE);
+
+                txtName.setText(championship.getName());
+
+                txtEmail.setText(championship.getResultStr());
+
+                if (!championship.getImageStr().isEmpty()) {
+
+                    ImageView imgProfile = ((ImageView)myContentsView.findViewById(R.id.img_edit_profile_infowindow));
+
+                    imgProfile.setImageBitmap(ImageFactory.imgStrToImage(championship.getImageStr()));
+
+                }
+            }
+
+            return myContentsView;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            // TODO Auto-generated method stub
+            return null;
+
+/*
+            if (clickedClusterItem instanceof Player){
+                //markerOptions.title(((Player)clickedClusterItem).getName());
+
+                final Player player = ((Player)clickedClusterItem);
+
+                TextView txtName = ((TextView)myContentsView.findViewById(R.id.lbl_display_name_infowindow));
+                txtName.setText(player.getName());
+
+                TextView txtEmail = ((TextView)myContentsView.findViewById(R.id.lbl_display_email_infowindow));
+                txtEmail.setText(player.getEmail());
+//
+//                if (!player.getImageStr().isEmpty()){
+//                    Bitmap b = ImageFactory.imgStrToImage(player.getImageStr());
+//
+//                    player.setMarkerBitmap(Bitmap.createScaledBitmap(b, 80, 80, false));
+//                }else {
+//                    player.setMarkerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_padellog_32));
+//                }
+//
+//                if (((Player)item).getMarkerBitmap() != null){
+//                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((Player)item).getMarkerBitmap()));
+//                }
+
+            }else{
+                final Championship championship = ((Championship)clickedClusterItem);
+
+                TextView txtName = ((TextView)myContentsView.findViewById(R.id.lbl_display_name_infowindow));
+                txtName.setText(championship.getName());
+
+                TextView txtEmail = ((TextView)myContentsView.findViewById(R.id.lbl_display_email_infowindow));
+                txtEmail.setText(championship.getCategoryStr());
+            }
+            */
+
+
+            //return myContentsView;
+        }
+
+    }
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
     ArrayList<Player> players = new ArrayList<Player>();
@@ -114,6 +241,8 @@ public class MainActivity extends CommonActivity
 //    private LocationRequest mLocationRequest;
 //    private Marker markerMyLocation;
     private ClusterManager mClusterManager;
+
+    private MyMapItem clickedClusterItem;
 
     protected void openProgressBar(){
         progressBar.setVisibility( View.VISIBLE );
@@ -213,12 +342,16 @@ public class MainActivity extends CommonActivity
         //dy7aCLp4u04:APA91bHeqe_pUFatAw41Ra7KU726TuFHXgC36Kn4VUxXBMWXQUAqnUMTwEYVHQIeEX94VwkEk5cbyl2JTGl0yG1D3I8k77ZC5p4i_8kOhAr-CdFO0kUuXFOBhMHSte6cTSwt0bCYoARf
 
 
+
         new Wait().execute();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.setInfoWindowAdapter(new MyInfoWindowAdapter());
+
 
         mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
         //mClusterManager = new ClusterManager<Championship>(this, mMap);
@@ -230,6 +363,18 @@ public class MainActivity extends CommonActivity
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(this);
 
+        mClusterManager
+                .setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyMapItem>() {
+                    @Override
+                    public boolean onClusterItemClick(MyMapItem item) {
+                        clickedClusterItem = item;
+                        return false;
+                    }
+                });
+
+        mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(
+                new MyInfoWindowAdapter());
+
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
@@ -237,6 +382,21 @@ public class MainActivity extends CommonActivity
                 if (mPreviousCameraPosition == null || mPreviousCameraPosition.zoom != position.zoom) {
                     mPreviousCameraPosition = mMap.getCameraPosition();
                     mClusterManager.cluster();
+                }
+
+                // to center the info window
+                if (clickedClusterItem != null) {
+                    Projection projection = mMap.getProjection();
+
+                    LatLng latLng = new LatLng(clickedClusterItem.getPosition().latitude, clickedClusterItem.getPosition().longitude);
+//
+                    Point screenPosition = projection.toScreenLocation(latLng);
+
+                    Point mappoint = mMap.getProjection().toScreenLocation(latLng);
+                    mappoint.set(mappoint.x, mappoint.y - (screenPosition.y / 2));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(mMap.getProjection().fromScreenLocation(mappoint)));
+
+                    clickedClusterItem = null;
                 }
             }
         });
@@ -617,7 +777,7 @@ public class MainActivity extends CommonActivity
 //                }
 
                 if (((Player)item).getMarkerBitmap() != null){
-                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((Player)item).getMarkerBitmap()));
+                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((Player)item).getMarkerBitmap()));
                 }
 
             }

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingTop="@dimen/nav_header_vertical_spacing"
+    android:layout_height="match_parent">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/img_edit_profile_infowindow"
+        android:src="@drawable/com_facebook_profile_picture_blank_square"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center|top"
+        app:border_color="@color/colorFacebookButtonText"
+        app:border_width="1dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lbl_display_name_infowindow"
+        android:text="Player's display name"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lbl_display_email_infowindow"
+        android:text="player@email.com"
+        android:textSize="15sp"
+        android:paddingTop="15dp"
+        android:layout_gravity="center"/>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_marginTop="15dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.34"
+            android:layout_height="wrap_content"
+            android:id="@+id/img_allchampionships_count_infowindow"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:src="@drawable/all_champs"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.33"
+            android:layout_height="wrap_content"
+            android:id="@+id/img_champion_count_infowindow"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:src="@drawable/trophy_gold_32"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.33"
+            android:layout_height="wrap_content"
+            android:id="@+id/img_vice_count_infowindow"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:src="@drawable/trophy_silver_32"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_marginTop="15dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.34"
+            android:layout_height="wrap_content"
+            android:id="@+id/lbl_all_championships_infowindow"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:textAlignment="center"
+            android:text="13"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.33"
+            android:layout_height="wrap_content"
+            android:id="@+id/lbl_champions_infowindow"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:textAlignment="center"
+            android:text="3"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.33"
+            android:layout_height="wrap_content"
+            android:id="@+id/lbl_vices_infowindow"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:visibility="visible"
+            android:text="1"/>
+
+    </LinearLayout>
+
+</LinearLayout>

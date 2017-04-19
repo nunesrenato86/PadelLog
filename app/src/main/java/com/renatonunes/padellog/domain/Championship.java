@@ -384,8 +384,8 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     @Exclude
     public String getCategoryStr() {
         switch(this.category) {
-            case 0: return context.getResources().getString(R.string.category_open);
-            case 1: return context.getResources().getString(R.string.category_pro);
+            case 0: return context.getResources().getString(R.string.category_pro);
+            case 1: return context.getResources().getString(R.string.category_open);
             case 2: return context.getResources().getString(R.string.category_2nd);
             case 3: return context.getResources().getString(R.string.category_3th);
             case 4: return context.getResources().getString(R.string.category_4th);
