@@ -20,7 +20,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +37,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -78,6 +81,7 @@ public class MainActivity extends CommonActivity
         LocationListener,
         GoogleMap.OnInfoWindowClickListener{
 
+
     class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         private final View myContentsView;
@@ -88,6 +92,7 @@ public class MainActivity extends CommonActivity
 
         @Override
         public View getInfoContents(Marker marker) {
+
             TextView txtName = ((TextView)myContentsView.findViewById(R.id.lbl_display_name_infowindow));
             TextView txtEmail = ((TextView)myContentsView.findViewById(R.id.lbl_display_email_infowindow));
             TextView lblAllChamps = ((TextView)myContentsView.findViewById(R.id.lbl_all_championships_infowindow));
@@ -97,6 +102,8 @@ public class MainActivity extends CommonActivity
             ImageView imgAllChamps = ((ImageView)myContentsView.findViewById(R.id.img_allchampionships_count_infowindow));
             ImageView imgChampion = ((ImageView)myContentsView.findViewById(R.id.img_champion_count_infowindow));
             ImageView imgVice = ((ImageView)myContentsView.findViewById(R.id.img_vice_count_infowindow));
+
+            ImageView imgProfile = ((ImageView)myContentsView.findViewById(R.id.img_edit_profile_infowindow));
 
             if (clickedClusterItem instanceof Player){
                 //markerOptions.title(((Player)clickedClusterItem).getName());
@@ -120,13 +127,14 @@ public class MainActivity extends CommonActivity
                 lblVice.setText(String.valueOf(player.getTotalSecondPlace()));
                 imgVice.setVisibility(View.VISIBLE);
 
+
                 if (!player.getImageStr().isEmpty()) {
-
-                    ImageView imgProfile = ((ImageView)myContentsView.findViewById(R.id.img_edit_profile_infowindow));
-
                     imgProfile.setImageBitmap(ImageFactory.imgStrToImage(player.getImageStr()));
+                }else{
+                    Picasso.with(mContext).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
                 }
 
+                clickedClusterItem = null;
                 return myContentsView;
 
             }else if (clickedClusterItem instanceof Championship) {
@@ -147,14 +155,16 @@ public class MainActivity extends CommonActivity
 
                 if (!championship.getImageStr().isEmpty()) {
 
-                    ImageView imgProfile = ((ImageView) myContentsView.findViewById(R.id.img_edit_profile_infowindow));
-
                     imgProfile.setImageBitmap(ImageFactory.imgStrToImage(championship.getImageStr()));
 
+                }else{
+                    Picasso.with(mContext).load(R.drawable.no_photo).into(imgProfile);
                 }
 
+                clickedClusterItem = null;
                 return myContentsView;
             }else{
+                clickedClusterItem = null;
                 return null;
             }
         }
@@ -236,6 +246,7 @@ public class MainActivity extends CommonActivity
     public static Player mPlayer = null;
     private Boolean isLoading = true;
     private Boolean canZoomMap = true;
+    private DefaultClusterRenderer mRenderer = null;
 
     Player mPlayerOfTheMap;
 
@@ -344,8 +355,6 @@ public class MainActivity extends CommonActivity
 //        Log.e("TESTEMSG", "token no service: " + token);
         //dy7aCLp4u04:APA91bHeqe_pUFatAw41Ra7KU726TuFHXgC36Kn4VUxXBMWXQUAqnUMTwEYVHQIeEX94VwkEk5cbyl2JTGl0yG1D3I8k77ZC5p4i_8kOhAr-CdFO0kUuXFOBhMHSte6cTSwt0bCYoARf
 
-
-
         new Wait().execute();
     }
 
@@ -359,19 +368,73 @@ public class MainActivity extends CommonActivity
         mClusterManager = new ClusterManager<MyMapItem>(this, mMap);
         //mClusterManager = new ClusterManager<Championship>(this, mMap);
 
-        mClusterManager.setRenderer(new OwnIconRendered(this, mMap, mClusterManager));
+        mRenderer = new OwnIconRendered(this, mMap, mClusterManager);
+
+        mClusterManager.setRenderer(mRenderer);
 
         //mMap.setOnCameraChangeListener(mClusterManager);
 
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(this);
 
+//        mRenderer = new DefaultClusterRenderer(this, mMap, mClusterManager);
+//        mClusterManager.setRenderer(mRenderer);
+
         mClusterManager
                 .setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyMapItem>() {
                     @Override
                     public boolean onClusterItemClick(MyMapItem item) {
                         clickedClusterItem = item;
-                        return false;
+
+                        //PopUpActivity.start(mContext);
+
+                        //return false;
+
+                        int yMatrix = 250, xMatrix = 40;
+
+                        DisplayMetrics metrics1 = new DisplayMetrics();
+                        getWindowManager().getDefaultDisplay().getMetrics(metrics1);
+                        switch(metrics1.densityDpi)
+                        {
+                            case DisplayMetrics.DENSITY_LOW:
+                                yMatrix = 80;
+                                xMatrix = 20;
+                                break;
+                            case DisplayMetrics.DENSITY_MEDIUM:
+                                yMatrix = 100;
+                                xMatrix = 25;
+                                break;
+                            case DisplayMetrics.DENSITY_HIGH:
+                                yMatrix = 150;
+                                xMatrix = 30;
+                                break;
+                            case DisplayMetrics.DENSITY_XHIGH:
+                                yMatrix = 200;
+                                xMatrix = 40;
+                                break;
+                            case DisplayMetrics.DENSITY_XXHIGH:
+                                yMatrix = 200;
+                                xMatrix = 50;
+                                break;
+                        }
+
+                        Projection projection = mMap.getProjection();
+                        LatLng latLng = item.getPosition();
+                        Point point = projection.toScreenLocation(latLng);
+                        Point point2 = new Point(point.x+xMatrix,point.y-yMatrix);
+
+                        LatLng point3 = projection.fromScreenLocation(point2);
+                        CameraUpdate zoom1 = CameraUpdateFactory.newLatLng(point3);
+                        mMap.animateCamera(zoom1);
+
+                        if ((item instanceof Player) || (item instanceof Championship)) {
+                            Marker marker = mRenderer.getMarker(item);
+                            if (marker != null) {
+                                marker.showInfoWindow();
+                            }
+                        }
+
+                        return true;
                     }
                 });
 
@@ -386,21 +449,21 @@ public class MainActivity extends CommonActivity
                     mPreviousCameraPosition = mMap.getCameraPosition();
                     mClusterManager.cluster();
                 }
-
-                // to center the info window
-                if (clickedClusterItem != null) {
-                    Projection projection = mMap.getProjection();
-
-                    LatLng latLng = new LatLng(clickedClusterItem.getPosition().latitude, clickedClusterItem.getPosition().longitude);
 //
-                    Point screenPosition = projection.toScreenLocation(latLng);
-
-                    Point mappoint = mMap.getProjection().toScreenLocation(latLng);
-                    mappoint.set(mappoint.x, mappoint.y - (screenPosition.y / 2));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(mMap.getProjection().fromScreenLocation(mappoint)));
-
-                    clickedClusterItem = null;
-                }
+//                // to center the info window
+//                if (clickedClusterItem != null) {
+//                    Projection projection = mMap.getProjection();
+//
+//                    LatLng latLng = new LatLng(clickedClusterItem.getPosition().latitude, clickedClusterItem.getPosition().longitude);
+////
+//                    Point screenPosition = projection.toScreenLocation(latLng);
+//
+//                    Point mappoint = mMap.getProjection().toScreenLocation(latLng);
+//                    mappoint.set(mappoint.x, mappoint.y - (screenPosition.y / 2));
+//                    mMap.animateCamera(CameraUpdateFactory.newLatLng(mMap.getProjection().fromScreenLocation(mappoint)));
+//
+//                    clickedClusterItem = null;
+//                }
             }
         });
 
