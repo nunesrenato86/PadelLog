@@ -1,6 +1,7 @@
 package com.renatonunes.padellog;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -44,8 +45,15 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
@@ -120,6 +128,8 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     private ArrayAdapter<String> dataAdapter;
     private Resources resources;
 
+    private Uri downloadUrl;
+
     static final int REQUEST_PLACE_PICKER = 203;
 
     //to handle place
@@ -154,6 +164,8 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         mPhotoTaker = new PhotoTaker(this);
 
         initSpinner();
+
+
 
         fabRotateClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
         fabRotateAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
@@ -241,18 +253,38 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             lblVicesCount.setText( String.valueOf(currentPlayer.getTotalSecondPlace()));
             lblAllChampionshipsCount.setText( String.valueOf(currentPlayer.getTotalChampionship()));
 
-            if (!currentPlayer.getImageStr().isEmpty()){
+            //if (currentPlayer.getPhotoUrl() != null) {
+            if (currentPlayer.isImgFirebase()) {
+                hasPhoto = true;
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                StorageReference httpsReference = storage.getReferenceFromUrl(currentPlayer.getPhotoUrl());
+
+                httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(getApplicationContext()).load(uri.toString()).into(imgProfile);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+            }else if (currentPlayer.isImgStrValid()){
                 mCurrentPlayerImageStr = currentPlayer.getImageStr();
                 imgProfile.setImageBitmap(ImageFactory.imgStrToImage(mCurrentPlayerImageStr));
                 hasPhoto = true;
             }else {
-                if (user.getPhotoUrl() != null) {
-                    Picasso.with(this).load(user.getPhotoUrl()).into(imgProfile);
-                    hasPhoto = true;
-                } else {
-                    Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
+                //dont take anymore the user photo
+                //if (user.getPhotoUrl() != null) {
+                //    Picasso.with(this).load(user.getPhotoUrl()).into(imgProfile);
+                //    hasPhoto = true;
+                //} else {
+                    imgProfile.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
                     hasPhoto = false;
-                }
+                //}
             }
         }
     }
@@ -429,39 +461,34 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     public void deletePhoto(){
         toggleFabs();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        hasPhoto = false;
+        playerImageHasChanged = true;
+        imgProfile.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
 
-        if (user.getPhotoUrl() != null) {
-
-            Picasso.with(this).load(user.getPhotoUrl().toString()).into(imgProfile, new Callback() {
-                @Override
-                public void onSuccess() {
-                    mCurrentPlayerImageStr = ImageFactory.getBase64Image(((BitmapDrawable) imgProfile.getDrawable()).getBitmap());
-                    hasPhoto = true;
-                    playerImageHasChanged = true;
-                }
-
-                @Override
-                public void onError() {
-
-                }
-            });
-        }else{
-            hasPhoto = false;
-            Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
-        }
-
-//        if (currentPlayer.getPhotoUrl() != null) {
-//            hasPhoto = true;
-//            Picasso.with(this).load(currentPlayer.getPhotoUrl()).into(imgProfile);
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        if (user.getPhotoUrl() != null) { //if facebook or google user (not player) have photo, use it
+//
+//            String url = user.getPhotoUrl().toString();
+//
+//            Picasso.with(this).load(url).into(imgProfile, new Callback() {
+//                @Override
+//                public void onSuccess() {
+//                    mCurrentPlayerImageStr = ImageFactory.getBase64Image(((BitmapDrawable) imgProfile.getDrawable()).getBitmap());
+//                    hasPhoto = true;
+//                    playerImageHasChanged = true; //to reload the photo on mainactivity
+//                }
+//
+//                @Override
+//                public void onError() {
+//
+//                }
+//            });
 //        }else{
 //            hasPhoto = false;
-//            Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
-//            imgProfile.setImageBitmap(null);
-//            imgProfile.setBackgroundResource(R.drawable.com_facebook_profile_picture_blank_square);
+//            imgProfile.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
+//            //Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
 //        }
-//        mCurrentPlayerImageStr = "";
-//        playerImageHasChanged = true;
     }
 
     @OnClick(R.id.fab_profile_photo_camera)
@@ -533,9 +560,16 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         c.startActivity(new Intent(c, EditProfileActivity.class));
     }
 
-//            poder selecionar de mais de um lugar
-//    apos salvar atualizar ja o menu e tal
+    private void savePlayer(){
+        if (LibraryClass.isNetworkActive(this)) {
+            uploadPhotoAndSaveToDB();
 
+        }else{
+            showSnackbar(linearLayout, getResources().getString(R.string.msg_no_internet) );
+        }
+    }
+
+    /*
     private void savePlayer(){
         if (LibraryClass.isNetworkActive(this)) {
             currentPlayer.setImageStr(this.getImageStr());
@@ -560,7 +594,117 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             showSnackbar(linearLayout, getResources().getString(R.string.msg_no_internet) );
         }
     }
+    */
 
+    public void uploadPhotoAndSaveToDB(){
+
+        //currentPlayer.setImageStr(base64Image);
+        currentPlayer.setCategory(spinnerCategory.getSelectedItemPosition());
+        currentPlayer.setPlace(edtProfilePlace.getText().toString());
+
+        currentPlayer.setIsPublic(switchProfilePublic.isChecked());
+
+        if (mCurrentLatLng != null) {
+            currentPlayer.setLat(mCurrentLatLng.latitude);
+            currentPlayer.setLng(mCurrentLatLng.longitude);
+        }
+
+        if (mCurrentPhotoUri != null) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+            if (ImageFactory.imgIsLarge(mCurrentPhotoUri)){
+                options.inSampleSize = 7; // shrink it down otherwise we will use stupid amounts of memory
+            }
+
+            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
+
+            if (bitmap != null) { //when user cancel the action and click in save
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+
+                byte[] bytes = baos.toByteArray();
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                // Create a storage reference from our app
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                String Id = "images/players/";
+
+                Id = Id.concat(currentPlayer.getId()).concat(".jpg");
+
+                StorageReference playersRef = storageRef.child(Id);
+
+                final ProgressDialog progressDialog = new ProgressDialog(this);
+                //progressDialog.setTitle(getResources().getString(R.string.photo_processing));
+                progressDialog.show();
+
+                UploadTask uploadTask = playersRef.putBytes(bytes);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        progressDialog.dismiss();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        MainActivity.playerImageHasChanged = playerImageHasChanged;
+
+                        currentPlayer.setPhotoUrl(downloadUrl.toString());
+                        currentPlayer.setImageStr(null);
+
+                        currentPlayer.updateDB();
+                        MainActivity.mPlayer = currentPlayer;
+
+                        showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
+                    }
+                });
+
+                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        //double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                        //progressDialog.setMessage((int)progress + "% " + getResources().getString(R.string.photo_complete));
+
+                        progressDialog.setMessage(getResources().getString(R.string.msg_saving));
+                        //progressDialog.setProgress((int)progress);
+
+                        //System.out.println("Upload is " + progress + "% done");
+                    }
+                }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        //System.out.println("Upload is paused");
+                    }
+                });
+            }else{ //pick or take photo but cancel the action and keep the old one
+                savePlayerWithoutPhoto();
+            }
+        }else { //deleted the photo
+            savePlayerWithoutPhoto();
+        }
+    }
+
+    private void savePlayerWithoutPhoto(){
+        if (!hasPhoto) {
+            currentPlayer.setPhotoUrl(null);
+        }
+
+        currentPlayer.updateDB();
+        MainActivity.mPlayer = currentPlayer;
+        MainActivity.playerImageHasChanged = playerImageHasChanged;
+
+        showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
+    }
 
     public String getImageStr(){
         if (mCurrentPhotoUri != null) {
@@ -589,6 +733,93 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         }else
             return mCurrentPlayerImageStr;
     }
+
+
+    /*
+    public void uploadPhotoAndSaveToDB(){
+
+        //currentPlayer.setImageStr(base64Image);
+        currentPlayer.setCategory(spinnerCategory.getSelectedItemPosition());
+        currentPlayer.setPlace(edtProfilePlace.getText().toString());
+
+        currentPlayer.setIsPublic(switchProfilePublic.isChecked());
+
+        if (mCurrentLatLng != null) {
+            currentPlayer.setLat(mCurrentLatLng.latitude);
+            currentPlayer.setLng(mCurrentLatLng.longitude);
+        }
+
+        if (mCurrentPhotoUri != null) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+            if (ImageFactory.imgIsLarge(mCurrentPhotoUri)){
+                options.inSampleSize = 7; // shrink it down otherwise we will use stupid amounts of memory
+            }
+
+            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
+
+            if (bitmap != null) { //when user cancel the action and click in save
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                byte[] bytes = baos.toByteArray();
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                // Create a storage reference from our app
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                String Id = "images/players/";
+
+                Id = Id.concat(currentPlayer.getId()).concat(".jpg");
+
+                StorageReference playersRef = storageRef.child(Id);
+
+                UploadTask uploadTask = playersRef.putBytes(bytes);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        MainActivity.playerImageHasChanged = playerImageHasChanged;
+
+                        currentPlayer.setPhotoUrl(downloadUrl.toString());
+
+                        currentPlayer.updateDB();
+                        MainActivity.mPlayer = currentPlayer;
+
+                        showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
+                    }
+                });
+            }else{ //pick or take photo but cancel the action and keep the old one
+                currentPlayer.updateDB();
+                MainActivity.mPlayer = currentPlayer;
+                MainActivity.playerImageHasChanged = playerImageHasChanged;
+
+                showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
+            }
+        }else { //deleted the photo
+            currentPlayer.setPhotoUrl(null);
+
+            //TODO: zerar o imagestr
+            //TODO: diminuir resolucao foto perfil
+
+            currentPlayer.updateDB();
+            MainActivity.mPlayer = currentPlayer;
+            MainActivity.playerImageHasChanged = playerImageHasChanged;
+
+            showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
+        }
+    }
+    */
 
     @OnClick(R.id.fab_profile_photo_add)
     public void toggleFabs(){

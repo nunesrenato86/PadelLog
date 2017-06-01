@@ -120,6 +120,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     private static int mLoggedPlayerDefaultCategory;
     private static Player mPlayer;
+    private static Boolean mAddingChampionship;
 
     //to handle dates
     private int year;
@@ -676,10 +677,15 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         editText.setError(null);
     }
 
-    public static void start(Context c, Championship championship, int loggedPlayerDefaultCategory, Player player) {
+    public static void start(Context c,
+                             Championship championship,
+                             int loggedPlayerDefaultCategory,
+                             Player player,
+                             boolean AddingChampionship) {
         currentChampionship = championship;
         mPlayer = player;
         mLoggedPlayerDefaultCategory = loggedPlayerDefaultCategory;
+        mAddingChampionship = AddingChampionship;
 
         c.startActivity(new Intent(c, AddChampionshipActivity.class));
     }
@@ -780,6 +786,12 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
             return true;
         }else if (id == android.R.id.home) {
             finish();
+
+            if (mAddingChampionship){
+                currentChampionship.setContext(this);
+                ChampionshipInfoActivity.start(this, currentChampionship, false, mPlayer.getName());
+            }
+
             return true;
         }
 

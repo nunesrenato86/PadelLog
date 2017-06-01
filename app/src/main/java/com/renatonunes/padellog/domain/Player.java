@@ -2,20 +2,35 @@ package com.renatonunes.padellog.domain;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.renatonunes.padellog.MainActivity;
+import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
+import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.renatonunes.padellog.MainActivity.playerImageHasChanged;
 
 /**
  * Created by Renato on 26/07/2016.
@@ -28,7 +43,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
     private String name;
     private String email;
     private String password;
-//    private String photoUrl;
+    private String photoUrl;
     private String newPassword;
 
     private Double lat;
@@ -47,13 +62,13 @@ public class Player extends MyMapItem{ //implements ClusterItem{
 
     public Player(){}
 
-//    public String getPhotoUrl() {
-//        return photoUrl;
-//    }
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
 
-//    public void setPhotoUrl(String photoUrl) {
-//        this.photoUrl = photoUrl;
-//    }
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 
 
     public long getTotalChampionship(){return this.totalChampionship;}
@@ -195,15 +210,15 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         return( LibraryClass.getSP( context, TOKEN) );
     }
 
-    public void saveDB( DatabaseReference.CompletionListener... completionListener ){
+    public void saveDB(final DatabaseReference.CompletionListener... completionListener ){
 
         initDataAux();
 
-        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("players").child( getId() );
+        final DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("players").child( getId() );
 
-        if( completionListener.length == 0 ){
+        if (completionListener.length == 0) {
             firebase.setValue(this);
-        }else{
+        } else {
             firebase.setValue(this, completionListener[0]);
         }
     }
@@ -280,10 +295,20 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         }
     }
 
+    private void setPhotoUrlInMap( Map<String, Object> map ) {
+        //if( getPhotoUrl() != null ){
+            map.put( "photoUrl", getPhotoUrl() );
+        //}
+    }
+
     public void setEmailIfNull(String email) {
         if( this.email == null ){
             this.email = email;
         }
+    }
+
+    public boolean isImgStrValid(){
+        return (this.getImageStr() != null) && (!this.getImageStr().isEmpty());
     }
 
     private void setIsPublicIfNull() {
@@ -331,6 +356,106 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         setPlaceIfNull();
     }
 
+    /*
+    public void updateDB(final DatabaseReference.CompletionListener... completionListener ){
+
+        final DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("players").child( getId() );
+
+        final Map<String, Object> map = new HashMap<>();
+        setNameInMap(map);
+        setEmailInMap(map);
+        setLatInMap(map);
+        setLngInMap(map);
+        setImageStrInMap(map);
+        setCategoryInMap(map);
+        setIsPublicInMap(map);
+        setPlaceInMap(map);
+        //setPhotoUrlInMap(map);
+
+        if (this.getImageStr() != null){ //have profile img as base64 string
+            Bitmap bitmap = ImageFactory.imgStrToImage(this.getImageStr());
+
+            if (bitmap != null) { //when user cancel the action and click in save
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                byte[] bytes = baos.toByteArray();
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                // Create a storage reference from our app
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                String Id = "images/players/";
+
+                Id = Id.concat(this.getId()).concat(".jpg");
+
+                StorageReference playersRef = storageRef.child(Id);
+
+                UploadTask uploadTask = playersRef.putBytes(bytes);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        setPhotoUrl(downloadUrl.toString());
+                        setPhotoUrlInMap(map);
+
+                        if( map.isEmpty() ){
+                            return;
+                        }
+
+                        if( completionListener.length > 0 ){
+                            firebase.updateChildren(map, completionListener[0]);
+                        }
+                        else{
+                            firebase.updateChildren(map);
+                        }
+
+                    }
+                });
+            } else {
+                setPhotoUrlInMap(map);
+
+                if( map.isEmpty() ){
+                    return;
+                }
+
+                if( completionListener.length > 0 ){
+                    firebase.updateChildren(map, completionListener[0]);
+                }
+                else{
+                    firebase.updateChildren(map);
+                }
+            }
+        }else{
+            setPhotoUrlInMap(map);
+
+            if( map.isEmpty() ){
+                return;
+            }
+
+            if( completionListener.length > 0 ){
+                firebase.updateChildren(map, completionListener[0]);
+            }
+            else{
+                firebase.updateChildren(map);
+            }
+        }
+
+
+    }
+    */
+
+
     public void updateDB( DatabaseReference.CompletionListener... completionListener ){
 
         DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("players").child( getId() );
@@ -344,6 +469,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         setCategoryInMap(map);
         setIsPublicInMap(map);
         setPlaceInMap(map);
+        setPhotoUrlInMap(map);
 
         if( map.isEmpty() ){
             return;
@@ -356,6 +482,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
             firebase.updateChildren(map);
         }
     }
+
 
 //    public void updateChampionshipsCount(Boolean isInsertingMatch, int result){
 //
@@ -396,6 +523,10 @@ public class Player extends MyMapItem{ //implements ClusterItem{
 
     public void decTotalChampionship(){
         this.totalChampionship = this.totalChampionship - 1;
+
+        if (this.totalChampionship < 0){
+            this.totalChampionship = 0;
+        }
 
         updateTotalChampionships();
     }
@@ -533,6 +664,10 @@ public class Player extends MyMapItem{ //implements ClusterItem{
 
     public boolean canBePublic(){
         return (this.havePlace() && (!this.imageStr.equals("")));
+    }
+
+    public boolean isImgFirebase(){
+        return ((this.getPhotoUrl() != null) && (this.getPhotoUrl().contains("firebasestorage")));
     }
 
 

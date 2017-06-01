@@ -101,6 +101,14 @@
     <string name="championship_info">
     Campeonato celebrado en %1$s, de %2$s hasta %3$s. %4$s y %5$s
     obtuvieron lo siguiente resultado en la %6$s: %7$s.</string>
+
+    <string name="photo_processing">Processando</string>
+    <string name="photo_complete" formatted="false">completo.</string>
+
+    <string name="login_activity_or">o</string>
+
+    <string name="msg_saving">Salvando...</string>
+
     <string name="title_activity_add_match">Juego</string>
 
     <string name="str_you">vos</string>

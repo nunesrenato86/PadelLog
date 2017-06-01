@@ -3,14 +3,14 @@ apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         applicationId "com.renatonunes.padellog"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 16
-        versionName "2.7"
+        versionCode 17
+        versionName "2.8"
         multiDexEnabled true
 
     }
@@ -40,8 +40,6 @@ dependencies {
     //compile 'com.firebase:firebase-client-android:2.5.2.+'
     //compile 'com.getbase:floatingactionbutton:1.10.0'
     //compile 'com.github.clans:fab:1.6.4'
-    
-
 
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.android.support:design:25.0.0'
@@ -66,6 +64,9 @@ dependencies {
     compile 'com.android.support:multidex:1.0.0'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
+    compile 'com.google.firebase:firebase-storage:9.6.1'
+    compile 'com.google.firebase:firebase-auth:9.6.1'
+    compile 'com.github.bumptech.glide:glide:3.6.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

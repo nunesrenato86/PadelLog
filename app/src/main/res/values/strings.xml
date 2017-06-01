@@ -103,6 +103,11 @@
         Campeonato disputado em %1$s, de %2$s até %3$s. %4$s e %5$s
         obtiveram o seguinte resultado na %6$s: %7$s.</string>
 
+    <string name="photo_processing">Processando</string>
+    <string name="photo_complete" formatted="false">completo.</string>
+
+    <string name="login_activity_or">ou</string>
+
     <string name="title_activity_add_match">Jogo</string>
 
     <string name="str_you">você</string>
@@ -179,6 +184,7 @@
     <string name="msg_profile_cant_be_public">Perfil público deve ter uma foto e um local.</string>
 
     <string name="msg_photo_erros">Falha ao capturar imagem.</string>
+    <string name="msg_saving">Salvando...</string>
 
     <string name="msg_loading">Carregando...</string>
     <string name="title_activity_chart">Resultados</string>

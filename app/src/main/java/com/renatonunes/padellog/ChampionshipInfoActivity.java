@@ -373,7 +373,11 @@ public class ChampionshipInfoActivity extends CommonActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_match_edit) {
-            AddChampionshipActivity.start(context, currentChampionship, currentChampionship.getCategory(), currentChampionship.getPlayer());
+            AddChampionshipActivity.start(context,
+                    currentChampionship,
+                    currentChampionship.getCategory(),
+                    currentChampionship.getPlayer(),
+                    false);
 
             return true;
         }else if (id == R.id.action_match_delete){

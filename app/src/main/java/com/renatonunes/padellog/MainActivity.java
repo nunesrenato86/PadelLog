@@ -8,28 +8,41 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -43,20 +56,26 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.ChampionshipSummary;
 import com.renatonunes.padellog.domain.MyMapItem;
@@ -64,10 +83,12 @@ import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -81,10 +102,39 @@ public class MainActivity extends CommonActivity
         LocationListener,
         GoogleMap.OnInfoWindowClickListener{
 
+    class MarkerCallback implements Callback {
+        Marker marker = null;
+        String URL;
+        ImageView userPhoto;
+
+        MarkerCallback(Marker marker, String URL, ImageView userPhoto) {
+            this.marker = marker;
+            this.URL = URL;
+            this.userPhoto = userPhoto;
+        }
+
+        @Override
+        public void onError() {
+            //Log.e(getClass().getSimpleName(), "Error loading thumbnail!");
+        }
+
+        @Override
+        public void onSuccess() {
+            if (marker != null && marker.isInfoWindowShown()) {
+                marker.hideInfoWindow();
+
+                Picasso.with(mContext)
+                        .load(URL)
+                        .into(userPhoto);
+
+                marker.showInfoWindow();
+            }
+        }
+    }
 
     class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
-        private final View myContentsView;
+        private View myContentsView;
 
         MyInfoWindowAdapter(){
             myContentsView = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
@@ -103,13 +153,12 @@ public class MainActivity extends CommonActivity
             ImageView imgChampion = ((ImageView)myContentsView.findViewById(R.id.img_champion_count_infowindow));
             ImageView imgVice = ((ImageView)myContentsView.findViewById(R.id.img_vice_count_infowindow));
 
-            ImageView imgProfile = ((ImageView)myContentsView.findViewById(R.id.img_edit_profile_infowindow));
+            final ImageView imgProfile = ((ImageView)myContentsView.findViewById(R.id.img_edit_profile_infowindow));
 
             if (clickedClusterItem instanceof Player){
                 //markerOptions.title(((Player)clickedClusterItem).getName());
 
                 final Player player = ((Player)clickedClusterItem);
-
 
                 txtName.setText(player.getName());
 
@@ -127,11 +176,17 @@ public class MainActivity extends CommonActivity
                 lblVice.setText(String.valueOf(player.getTotalSecondPlace()));
                 imgVice.setVisibility(View.VISIBLE);
 
-
-                if (!player.getImageStr().isEmpty()) {
+                if (player.isImgFirebase()) {
+                    Picasso.with(mContext)
+                            .load(player.getPhotoUrl())
+                            .error(R.drawable.com_facebook_profile_picture_blank_square)
+                            .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
+                            .into(imgProfile, new MarkerCallback(marker, player.getPhotoUrl(), imgProfile));
+                } else if (player.isImgStrValid()) {
                     imgProfile.setImageBitmap(ImageFactory.imgStrToImage(player.getImageStr()));
                 }else{
-                    Picasso.with(mContext).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
+                    imgProfile.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
+                    //Picasso.with(mContext).load(R.drawable.com_facebook_profile_picture_blank_square).into(imgProfile);
                 }
 
                 clickedClusterItem = null;
@@ -158,7 +213,8 @@ public class MainActivity extends CommonActivity
                     imgProfile.setImageBitmap(ImageFactory.imgStrToImage(championship.getImageStr()));
 
                 }else{
-                    Picasso.with(mContext).load(R.drawable.no_photo).into(imgProfile);
+                    imgProfile.setImageResource(R.drawable.no_photo);
+                    //Picasso.with(mContext).load(R.drawable.no_photo).into(imgProfile);
                 }
 
                 clickedClusterItem = null;
@@ -171,49 +227,11 @@ public class MainActivity extends CommonActivity
 
         @Override
         public View getInfoWindow(Marker marker) {
-            // TODO Auto-generated method stub
             return null;
-
-/*
-            if (clickedClusterItem instanceof Player){
-                //markerOptions.title(((Player)clickedClusterItem).getName());
-
-                final Player player = ((Player)clickedClusterItem);
-
-                TextView txtName = ((TextView)myContentsView.findViewById(R.id.lbl_display_name_infowindow));
-                txtName.setText(player.getName());
-
-                TextView txtEmail = ((TextView)myContentsView.findViewById(R.id.lbl_display_email_infowindow));
-                txtEmail.setText(player.getEmail());
-//
-//                if (!player.getImageStr().isEmpty()){
-//                    Bitmap b = ImageFactory.imgStrToImage(player.getImageStr());
-//
-//                    player.setMarkerBitmap(Bitmap.createScaledBitmap(b, 80, 80, false));
-//                }else {
-//                    player.setMarkerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_padellog_32));
-//                }
-//
-//                if (((Player)item).getMarkerBitmap() != null){
-//                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((Player)item).getMarkerBitmap()));
-//                }
-
-            }else{
-                final Championship championship = ((Championship)clickedClusterItem);
-
-                TextView txtName = ((TextView)myContentsView.findViewById(R.id.lbl_display_name_infowindow));
-                txtName.setText(championship.getName());
-
-                TextView txtEmail = ((TextView)myContentsView.findViewById(R.id.lbl_display_email_infowindow));
-                txtEmail.setText(championship.getCategoryStr());
-            }
-            */
-
-
-            //return myContentsView;
         }
 
     }
+
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
     ArrayList<Player> players = new ArrayList<Player>();
@@ -236,6 +254,13 @@ public class MainActivity extends CommonActivity
 
     @BindView(R.id.img_marker)
     ImageView imgMarker;
+
+
+    private IconGenerator mIconGenerator;
+    private IconGenerator mClusterIconGenerator;
+    private ImageView mImageView;
+    private ImageView mClusterImageView;
+    private int mDimension;
 
     public static boolean playerImageHasChanged = false;
     private CameraPosition mPreviousCameraPosition = null;
@@ -277,6 +302,16 @@ public class MainActivity extends CommonActivity
         ButterKnife.setDebug(true);
 
         mContext = this;
+
+        mIconGenerator = new IconGenerator(mContext);
+        mClusterIconGenerator = new IconGenerator(mContext);
+
+        mImageView = new ImageView(mContext);
+        mDimension = (int) getResources().getDimension(R.dimen.marker_size);
+        mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
+        int padding = (int) getResources().getDimension(R.dimen.marker_padding);
+        mImageView.setPadding(padding, padding, padding, padding);
+        mIconGenerator.setContentView(mImageView);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String permissions[] = new String[]{
@@ -489,10 +524,28 @@ public class MainActivity extends CommonActivity
 
             navEmail.setText(user.getEmail());
 
-            if (!player.getImageStr().isEmpty()){
+            if (player.getPhotoUrl() != null) {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                StorageReference httpsReference = storage.getReferenceFromUrl(player.getPhotoUrl());
+
+                httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(mContext).load(uri.toString()).into(navImage);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+            }else if (player.isImgStrValid()){
                 navImage.setImageBitmap(ImageFactory.imgStrToImage(player.getImageStr()));
             }else {
-                Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(navImage);
+                navImage.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
+                //Picasso.with(this).load(R.drawable.com_facebook_profile_picture_blank_square).into(navImage);
 //                if (user.getPhotoUrl() != null) {
 //                    Picasso.with(this).load(user.getPhotoUrl()).into(navImage);
 //                }
@@ -737,20 +790,77 @@ public class MainActivity extends CommonActivity
         //updateCamera(location);
     }
 
+    private void GlideLoadImgToMarker(String url, final Marker marker){
+        Glide.with(mContext)
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .thumbnail(0.1f)
+                .into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource,
+                                                GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        mImageView.setImageDrawable(resource);
+                        Bitmap icon = mIconGenerator.makeIcon();
+                        if (marker.getTag() != null) {
+                            marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
+                        }
+                    }
+                });
+
+    }
+
+    private void GlideLoadImgToMarker(final Marker marker){
+        Glide.with(mContext)
+                .load(R.drawable.ic_padellog_48)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .thumbnail(0.1f)
+                .into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource,
+                                                GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        mImageView.setImageDrawable(resource);
+                        Bitmap icon = mIconGenerator.makeIcon();
+
+                        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(icon);
+
+                        if (marker.getTag() != null) {
+                            marker.setIcon(bitmapDescriptor);
+                        }
+                    }
+                });
+
+    }
+
+    private void GlideLoadImgToMarker(byte[] base64img, final Marker marker){
+        Glide.with(mContext)
+                .load(base64img)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .thumbnail(0.1f)
+                .into(new SimpleTarget<GlideDrawable>() {
+                    @Override
+                    public void onResourceReady(GlideDrawable resource,
+                                                GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        mImageView.setImageDrawable(resource);
+                        Bitmap icon = mIconGenerator.makeIcon();
+
+                        if (marker.getTag() != null) {
+                            marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
+                        }
+                    }
+                });
+
+    }
+
+
     class OwnIconRendered extends DefaultClusterRenderer<MyMapItem> {
-//    class OwnIconRendered extends DefaultClusterRenderer<Championship> {
 
         public OwnIconRendered(Context context, GoogleMap map,
                                ClusterManager<MyMapItem> clusterManager) {
-//                               ClusterManager<Championship> clusterManager) {
             super(context, map, clusterManager);
         }
 
         @Override
         protected void onBeforeClusterItemRendered(MyMapItem item, final MarkerOptions markerOptions) {
-//        protected void onBeforeClusterItemRendered(Championship item, MarkerOptions markerOptions) {
-//            markerOptions.icon(item.getIcon());
-            //markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
             if (item instanceof Championship){
                 switch(((Championship)item).getResult()) {
@@ -769,7 +879,7 @@ public class MainActivity extends CommonActivity
 
                 markerOptions.snippet(((Championship)item).getResultStr());
                 markerOptions.title(((Championship)item).getName());
-            }else{ //is a player
+            }else if (item instanceof Player){
                 String text = String.format(getResources().getString(R.string.lbl_see_championships),
                         String.valueOf(((Player)item).getTotalChampionship()));
 
@@ -778,69 +888,14 @@ public class MainActivity extends CommonActivity
                 markerOptions.title(((Player)item).getName());
 
                 final Player player = ((Player)item);
-//
-                if (!player.getImageStr().isEmpty()){
+
+                if (player.isImgStrValid()){
                     Bitmap b = ImageFactory.imgStrToImage(player.getImageStr());
 
                     player.setMarkerBitmap(Bitmap.createScaledBitmap(b, 80, 80, false));
                 }else {
                     player.setMarkerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_padellog_32));
                 }
-//                    if (player.getPhotoUrl() != null) {
-//                        final Target mTarget = new Target() {
-//                            @Override
-//                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom loadedFrom) {
-//                                Log.d("DEBUG", "onBitmapLoaded");
-//                                Bitmap mBitmap = ((BitmapDrawable)imgMarker.getDrawable()).getBitmap();
-////
-//                                if (mBitmap != null){
-//                                    player.setMarkerBitmap(bitmap);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onBitmapFailed(Drawable drawable) {
-//                                Log.d("DEBUG", "onBitmapFailed");
-//                            }
-//
-//                            @Override
-//                            public void onPrepareLoad(Drawable drawable) {
-//                                Log.d("DEBUG", "onPrepareLoad");
-//                            }
-//                        };
-////
-//                        Picasso.with(mContext).load(player.getPhotoUrl())
-//                                .resize(80, 80)
-//                                .into(mTarget);
-
-                        //it doesnt work at first time loading images
-//                        Picasso.with(mContext).load(player.getPhotoUrl())
-//                                .resize(80, 80)
-//                                .into(imgMarker, new Callback() {
-//                                    @Override
-//                                    public void onSuccess() {
-//
-////                                        Bitmap bitmap = ((BitmapDrawable)imgMarker.getDrawable()).getBitmap();
-////
-////                                        if (bitmap != null){
-////                                            player.setMarkerBitmap(bitmap);
-////                                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-////                                        }
-//
-//                                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((BitmapDrawable)imgMarker.getDrawable()).getBitmap()));
-//                                        Log.d("RNN", "onSuccess: caiu aqui" + player.getName());
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onError() {
-//
-//                                    }
-//                                });
-//
-//                    } else
-//                        player.setMarkerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_padellog_32));
-//                }
 
                 if (((Player)item).getMarkerBitmap() != null){
                     markerOptions.icon(BitmapDescriptorFactory.fromBitmap(((Player)item).getMarkerBitmap()));
@@ -854,11 +909,23 @@ public class MainActivity extends CommonActivity
 
         @Override
         protected void onClusterItemRendered(MyMapItem clusterItem,
-                                             Marker marker) {
+                                             final Marker marker) {
             super.onClusterItemRendered(clusterItem, marker);
+
+            marker.setTag("tag"); //to check after when rendering
 
             mMarkerPlayerMap.put(marker.getId(), clusterItem);
 
+            if (clusterItem instanceof Player) {
+                if (((Player) clusterItem).isImgFirebase()) {
+                    GlideLoadImgToMarker(((Player) clusterItem).getPhotoUrl(), marker);
+                }
+                else if (((Player) clusterItem).isImgStrValid()) {
+                    GlideLoadImgToMarker(Base64.decode(((Player) clusterItem).getImageStr(), Base64.DEFAULT), marker);
+                } else {
+                    GlideLoadImgToMarker(marker);
+                }
+            }
         }
     }
 
@@ -867,7 +934,6 @@ public class MainActivity extends CommonActivity
         isShowingChampionships = true;
         championships.clear();
         clearMap();
-
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -1143,6 +1209,7 @@ public class MainActivity extends CommonActivity
             player.setPlace(ds.getValue(Player.class).getPlace());
             player.setEmail(ds.getValue(Player.class).getEmail());
             player.setImageStr(ds.getValue(Player.class).getImageStr());
+            player.setPhotoUrl(ds.getValue(Player.class).getPhotoUrl());
             player.setLat(ds.getValue(Player.class).getLat());
             player.setLng(ds.getValue(Player.class).getLng());
             player.setIsPublic(ds.getValue(Player.class).getIsPublic());
@@ -1161,7 +1228,16 @@ public class MainActivity extends CommonActivity
 
             if (player.havePlace()){
                 markPlayerOnMap(player);
+            }else{
+                double longitude = Math.random() * Math.PI * 2;
+                double latitude = Math.acos(Math.random() * 2 - 1);
+
+                player.setLat(latitude);
+                player.setLng(longitude);
+
+                markPlayerOnMap(player);
             }
+
         }
 
 
@@ -1321,9 +1397,6 @@ public class MainActivity extends CommonActivity
             }
         }
     }
-
-
-    //TODO: custominfowindow
 
 
 }

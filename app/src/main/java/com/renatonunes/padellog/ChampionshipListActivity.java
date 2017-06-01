@@ -131,7 +131,11 @@ public class ChampionshipListActivity extends CommonActivity {
     public void callAddChampionshipActivity(){
         //Intent intent = new Intent(this, AddChampionshipActivity.class);
         //startActivity(intent);
-        AddChampionshipActivity.start(this, null, mPlayer.getCategory(), mPlayer);
+        AddChampionshipActivity.start(this,
+                null,
+                mPlayer.getCategory(),
+                mPlayer,
+                true);
 
     }
 

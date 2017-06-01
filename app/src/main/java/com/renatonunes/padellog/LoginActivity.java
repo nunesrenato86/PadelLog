@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
@@ -33,6 +35,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -44,6 +47,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
@@ -52,6 +58,7 @@ import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 import butterknife.BindView;
@@ -263,9 +270,55 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     String img = ImageFactory.getBase64Image(((BitmapDrawable)imgLogin.getDrawable()).getBitmap());
 
                     player.setImageStr(img);
-                    player.saveDB();
-                    MainActivity.start(context, player);
-                    finish();
+
+                    Bitmap bitmap = ImageFactory.imgStrToImage(img);
+
+                    if (bitmap != null) { //when user cancel the action and click in save
+
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                        byte[] bytes = baos.toByteArray();
+
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                        // Create a storage reference from our app
+                        StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                        String Id = "images/players/";
+
+                        Id = Id.concat(player.getId()).concat(".jpg");
+
+                        StorageReference playersRef = storageRef.child(Id);
+
+                        UploadTask uploadTask = playersRef.putBytes(bytes);
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle unsuccessful uploads
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                                player.setPhotoUrl(downloadUrl.toString());
+                                player.setImageStr(null);
+
+                                player.saveDB();
+
+                                MainActivity.start(context, player);
+                                finish();
+                            }
+                        });
+                    } else {
+                        player.saveDB();
+                        MainActivity.start(context, player);
+                        finish();
+                    }
+
                     //callMainActivity();
                 }
 
@@ -569,5 +622,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         }
         //OK can login
     }
+
+    //TODO: get place from facebook and google
 
 }
