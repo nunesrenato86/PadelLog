@@ -1,6 +1,7 @@
 package com.renatonunes.padellog.domain;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.android.gms.maps.model.LatLng;
@@ -29,6 +30,7 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     private String owner;
     private String imageStr;
     private Long initialDate;
+    private String photoUrl;
     private Long finalDate;
     private Long dateSort;
     private Integer category;
@@ -39,7 +41,26 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     private Match lastMatch;
     private Player player;
 
+    private Bitmap markerBitmap;
+
+    @Exclude
+    public Bitmap getMarkerBitmap() {
+        return markerBitmap;
+    }
+
+    public void setMarkerBitmap(Bitmap markerBitmap) {
+        this.markerBitmap = markerBitmap;
+    }
+
     public Championship() {}
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 
     public Integer getResult() {
         return result;
@@ -65,6 +86,7 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         this.partner = partner;
     }
 
+    @Exclude
     public String getImageStr() {
         return imageStr;
     }
@@ -242,7 +264,9 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     public void saveDB(DatabaseReference.CompletionListener... completionListener ){
         DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
 
-        id = firebase.child("championships").child(getOwner()).push().getKey();
+        if (id == null) {
+            id = firebase.child("championships").child(getOwner()).push().getKey();
+        }
 
         firebase = firebase.child("championships").child(getOwner()).child( getId() );
 
@@ -326,10 +350,16 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         }
     }
 
+    private void setPhotoUrlInMap( Map<String, Object> map ) {
+        //if( getPhotoUrl() != null ){
+        map.put( "photoUrl", getPhotoUrl() );
+        //}
+    }
+
     private void setDataInMap( Map<String, Object> map ) {
-        if( getImageStr() != null ){
+        //if( getImageStr() != null ){
             map.put( "imageStr", getImageStr() );
-        }
+        //}
 
         if( getCategory() != null ){
             map.put( "category", getCategory() );
@@ -366,6 +396,8 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         if( getPlace() != null ){
             map.put( "place", getPlace() );
         }
+
+        setPhotoUrlInMap(map);
 
 //        if( getResult() != null ){
 //            map.put( "result", getResult() );
@@ -419,4 +451,15 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         }
         return context.getResources().getString(R.string.category_other);
     }
+
+    @Exclude
+    public boolean isImgFirebase(){
+        return ((this.getPhotoUrl() != null) && (this.getPhotoUrl().contains("firebasestorage")));
+    }
+
+    @Exclude
+    public boolean isImgStrValid(){
+        return (this.getImageStr() != null) && (!this.getImageStr().isEmpty());
+    }
+
 }

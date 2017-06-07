@@ -37,6 +37,7 @@ public class MatchListFragment extends Fragment {
     public static Context mContext;
     public static String myName;
     private static boolean mIsReadOnly;
+    boolean mDidLoad = false;
     public static String mFirstName;
 
     ProgressBar progressBar;
@@ -85,7 +86,14 @@ public class MatchListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        refreshData();
+
+        if (mIsReadOnly) {
+            if (!mDidLoad) {
+                refreshData();
+            }
+        } else {
+            refreshData();
+        }
     }
 
     public static Fragment newInstance(Championship currentChampionship, Context context, boolean isReadOnly,
@@ -103,6 +111,7 @@ public class MatchListFragment extends Fragment {
 
     //retrieve data
     private void refreshData(){
+        mDidLoad = true;
         matches.clear();
 //		FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //		final String userId = user.getUid();
@@ -154,6 +163,7 @@ public class MatchListFragment extends Fragment {
         match.setSet3Score2(dataSnapshot.getValue(Match.class).getSet3Score2());
         match.setRound(dataSnapshot.getValue(Match.class).getRound());
         match.setImageStr(dataSnapshot.getValue(Match.class).getImageStr());
+        match.setPhotoUrl(dataSnapshot.getValue(Match.class).getPhotoUrl());
         match.setTeam1(myName + " / " + mCurrentChampionship.getPartner());
         match.setContext(mContext);
 

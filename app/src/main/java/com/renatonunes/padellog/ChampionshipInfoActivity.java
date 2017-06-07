@@ -4,8 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -27,14 +29,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -297,11 +304,37 @@ public class ChampionshipInfoActivity extends CommonActivity
 
     private void updateUi(){
 		//setting top image
-		if (currentChampionship.getImageStr().isEmpty()){
-			TopImage.setImageResource(R.drawable.no_photo);
-		}else{
-			TopImage.setImageBitmap(ImageFactory.imgStrToImage(currentChampionship.getImageStr()));
-		}
+
+        if (currentChampionship.isImgFirebase()){
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            StorageReference httpsReference = storage.getReferenceFromUrl(currentChampionship.getPhotoUrl());
+
+            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.with(getApplicationContext()).load(uri.toString()).into(TopImage);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+
+        }else if (currentChampionship.isImgStrValid()){
+            TopImage.setImageBitmap(ImageFactory.imgStrToImage( currentChampionship.getImageStr() ));
+
+            //Usaria o Bitmap
+
+            //TopImage.getDrawingCache()
+
+            //https://stackoverflow.com/questions/41404478/how-to-get-a-bitmap-from-an-imageview
+        }
+        else{
+            TopImage.setImageResource(R.drawable.no_photo);
+        }
 
 		//setting championship title
 		textTitle.setText(currentChampionship.getName());

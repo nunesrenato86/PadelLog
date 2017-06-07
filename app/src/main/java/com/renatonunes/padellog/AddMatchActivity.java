@@ -1,6 +1,7 @@
 package com.renatonunes.padellog;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -30,6 +31,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.AlertUtils;
@@ -37,6 +47,7 @@ import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -105,6 +116,8 @@ public class AddMatchActivity extends CommonActivity {
     private Uri mCurrentPhotoUri;
     private static Championship currentChampionship = null;
     private PhotoTaker mPhotoTaker;
+
+    private Uri downloadUrl;
 
     private ArrayAdapter<String> dataAdapter;
     private Resources resources;
@@ -238,7 +251,26 @@ public class AddMatchActivity extends CommonActivity {
 
             mCurrentMatchImageStr = mCurrentMatch.getImageStr();
 
-            if (((mCurrentMatchImageStr != null)) && (mCurrentMatchImageStr != "")){
+            if (mCurrentMatch.getPhotoUriDownloaded() != null) {
+                Picasso.with(getApplicationContext()).load(mCurrentMatch.getPhotoUriDownloaded().toString()).into(mThumbnailPreview);
+            }else if (mCurrentMatch.isImgFirebase()) {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                StorageReference httpsReference = storage.getReferenceFromUrl(mCurrentMatch.getPhotoUrl());
+
+                httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(getApplicationContext()).load(uri.toString()).into(mThumbnailPreview);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+            }else if (((mCurrentMatchImageStr != null)) && (mCurrentMatchImageStr != "")){
                 mThumbnailPreview.setImageBitmap(ImageFactory.imgStrToImage(mCurrentMatchImageStr));
             }else {
                 deletePhoto();
@@ -377,70 +409,189 @@ public class AddMatchActivity extends CommonActivity {
     }
 
     public void saveMatch(){
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (LibraryClass.isNetworkActive(this)) {
-            if (currentChampionship != null) {
-                boolean isNewMatch = false;
+            uploadPhotoAndSaveToDB();
+        }else{
+            showSnackbar(fabMatchPhoto, getResources().getString(R.string.msg_no_internet));
+        }
+    }
 
-                if (mCurrentMatch == null) { //not editing
-                    isNewMatch = true;
-                    mCurrentMatch = new Match();
+    public void uploadPhotoAndSaveToDB(){
+
+        if (currentChampionship != null) {
+            boolean isNewMatch = false;
+
+            if (mCurrentMatch == null) { //not editing
+                isNewMatch = true;
+                mCurrentMatch = new Match();
+            }
+            mCurrentMatch.setOpponentBackdrive(edtOpponentBackdrive.getText().toString());
+            mCurrentMatch.setOpponentDrive(edtOpponentDrive.getText().toString());
+            mCurrentMatch.setOwner(currentChampionship.getId());
+
+            int value;
+
+            //score 1
+            if (edtSet1Score1.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet1Score1.getText().toString());
+            }
+            mCurrentMatch.setSet1Score1(value);
+
+            if (edtSet1Score2.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet1Score2.getText().toString());
+            }
+            mCurrentMatch.setSet1Score2(value);
+
+            //score 2
+            if (edtSet2Score1.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet2Score1.getText().toString());
+            }
+            mCurrentMatch.setSet2Score1(value);
+
+            if (edtSet2Score2.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet2Score2.getText().toString());
+            }
+            mCurrentMatch.setSet2Score2(value);
+
+            //score 3
+            if (edtSet3Score1.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet3Score1.getText().toString());
+            }
+            mCurrentMatch.setSet3Score1(value);
+
+            if (edtSet3Score2.getText().toString().isEmpty()){
+                value = 0;
+            }else {
+                value = Integer.valueOf(edtSet3Score2.getText().toString());
+            }
+            mCurrentMatch.setSet3Score2(value);
+
+            mCurrentMatch.setRound(spinnerRound.getSelectedItemPosition());
+            mCurrentMatch.setContext(this);
+
+
+            if (mCurrentPhotoUri != null) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+
+                //if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
+                //    options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+                //}
+
+                Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
+
+                if (bitmap != null) { //when user cancel the action and click in save
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+
+                    byte[] bytes = baos.toByteArray();
+
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                    // Create a storage reference from our app
+                    StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                    String Id = "images/matches/";
+
+                    if (isNewMatch){
+                        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
+
+                        mCurrentMatch.setId(firebase.child("matches").child(mCurrentMatch.getOwner()).push().getKey());
+                    }
+
+                    Id = Id.concat(mCurrentMatch.getId()).concat(".jpg");
+
+                    StorageReference playersRef = storageRef.child(Id);
+
+                    final ProgressDialog progressDialog = new ProgressDialog(this);
+                    //progressDialog.setTitle(getResources().getString(R.string.photo_processing));
+                    progressDialog.show();
+
+                    UploadTask uploadTask = playersRef.putBytes(bytes);
+                    final boolean finalIsNewMatch = isNewMatch;
+
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            progressDialog.dismiss();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                            downloadUrl = taskSnapshot.getDownloadUrl();
+
+                            mCurrentMatch.setPhotoUrl(downloadUrl.toString());
+
+                            MatchInfoActivity.mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
+                            //mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
+
+                            //mCurrentMatch.setImageStr(null);
+
+                            //TODO: quando nao altero imagem nenhuma, podia nao fazer o download no recicler de novo
+                            //porem chamo o getupdates la ai
+
+                            if (finalIsNewMatch) {
+                                mCurrentMatch.saveDB();
+                            }else{
+                                mCurrentMatch.updateDB();
+                            }
+
+                            currentChampionship.updateResult();
+
+                            ChampionshipInfoActivity.currentChampionship = currentChampionship;
+
+                            showSnackbar(fabMatchPhoto,
+                                    getResources().getString(R.string.msg_match_saved)
+                            );
+                        }
+                    });
+
+                    uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            progressDialog.setMessage(getResources().getString(R.string.msg_saving));
+                        }
+                    }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                        }
+                    });
+                }else{
+                    mCurrentMatch.setImageStr(mCurrentMatchImageStr);
+
+                    if (isNewMatch) {
+                        mCurrentMatch.saveDB();
+                    }else{
+                        mCurrentMatch.updateDB();
+                    }
+
+                    currentChampionship.updateResult();
+
+                    ChampionshipInfoActivity.currentChampionship = currentChampionship;
+
+                    showSnackbar(fabMatchPhoto,
+                            getResources().getString(R.string.msg_match_saved)
+                    );
                 }
-                mCurrentMatch.setOpponentBackdrive(edtOpponentBackdrive.getText().toString());
-                mCurrentMatch.setOpponentDrive(edtOpponentDrive.getText().toString());
-                mCurrentMatch.setImageStr(getImageStr());
-                mCurrentMatch.setOwner(currentChampionship.getId());
-
-                int value;
-
-                //score 1
-                if (edtSet1Score1.getText().toString().isEmpty()){
-                    value = 0;
-                }else {
-                    value = Integer.valueOf(edtSet1Score1.getText().toString());
-                }
-                mCurrentMatch.setSet1Score1(value);
-
-                if (edtSet1Score2.getText().toString().isEmpty()){
-                    value = 0;
-                }else {
-                    value = Integer.valueOf(edtSet1Score2.getText().toString());
-                }
-                mCurrentMatch.setSet1Score2(value);
-
-                //score 2
-                if (edtSet2Score1.getText().toString().isEmpty()){
-                    value = 0;
-                }else {
-                    value = Integer.valueOf(edtSet2Score1.getText().toString());
-                }
-                mCurrentMatch.setSet2Score1(value);
-
-                if (edtSet2Score2.getText().toString().isEmpty()){
-                    value = 0;
-                }else {
-                    value = Integer.valueOf(edtSet2Score2.getText().toString());
-                }
-                mCurrentMatch.setSet2Score2(value);
-
-                //score 3
-                if (edtSet3Score1.getText().toString().isEmpty()){
-                    value = 0;
-                }else {
-                    value = Integer.valueOf(edtSet3Score1.getText().toString());
-                }
-                mCurrentMatch.setSet3Score1(value);
-
-                if (edtSet3Score2.getText().toString().isEmpty()){
-                    value = 0;
-                }else {
-                    value = Integer.valueOf(edtSet3Score2.getText().toString());
-                }
-                mCurrentMatch.setSet3Score2(value);
-
-                mCurrentMatch.setRound(spinnerRound.getSelectedItemPosition());
-                mCurrentMatch.setContext(this);
+            }else {
+                mCurrentMatch.setImageStr(mCurrentMatchImageStr);
 
                 if (isNewMatch) {
                     mCurrentMatch.saveDB();
@@ -450,17 +601,14 @@ public class AddMatchActivity extends CommonActivity {
 
                 currentChampionship.updateResult();
 
-                //currentChampionship.getPlayer().updateChampionshipsCount();
-
                 ChampionshipInfoActivity.currentChampionship = currentChampionship;
 
                 showSnackbar(fabMatchPhoto,
                         getResources().getString(R.string.msg_match_saved)
-                        );
+                );
             }
-        }else{
-            showSnackbar(fabMatchPhoto, getResources().getString(R.string.msg_no_internet));
         }
+
     }
 
     protected void onDestroy() {
@@ -497,6 +645,7 @@ public class AddMatchActivity extends CommonActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
     public String getImageStr(){
         if (mCurrentPhotoUri != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -524,6 +673,7 @@ public class AddMatchActivity extends CommonActivity {
         }else
             return mCurrentMatchImageStr;
     }
+    */
 
     public static void start(Context c, Championship championship, Match currentMatch) {
         currentChampionship = championship;

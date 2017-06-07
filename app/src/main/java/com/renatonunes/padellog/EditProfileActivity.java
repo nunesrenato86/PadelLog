@@ -128,8 +128,6 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     private ArrayAdapter<String> dataAdapter;
     private Resources resources;
 
-    private Uri downloadUrl;
-
     static final int REQUEST_PLACE_PICKER = 203;
 
     //to handle place
@@ -138,6 +136,8 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     //to handle images
     @BindView(R.id.img_edit_profile)
     ImageView imgProfile;
+
+    private Uri downloadUrl;
 
     private Uri mCurrentPhotoUri;
     private PhotoTaker mPhotoTaker;
@@ -164,8 +164,6 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         mPhotoTaker = new PhotoTaker(this);
 
         initSpinner();
-
-
 
         fabRotateClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
         fabRotateAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
@@ -706,6 +704,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
         showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
     }
 
+    /*
     public String getImageStr(){
         if (mCurrentPhotoUri != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -734,92 +733,8 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             return mCurrentPlayerImageStr;
     }
 
-
-    /*
-    public void uploadPhotoAndSaveToDB(){
-
-        //currentPlayer.setImageStr(base64Image);
-        currentPlayer.setCategory(spinnerCategory.getSelectedItemPosition());
-        currentPlayer.setPlace(edtProfilePlace.getText().toString());
-
-        currentPlayer.setIsPublic(switchProfilePublic.isChecked());
-
-        if (mCurrentLatLng != null) {
-            currentPlayer.setLat(mCurrentLatLng.latitude);
-            currentPlayer.setLng(mCurrentLatLng.longitude);
-        }
-
-        if (mCurrentPhotoUri != null) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-
-            if (ImageFactory.imgIsLarge(mCurrentPhotoUri)){
-                options.inSampleSize = 7; // shrink it down otherwise we will use stupid amounts of memory
-            }
-
-            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
-
-            if (bitmap != null) { //when user cancel the action and click in save
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
-                byte[] bytes = baos.toByteArray();
-
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-
-                // Create a storage reference from our app
-                StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
-
-                String Id = "images/players/";
-
-                Id = Id.concat(currentPlayer.getId()).concat(".jpg");
-
-                StorageReference playersRef = storageRef.child(Id);
-
-                UploadTask uploadTask = playersRef.putBytes(bytes);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                        downloadUrl = taskSnapshot.getDownloadUrl();
-
-                        MainActivity.playerImageHasChanged = playerImageHasChanged;
-
-                        currentPlayer.setPhotoUrl(downloadUrl.toString());
-
-                        currentPlayer.updateDB();
-                        MainActivity.mPlayer = currentPlayer;
-
-                        showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
-                    }
-                });
-            }else{ //pick or take photo but cancel the action and keep the old one
-                currentPlayer.updateDB();
-                MainActivity.mPlayer = currentPlayer;
-                MainActivity.playerImageHasChanged = playerImageHasChanged;
-
-                showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
-            }
-        }else { //deleted the photo
-            currentPlayer.setPhotoUrl(null);
-
-            //TODO: zerar o imagestr
-            //TODO: diminuir resolucao foto perfil
-
-            currentPlayer.updateDB();
-            MainActivity.mPlayer = currentPlayer;
-            MainActivity.playerImageHasChanged = playerImageHasChanged;
-
-            showSnackbar(linearLayout, resources.getString(R.string.msg_profile_updated));
-        }
-    }
     */
+
 
     @OnClick(R.id.fab_profile_photo_add)
     public void toggleFabs(){

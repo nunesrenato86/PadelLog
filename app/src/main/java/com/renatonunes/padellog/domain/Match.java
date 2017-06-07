@@ -2,6 +2,7 @@ package com.renatonunes.padellog.domain;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.net.Uri;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.firebase.database.DatabaseReference;
@@ -24,6 +25,7 @@ public class Match {
     private String opponentBackdrive;
     private String owner;
     private String imageStr;
+    private String photoUrl;
     private String scoreStr;
     private String team1;
     private Integer set1Score1;
@@ -33,7 +35,26 @@ public class Match {
     private Integer set3Score1;
     private Integer set3Score2;
 
+    private Uri photoUriDownloaded;
+
+    public Uri getPhotoUriDownloaded() {
+        return photoUriDownloaded;
+    }
+
+    @Exclude
+    public void setPhotoUriDownloaded(Uri photoUriDownloaded) {
+        this.photoUriDownloaded = photoUriDownloaded;
+    }
+
     public Match() {
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public Integer getSet1Score1() {
@@ -233,10 +254,18 @@ public class Match {
             return this.getSet1Score1() > this.getSet1Score2();
     }
 
+    private void setPhotoUrlInMap( Map<String, Object> map ) {
+        //if( getPhotoUrl() != null ){
+        map.put( "photoUrl", getPhotoUrl() );
+        //}
+    }
+
     public void saveDB(DatabaseReference.CompletionListener... completionListener ){
         DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
 
-        id = firebase.child("matches").child(getOwner()).push().getKey();
+        if (id == null) {
+            id = firebase.child("matches").child(getOwner()).push().getKey();
+        }
 
         firebase = firebase.child("matches").child(getOwner()).child( getId() );
 
@@ -307,5 +336,17 @@ public class Match {
         if( getSet3Score2() != null ){
             map.put( "set3Score2", getSet3Score2() );
         }
+
+        setPhotoUrlInMap(map);
+    }
+
+    @Exclude
+    public boolean isImgFirebase(){
+        return ((this.getPhotoUrl() != null) && (this.getPhotoUrl().contains("firebasestorage")));
+    }
+
+    @Exclude
+    public boolean isImgStrValid(){
+        return (this.getImageStr() != null) && (!this.getImageStr().isEmpty());
     }
 }

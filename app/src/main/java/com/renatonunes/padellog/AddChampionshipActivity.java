@@ -2,6 +2,7 @@ package com.renatonunes.padellog;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,8 +49,17 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
@@ -57,6 +67,7 @@ import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.renatonunes.padellog.domain.util.PhotoTaker;
+import com.squareup.picasso.Picasso;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.ByteArrayOutputStream;
@@ -138,6 +149,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     private Uri mCurrentPhotoUri;
     private PhotoTaker mPhotoTaker;
+
+    private Uri downloadUrl;
 
     //google places api
     private GoogleApiClient mGoogleApiClient;
@@ -348,7 +361,24 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
             mCurrentChampionshipImageStr = currentChampionship.getImageStr();
 
-            if (((mCurrentChampionshipImageStr != null)) && (mCurrentChampionshipImageStr != "")){
+            if (currentChampionship.isImgFirebase()) {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                StorageReference httpsReference = storage.getReferenceFromUrl(currentChampionship.getPhotoUrl());
+
+                httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(getApplicationContext()).load(uri.toString()).into(mThumbnailPreview);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+            }else if (((mCurrentChampionshipImageStr != null)) && (mCurrentChampionshipImageStr != "")){
                 mThumbnailPreview.setImageBitmap(ImageFactory.imgStrToImage(mCurrentChampionshipImageStr));
             }else {
                 deletePhoto();
@@ -493,81 +523,173 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         }
     }
 
-    public void saveChampionship(){
-        if (LibraryClass.isNetworkActive(this)) {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    public void uploadPhotoAndSaveToDB(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-            if (user != null) {
-                Boolean isNewChampionship = false;
+        if (user != null) {
+            Boolean isNewChampionship = false;
 
-                if (currentChampionship == null) { //not editing
-                    isNewChampionship = true;
-                    currentChampionship = new Championship();
-                }
+            if (currentChampionship == null) { //not editing
+                isNewChampionship = true;
+                currentChampionship = new Championship();
+            }
 
-                currentChampionship.setName(edtName.getText().toString());
-                currentChampionship.setPartner(edtPartner.getText().toString());
-                currentChampionship.setOwner(user.getUid());
-                currentChampionship.setImageStr(getImageStr());
+            currentChampionship.setName(edtName.getText().toString());
+            currentChampionship.setPartner(edtPartner.getText().toString());
+            currentChampionship.setOwner(user.getUid());
 //                currentChampionship.setInitialDate(edtInitialDate.getText().toString());
 //                currentChampionship.setFinalDate(edtFinalDate.getText().toString());
 
-                currentChampionship.setInitialDate(mInitialDate);
-                currentChampionship.setFinalDate(mFinalDate);
+            currentChampionship.setInitialDate(mInitialDate);
+            currentChampionship.setFinalDate(mFinalDate);
 
-                currentChampionship.setCategory(spinnerCategory.getSelectedItemPosition());
-                currentChampionship.setPlace(edtPlace.getText().toString());
+            currentChampionship.setCategory(spinnerCategory.getSelectedItemPosition());
+            currentChampionship.setPlace(edtPlace.getText().toString());
+            currentChampionship.setPlayer(mPlayer);
 
-                if (mCurrentLatLng != null){
-                    currentChampionship.setLat(mCurrentLatLng.latitude);
-                    currentChampionship.setLng(mCurrentLatLng.longitude);
+            if (mCurrentLatLng != null){
+                currentChampionship.setLat(mCurrentLatLng.latitude);
+                currentChampionship.setLng(mCurrentLatLng.longitude);
+            }
+
+            if (mCurrentPhotoUri != null) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+
+                //if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
+                //    options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
+                //}
+
+                Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
+
+                if (bitmap != null) { //when user cancel the action and click in save
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+
+                    byte[] bytes = baos.toByteArray();
+
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                    // Create a storage reference from our app
+                    StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                    String Id = "images/championships/";
+
+                    if (isNewChampionship){
+                        DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
+
+                        String champId = firebase.child("championships").child(currentChampionship.getOwner()).push().getKey();
+
+                        currentChampionship.setId(champId);
+                    }
+
+                    Id = Id.concat(currentChampionship.getId()).concat(".jpg");
+
+                    StorageReference playersRef = storageRef.child(Id);
+
+                    final ProgressDialog progressDialog = new ProgressDialog(this);
+                    //progressDialog.setTitle(getResources().getString(R.string.photo_processing));
+                    progressDialog.show();
+
+                    UploadTask uploadTask = playersRef.putBytes(bytes);
+                    final boolean finalIsNewChampionship = isNewChampionship;
+
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            progressDialog.dismiss();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                            downloadUrl = taskSnapshot.getDownloadUrl();
+
+                            currentChampionship.setPhotoUrl(downloadUrl.toString());
+
+                            //MatchInfoActivity.mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
+                            //mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
+
+                            currentChampionship.setImageStr(null);
+
+                            //TODO: quando nao altero imagem nenhuma, podia nao fazer o download no recicler de novo
+                            //porem chamo o getupdates la ai
+
+                            if (finalIsNewChampionship) {
+                                currentChampionship.saveDB();
+                            }else{
+                                currentChampionship.updateDB();
+                            }
+
+                            currentChampionship.updateResult();
+
+                            ChampionshipInfoActivity.currentChampionship = currentChampionship;
+
+                            showSnackbar(fabMenuChampionshipPhoto,
+                                    getResources().getString(R.string.msg_championship_saved)
+                            );
+                        }
+                    });
+
+                    uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            progressDialog.setMessage(getResources().getString(R.string.msg_saving));
+                        }
+                    }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                        }
+                    });
+                }else{
+                    currentChampionship.setImageStr(mCurrentChampionshipImageStr);
+
+                    if (isNewChampionship) {
+                        currentChampionship.saveDB();
+                    }else{
+                        currentChampionship.updateDB();
+                    }
+
+                    currentChampionship.updateResult();
+
+                    ChampionshipInfoActivity.currentChampionship = currentChampionship;
+
+                    showSnackbar(fabMenuChampionshipPhoto,
+                            getResources().getString(R.string.msg_championship_saved)
+                    );
                 }
+            }else {
+                currentChampionship.setImageStr(mCurrentChampionshipImageStr);
 
                 if (isNewChampionship) {
-                    currentChampionship.setResult(-1); //dont have matches yet
-                    currentChampionship.setPlayer(mPlayer);
                     currentChampionship.saveDB();
                 }else{
                     currentChampionship.updateDB();
                 }
 
-                Snackbar.make(fabMenuChampionshipPhoto,
-                        getResources().getString(R.string.msg_championship_saved),
-                        Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                currentChampionship.updateResult();
+
+                ChampionshipInfoActivity.currentChampionship = currentChampionship;
+
+                showSnackbar(fabMenuChampionshipPhoto,
+                        getResources().getString(R.string.msg_championship_saved)
+                );
             }
 
-        }else{
-            showSnackbar(fabMenuChampionshipPhoto, getResources().getString(R.string.msg_no_internet) );
         }
     }
 
-    public String getImageStr(){
-        if (mCurrentPhotoUri != null) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-
-            //if (ImageFactory.imgIsLarge(mCurrentPhotoUri)){
-            //    options.inSampleSize = 8; // shrink it down otherwise we will use stupid amounts of memory
-            //}
-
-            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
-
-            if (bitmap != null) { //when user cancel the action and click in save
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
-                byte[] bytes = baos.toByteArray();
-
-                String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
-
-                return base64Image;
-            }else{
-                return mCurrentChampionshipImageStr;
-            }
-        }else
-            return mCurrentChampionshipImageStr;
+    public void saveChampionship(){
+        if (LibraryClass.isNetworkActive(this)) {
+            uploadPhotoAndSaveToDB();
+        }else{
+            showSnackbar(fabMenuChampionshipPhoto, getResources().getString(R.string.msg_no_internet) );
+        }
     }
 
     @Override

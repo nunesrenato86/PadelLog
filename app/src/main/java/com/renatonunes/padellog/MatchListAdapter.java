@@ -6,14 +6,21 @@
 package com.renatonunes.padellog;
 
 import android.content.Context;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -42,18 +49,38 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> 
 	}
 
 	@Override
-	public void onBindViewHolder(MatchListViewHolder holder, int position) {
+	public void onBindViewHolder(final MatchListViewHolder holder, int position) {
         holder.currentMatch = matches.get(position);
         holder.currentChampionship = mCurrentChampionship;
 
-        holder.matchRound.setText(matches.get(position).getRoundStr());
-        holder.matchScore.setText(matches.get(position).getScoreStr());
+        holder.matchRound.setText(holder.currentMatch.getRoundStr());
+        holder.matchScore.setText(holder.currentMatch.getScoreStr());
 
-        String imgStr = matches.get(position).getImageStr();
+        //Ver aqui
 
-        if (((imgStr != null)) && (imgStr != "")){
-            holder.matchImage.setImageBitmap(ImageFactory.imgStrToImage(imgStr));
-        }else {
+        if (holder.currentMatch.isImgFirebase()){
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            StorageReference httpsReference = storage.getReferenceFromUrl(holder.currentMatch.getPhotoUrl());
+
+            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    holder.currentMatch.setPhotoUriDownloaded(uri);
+
+                    Picasso.with(context).load(uri.toString()).into(holder.matchImage);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+
+        }else if (holder.currentMatch.isImgStrValid()){
+            holder.matchImage.setImageBitmap(ImageFactory.imgStrToImage(holder.currentMatch.getImageStr()));
+        }else{
             holder.matchImage.setImageBitmap(null);
             holder.matchImage.setBackgroundResource(R.drawable.no_photo);
         }

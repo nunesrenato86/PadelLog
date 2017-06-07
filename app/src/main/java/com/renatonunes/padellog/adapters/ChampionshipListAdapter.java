@@ -1,14 +1,21 @@
 package com.renatonunes.padellog.adapters;
 
 import android.content.Context;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -40,34 +47,13 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
     }
 
     @Override
-    public void onBindViewHolder(ChampionshipListViewHolder holder, int position) {
+    public void onBindViewHolder(final ChampionshipListViewHolder holder, int position) {
         holder.currentChampionship = championships.get(position);
 
         holder.championshipTitle.setText(championships.get(position).getName());
         holder.championshipDetail.setText(championships.get(position).getInitialDateStr()
                 + " até "
                 + championships.get(position).getFinalDateStr());
-
-//        String name = championships.get(position).getName();
-//        holder.championshipTitle.setText(name);
-
-//        String currentKey = championships.get(position).getId();
-//        holder.currentKey = currentKey;
-
-//        String partner = championships.get(position).getPartner();
-//        holder.championshipDetail.setText(partner);
-
-        String imgStr = championships.get(position).getImageStr();
-
-        if (((imgStr != null)) && (imgStr != "")){
-            holder.championshipImage.setImageBitmap(ImageFactory.imgStrToImage(imgStr));
-        }else {
-            holder.championshipImage.setImageBitmap(null);
-            holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
-        }
-
-        //holder.championshipImage.setBackgroundResource(R.drawable.fotopadel);
-//        holder.championshipTrophyImage.setImageDrawable(null);
 
         if (championships.get(position).getResult() == 8){
             holder.championshipTrophyImage.setVisibility(View.VISIBLE);
@@ -80,6 +66,34 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
 
         holder.isReadOnly = mIsReadOnly;
         holder.playerToListFirstName = mFirstName;
+
+        if (holder.currentChampionship.isImgFirebase()){
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            StorageReference httpsReference = storage.getReferenceFromUrl(holder.currentChampionship.getPhotoUrl());
+
+            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    //holder.currentChampionship.setPhotoUriDownloaded(uri);
+
+                    Picasso.with(context).load(uri.toString()).into(holder.championshipImage);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+
+        }else if (holder.currentChampionship.isImgStrValid()){
+            holder.championshipImage.setImageBitmap(ImageFactory.imgStrToImage(holder.currentChampionship.getImageStr()));
+        }else{
+            holder.championshipImage.setImageBitmap(null);
+            holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+        }
+
     }
 
     @Override

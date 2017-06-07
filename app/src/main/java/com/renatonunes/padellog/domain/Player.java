@@ -260,9 +260,9 @@ public class Player extends MyMapItem{ //implements ClusterItem{
     }
 
     private void setImageStrInMap( Map<String, Object> map ) {
-        if( getImageStr() != null ){
+        //if( getImageStr() != null ){
             map.put( "imageStr", getImageStr() );
-        }
+        //}
     }
 
     private void setCategoryInMap( Map<String, Object> map ) {
@@ -666,6 +666,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         return (this.havePlace() && (!this.imageStr.equals("")));
     }
 
+    @Exclude
     public boolean isImgFirebase(){
         return ((this.getPhotoUrl() != null) && (this.getPhotoUrl().contains("firebasestorage")));
     }

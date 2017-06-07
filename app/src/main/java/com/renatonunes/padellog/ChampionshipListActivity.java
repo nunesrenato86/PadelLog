@@ -43,6 +43,7 @@ public class ChampionshipListActivity extends CommonActivity {
     private static String mUserIdToList;
     private static String mFirstName;
     private Boolean mIsModeReadOnly = false;
+    boolean mDidLoad = false;
 
     private static ProgressDialog mProgressDialog;
 
@@ -125,7 +126,14 @@ public class ChampionshipListActivity extends CommonActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        this.refreshData();
+
+        if (mIsModeReadOnly) {
+            if (!mDidLoad) {
+                this.refreshData();
+            }
+        } else {
+            this.refreshData();
+        }
     }
 
     public void callAddChampionshipActivity(){
@@ -155,26 +163,18 @@ public class ChampionshipListActivity extends CommonActivity {
 
     //retrieve data
     private void refreshData(){
+        mDidLoad = true;
         championships.clear();
-        //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        //final String userId = user.getUid();
 
-        //ver aqui um modo de filtar melhor
-//        FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
-        //FirebaseDatabase.getInstance().getReference().child("championships").addChildEventListener(new ChildEventListener() {
         FirebaseDatabase.getInstance().getReference().child("championships").child(mUserIdToList).orderByChild("dateSort").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-                //if (dataSnapshot.getKey().equals(userId)) { //ver aqui um modo de filtar melhor
-                    getUpdates(dataSnapshot);
-                //}
+                getUpdates(dataSnapshot);
             }
 
             @Override
             public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
-//                if (dataSnapshot.getKey().equals(userId)) {
-                    getUpdates(dataSnapshot);
-//                }
+                getUpdates(dataSnapshot);
             }
 
             @Override
@@ -196,19 +196,12 @@ public class ChampionshipListActivity extends CommonActivity {
     }
 
     private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
-        //championships.clear();
-
-        //for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()){
-//        for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()){
-
-//            com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()
         Championship championship = new Championship();
         championship.setId(dataSnapshot.getKey());
         championship.setName(dataSnapshot.getValue(Championship.class).getName());
 
         String owner = FirebaseAuth.getInstance().getCurrentUser().getUid();
         championship.setOwner(owner);
-//        championship.setOwner(dataSnapshot.getValue(Championship.class).getOwner());
 
         championship.setPartner(dataSnapshot.getValue(Championship.class).getPartner());
         championship.setPlace(dataSnapshot.getValue(Championship.class).getPlace());
@@ -218,6 +211,7 @@ public class ChampionshipListActivity extends CommonActivity {
         championship.setLng(dataSnapshot.getValue(Championship.class).getLng());
         championship.setInitialDate(dataSnapshot.getValue(Championship.class).getInitialDate());
         championship.setFinalDate(dataSnapshot.getValue(Championship.class).getFinalDate());
+        championship.setPhotoUrl(dataSnapshot.getValue(Championship.class).getPhotoUrl());
         championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
 
         championship.setPlayer(mPlayer);
@@ -240,7 +234,6 @@ public class ChampionshipListActivity extends CommonActivity {
     public static void start(Context c, Player player, String userIdToList, String playerName) {
         mPlayer = player;
         mUserIdToList = userIdToList;
-        //mFirstName = playerName.substring(0, playerName.indexOf(' '));
 
         mFirstName = playerName;
 
