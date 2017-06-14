@@ -305,7 +305,9 @@ public class ChampionshipInfoActivity extends CommonActivity
     private void updateUi(){
 		//setting top image
 
-        if (currentChampionship.isImgFirebase()){
+        if (currentChampionship.getPhotoUriDownloaded() != null) {
+            Picasso.with(getApplicationContext()).load(currentChampionship.getPhotoUriDownloaded().toString()).into(TopImage);
+        }else if (currentChampionship.isImgFirebase()){
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
 

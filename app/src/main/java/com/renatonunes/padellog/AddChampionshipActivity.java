@@ -361,7 +361,9 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
             mCurrentChampionshipImageStr = currentChampionship.getImageStr();
 
-            if (currentChampionship.isImgFirebase()) {
+            if (currentChampionship.getPhotoUriDownloaded() != null) {
+                Picasso.with(getApplicationContext()).load(currentChampionship.getPhotoUriDownloaded().toString()).into(mThumbnailPreview);
+            }else if (currentChampionship.isImgFirebase()) {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
 
                 StorageReference httpsReference = storage.getReferenceFromUrl(currentChampionship.getPhotoUrl());
@@ -610,7 +612,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
                             currentChampionship.setPhotoUrl(downloadUrl.toString());
 
-                            //MatchInfoActivity.mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
+                            ChampionshipInfoActivity.currentChampionship.setPhotoUriDownloaded(downloadUrl);
                             //mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
 
                             currentChampionship.setImageStr(null);
@@ -627,6 +629,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                             currentChampionship.updateResult();
 
                             ChampionshipInfoActivity.currentChampionship = currentChampionship;
+                            ChampionshipListActivity.mNeedToRefreshData = true;
 
                             showSnackbar(fabMenuChampionshipPhoto,
                                     getResources().getString(R.string.msg_championship_saved)
@@ -658,6 +661,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                     currentChampionship.updateResult();
 
                     ChampionshipInfoActivity.currentChampionship = currentChampionship;
+                    ChampionshipListActivity.mNeedToRefreshData = true;
 
                     showSnackbar(fabMenuChampionshipPhoto,
                             getResources().getString(R.string.msg_championship_saved)
@@ -675,6 +679,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                 currentChampionship.updateResult();
 
                 ChampionshipInfoActivity.currentChampionship = currentChampionship;
+                ChampionshipListActivity.mNeedToRefreshData = true;
 
                 showSnackbar(fabMenuChampionshipPhoto,
                         getResources().getString(R.string.msg_championship_saved)

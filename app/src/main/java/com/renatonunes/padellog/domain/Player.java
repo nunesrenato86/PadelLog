@@ -60,6 +60,17 @@ public class Player extends MyMapItem{ //implements ClusterItem{
 
     private Bitmap markerBitmap;
 
+    private Uri photoUriDownloaded;
+
+    public Uri getPhotoUriDownloaded() {
+        return photoUriDownloaded;
+    }
+
+    @Exclude
+    public void setPhotoUriDownloaded(Uri photoUriDownloaded) {
+        this.photoUriDownloaded = photoUriDownloaded;
+    }
+
     public Player(){}
 
     public String getPhotoUrl() {

@@ -76,7 +76,7 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
             httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    //holder.currentChampionship.setPhotoUriDownloaded(uri);
+                    holder.currentChampionship.setPhotoUriDownloaded(uri);
 
                     Picasso.with(context).load(uri.toString()).into(holder.championshipImage);
                 }

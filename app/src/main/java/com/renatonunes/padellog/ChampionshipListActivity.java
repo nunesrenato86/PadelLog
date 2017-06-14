@@ -45,6 +45,8 @@ public class ChampionshipListActivity extends CommonActivity {
     private Boolean mIsModeReadOnly = false;
     boolean mDidLoad = false;
 
+    public static Boolean mNeedToRefreshData = true;
+
     private static ProgressDialog mProgressDialog;
 
     @BindView(R.id.fab_add_championship)
@@ -132,7 +134,10 @@ public class ChampionshipListActivity extends CommonActivity {
                 this.refreshData();
             }
         } else {
-            this.refreshData();
+            if (mNeedToRefreshData) {
+                this.refreshData();
+                mNeedToRefreshData = false;
+            }
         }
     }
 
@@ -234,6 +239,7 @@ public class ChampionshipListActivity extends CommonActivity {
     public static void start(Context c, Player player, String userIdToList, String playerName) {
         mPlayer = player;
         mUserIdToList = userIdToList;
+        mNeedToRefreshData = true;
 
         mFirstName = playerName;
 

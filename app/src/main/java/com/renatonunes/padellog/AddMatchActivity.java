@@ -540,7 +540,7 @@ public class AddMatchActivity extends CommonActivity {
                             MatchInfoActivity.mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
                             //mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
 
-                            //mCurrentMatch.setImageStr(null);
+                            mCurrentMatch.setImageStr(null);
 
                             //TODO: quando nao altero imagem nenhuma, podia nao fazer o download no recicler de novo
                             //porem chamo o getupdates la ai
@@ -554,6 +554,7 @@ public class AddMatchActivity extends CommonActivity {
                             currentChampionship.updateResult();
 
                             ChampionshipInfoActivity.currentChampionship = currentChampionship;
+                            ChampionshipListActivity.mNeedToRefreshData = true;
 
                             showSnackbar(fabMatchPhoto,
                                     getResources().getString(R.string.msg_match_saved)
@@ -585,6 +586,7 @@ public class AddMatchActivity extends CommonActivity {
                     currentChampionship.updateResult();
 
                     ChampionshipInfoActivity.currentChampionship = currentChampionship;
+                    ChampionshipListActivity.mNeedToRefreshData = true;
 
                     showSnackbar(fabMatchPhoto,
                             getResources().getString(R.string.msg_match_saved)
@@ -602,6 +604,7 @@ public class AddMatchActivity extends CommonActivity {
                 currentChampionship.updateResult();
 
                 ChampionshipInfoActivity.currentChampionship = currentChampionship;
+                ChampionshipListActivity.mNeedToRefreshData = true;
 
                 showSnackbar(fabMatchPhoto,
                         getResources().getString(R.string.msg_match_saved)

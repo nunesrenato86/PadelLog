@@ -2,6 +2,7 @@ package com.renatonunes.padellog.domain;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.android.gms.maps.model.LatLng;
@@ -42,6 +43,17 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     private Player player;
 
     private Bitmap markerBitmap;
+
+    private Uri photoUriDownloaded;
+
+    public Uri getPhotoUriDownloaded() {
+        return photoUriDownloaded;
+    }
+
+    @Exclude
+    public void setPhotoUriDownloaded(Uri photoUriDownloaded) {
+        this.photoUriDownloaded = photoUriDownloaded;
+    }
 
     @Exclude
     public Bitmap getMarkerBitmap() {
@@ -86,13 +98,16 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         this.partner = partner;
     }
 
-    @Exclude
+    //@Exclude
     public String getImageStr() {
         return imageStr;
     }
 
+    //@Exclude
     public void setImageStr(String imageStr) {
-        this.imageStr = imageStr;
+        //if (imageStr == null) { //so seto se for null, pois troquei pro storage
+            this.imageStr = imageStr;
+        //}
     }
 
     public Long getInitialDate() {return initialDate;}

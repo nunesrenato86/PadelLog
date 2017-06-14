@@ -251,8 +251,9 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             lblVicesCount.setText( String.valueOf(currentPlayer.getTotalSecondPlace()));
             lblAllChampionshipsCount.setText( String.valueOf(currentPlayer.getTotalChampionship()));
 
-            //if (currentPlayer.getPhotoUrl() != null) {
-            if (currentPlayer.isImgFirebase()) {
+            if (currentPlayer.getPhotoUriDownloaded() != null) {
+                Picasso.with(getApplicationContext()).load(currentPlayer.getPhotoUriDownloaded().toString()).into(imgProfile);
+            } else if (currentPlayer.isImgFirebase()) {
                 hasPhoto = true;
                 FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -654,6 +655,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
                         downloadUrl = taskSnapshot.getDownloadUrl();
 
                         MainActivity.playerImageHasChanged = playerImageHasChanged;
+                        MainActivity.mPlayer.setPhotoUriDownloaded(downloadUrl);
 
                         currentPlayer.setPhotoUrl(downloadUrl.toString());
                         currentPlayer.setImageStr(null);

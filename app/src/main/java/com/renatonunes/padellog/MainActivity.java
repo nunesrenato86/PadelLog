@@ -620,7 +620,9 @@ public class MainActivity extends CommonActivity
 
             navEmail.setText(user.getEmail());
 
-            if (player.isImgFirebase()) {
+            if (mPlayer.getPhotoUriDownloaded() != null) {
+                Picasso.with(getApplicationContext()).load(mPlayer.getPhotoUriDownloaded().toString()).into(navImage);
+            } else if (player.isImgFirebase()) {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
 
                 StorageReference httpsReference = storage.getReferenceFromUrl(player.getPhotoUrl());
@@ -628,6 +630,8 @@ public class MainActivity extends CommonActivity
                 httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
+                        mPlayer.setPhotoUriDownloaded(uri);
+
                         Picasso.with(mContext).load(uri.toString()).into(navImage);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -1500,6 +1504,15 @@ public class MainActivity extends CommonActivity
             }else{
                 showSnackbar(navigationView, getResources().getString(R.string.msg_player_without_chapionships));
             }
+        } else { //championship - show current championship
+            final Championship championship = (Championship)mMarkerPlayerMap.get(marker.getId());
+
+            championship.setPlayer(mPlayer);
+
+            ChampionshipInfoActivity.start(mContext,
+                    championship,
+                    false,
+                    mPlayer.getName());
         }
     }
 

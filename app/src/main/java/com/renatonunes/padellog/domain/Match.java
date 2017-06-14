@@ -297,9 +297,9 @@ public class Match {
     }
 
     private void setDataInMap( Map<String, Object> map ) {
-        if( getImageStr() != null ){
+        //if( getImageStr() != null ){
             map.put( "imageStr", getImageStr() );
-        }
+        //}
 
         if( getOpponentBackdrive() != null ){
             map.put( "opponentBackdrive", getOpponentBackdrive() );
