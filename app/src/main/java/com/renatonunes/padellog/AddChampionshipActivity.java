@@ -635,6 +635,10 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                            Log.e("RNN", ((int)progress + "% " + getResources().getString(R.string.photo_complete)));
+
                             progressDialog.setMessage(getResources().getString(R.string.msg_saving));
                         }
                     }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
