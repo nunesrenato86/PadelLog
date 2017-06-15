@@ -226,7 +226,7 @@ public class ChampionshipListActivity extends CommonActivity {
         championships.add(championship);//        }
 
         if (championships.size() > 0){
-            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships, isModeReadOnly(), mFirstName);
+            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships, mIsModeReadOnly, mFirstName);
             recyclerView.setAdapter(adapter);
         }else{
             Toast.makeText(ChampionshipListActivity.this, getResources().getString(R.string.msg_chart_no_data), Toast.LENGTH_SHORT).show();

@@ -611,14 +611,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                             downloadUrl = taskSnapshot.getDownloadUrl();
 
                             currentChampionship.setPhotoUrl(downloadUrl.toString());
-
-                            ChampionshipInfoActivity.currentChampionship.setPhotoUriDownloaded(downloadUrl);
-                            //mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
-
                             currentChampionship.setImageStr(null);
-
-                            //TODO: quando nao altero imagem nenhuma, podia nao fazer o download no recicler de novo
-                            //porem chamo o getupdates la ai
 
                             if (finalIsNewChampionship) {
                                 currentChampionship.saveDB();
@@ -629,6 +622,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                             currentChampionship.updateResult();
 
                             ChampionshipInfoActivity.currentChampionship = currentChampionship;
+                            ChampionshipInfoActivity.currentChampionship.setPhotoUriDownloaded(downloadUrl);
                             ChampionshipListActivity.mNeedToRefreshData = true;
 
                             showSnackbar(fabMenuChampionshipPhoto,

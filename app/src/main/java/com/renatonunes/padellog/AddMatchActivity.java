@@ -536,19 +536,15 @@ public class AddMatchActivity extends CommonActivity {
                             downloadUrl = taskSnapshot.getDownloadUrl();
 
                             mCurrentMatch.setPhotoUrl(downloadUrl.toString());
-
-                            MatchInfoActivity.mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
-                            //mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
-
                             mCurrentMatch.setImageStr(null);
 
-                            //TODO: quando nao altero imagem nenhuma, podia nao fazer o download no recicler de novo
-                            //porem chamo o getupdates la ai
+                            MatchInfoActivity.mCurrentMatch = mCurrentMatch;
 
                             if (finalIsNewMatch) {
                                 mCurrentMatch.saveDB();
                             }else{
                                 mCurrentMatch.updateDB();
+                                MatchInfoActivity.mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
                             }
 
                             currentChampionship.updateResult();
