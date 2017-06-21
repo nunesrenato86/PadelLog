@@ -73,6 +73,7 @@
     !-->
     <string name="chk_unique_token">Unique token id</string>
 
+    <string name="nav_policy">Política de privacidad</string>
     <string name="nav_logout">Logout</string>
     <string name="nav_championships">Campeonatos</string>
     <string name="nav_my_championships">Mis campeonatos</string>

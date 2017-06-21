@@ -8,11 +8,21 @@ android {
     defaultConfig {
         applicationId "com.renatonunes.padellog"
         minSdkVersion 15
-        targetSdkVersion 24
-        versionCode 17
-        versionName "2.8"
+        targetSdkVersion 25
+        versionCode 18
+        versionName "3.0"
         multiDexEnabled true
 
+    }
+
+    signingConfigs {
+        release {
+//            storeFile file("myreleasekey.keystore")
+//            storePassword "password"
+//            keyAlias "MyReleaseKey"
+//            keyPassword "password"
+            v2SigningEnabled false
+        }
     }
 
     dexOptions {
@@ -62,11 +72,11 @@ dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.4.3'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
     compile 'com.android.support:multidex:1.0.0'
+    compile 'com.google.firebase:firebase-storage:9.6.1'
+    compile 'com.github.bumptech.glide:glide:3.6.0'
+    compile 'com.android.support.constraint:constraint-layout:+'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
-    compile 'com.google.firebase:firebase-storage:9.6.1'
-    compile 'com.google.firebase:firebase-auth:9.6.1'
-    compile 'com.github.bumptech.glide:glide:3.6.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

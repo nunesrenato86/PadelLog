@@ -709,6 +709,8 @@ public class MainActivity extends CommonActivity
             } else if (id == R.id.nav_per_year) {
                 Intent intent = new Intent(this, ChartActivity.class);
                 startActivity(intent);
+            } else if (id == R.id.nav_policy){
+                PrivacyPolicyActivity.start(this);
             } else if (id == R.id.nav_logout) {
                 if (FirebaseAuth.getInstance() != null) {
                     FirebaseAuth.getInstance().signOut();
@@ -1263,8 +1265,8 @@ public class MainActivity extends CommonActivity
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //        final String userId = user.getUid();
 
-        FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
-        //FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
+        //FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 getPlayersUpdates(dataSnapshot);
@@ -1310,13 +1312,13 @@ public class MainActivity extends CommonActivity
             if (player.havePlace()){
                 markPlayerOnMap(player);
             }else{
-                double longitude = Math.random() * Math.PI * 2;
-                double latitude = Math.acos(Math.random() * 2 - 1);
-
-                player.setLat(latitude);
-                player.setLng(longitude);
-
-                markPlayerOnMap(player);
+//                double longitude = Math.random() * Math.PI * 2;
+//                double latitude = Math.acos(Math.random() * 2 - 1);
+//
+//                player.setLat(latitude);
+//                player.setLng(longitude);
+//
+//                markPlayerOnMap(player);
             }
 
         }
