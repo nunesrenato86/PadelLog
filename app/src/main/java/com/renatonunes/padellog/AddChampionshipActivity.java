@@ -567,7 +567,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 65, baos);
 
                     byte[] bytes = baos.toByteArray();
 

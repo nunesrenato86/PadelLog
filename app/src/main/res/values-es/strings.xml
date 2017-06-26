@@ -73,6 +73,8 @@
     !-->
     <string name="chk_unique_token">Unique token id</string>
 
+    <string name="link_privacy">file:///android_asset/politicaprivacidad.html</string>
+
     <string name="nav_policy">Política de privacidad</string>
     <string name="nav_logout">Logout</string>
     <string name="nav_championships">Campeonatos</string>

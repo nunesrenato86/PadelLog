@@ -318,6 +318,7 @@ public class Player extends MyMapItem{ //implements ClusterItem{
         }
     }
 
+    @Exclude
     public boolean isImgStrValid(){
         return (this.getImageStr() != null) && (!this.getImageStr().isEmpty());
     }
@@ -674,7 +675,10 @@ public class Player extends MyMapItem{ //implements ClusterItem{
     }
 
     public boolean canBePublic(){
-        return (this.havePlace() && (!this.imageStr.equals("")));
+
+        boolean havePicture = isImgFirebase() || (!this.imageStr.equals(""));
+
+        return (this.havePlace() && (havePicture));
     }
 
     @Exclude

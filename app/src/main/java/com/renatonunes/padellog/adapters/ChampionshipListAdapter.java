@@ -67,6 +67,8 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
         holder.isReadOnly = mIsReadOnly;
         holder.playerToListFirstName = mFirstName;
 
+        Picasso.with(context).cancelRequest(holder.championshipImage);
+
         if (holder.currentChampionship.isImgFirebase()){
 
             FirebaseStorage storage = FirebaseStorage.getInstance();

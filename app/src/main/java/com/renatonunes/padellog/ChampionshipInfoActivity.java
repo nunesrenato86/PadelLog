@@ -437,6 +437,7 @@ public class ChampionshipInfoActivity extends CommonActivity
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             deleteMatchesThenChampionship();
+                            ChampionshipListActivity.mNeedToRefreshData = true;
                         }
                     })
                     .setNegativeButton(getResources().getString(R.string.btn_cancel), null)

@@ -253,6 +253,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
             if (currentPlayer.getPhotoUriDownloaded() != null) {
                 Picasso.with(getApplicationContext()).load(currentPlayer.getPhotoUriDownloaded().toString()).into(imgProfile);
+                hasPhoto = true;
             } else if (currentPlayer.isImgFirebase()) {
                 hasPhoto = true;
                 FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -443,6 +444,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             final CharSequence name = place.getName();
             final CharSequence address = place.getAddress();
             mCurrentLatLng = place.getLatLng();
+            MainActivity.playerPlaceHasChanged = true; //to refresh player
             String attributions = PlacePicker.getAttributions(data);
 
             if (attributions == null) {

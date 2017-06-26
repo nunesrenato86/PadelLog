@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -85,6 +86,7 @@ import com.renatonunes.padellog.domain.MyMapItem;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
 import com.renatonunes.padellog.domain.util.ImageFactory;
+import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -283,8 +285,8 @@ public class MainActivity extends CommonActivity
     @BindView(R.id.progressBar_maps)
     ProgressBar progressBar;
 
-//    @BindView(R.id.fab_main)
-//    FloatingActionButton fabMain;
+    @BindView(R.id.fab_main)
+    FloatingActionButton fabMain;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
@@ -308,6 +310,7 @@ public class MainActivity extends CommonActivity
     private String mInfoWindowBase64Image;
 
     public static boolean playerImageHasChanged = false;
+    public static boolean playerPlaceHasChanged = false;
     private CameraPosition mPreviousCameraPosition = null;
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
@@ -355,6 +358,9 @@ public class MainActivity extends CommonActivity
 //            window.setStatusBarColor(Color.TRANSPARENT);
 //        }
 
+        String value = LibraryClass.getSP(this, "isShowingChampionships");
+
+        isShowingChampionships = value.equals("1") || value.equals("");
 
         ButterKnife.bind(this);
         ButterKnife.setDebug(true);
@@ -697,11 +703,13 @@ public class MainActivity extends CommonActivity
         if (!isLoading) {
 
             if (id == R.id.nav_show_championships) {
+                LibraryClass.saveSP(this, "isShowingChampionships", "1");
                 canZoomMap = true;
                 getChampionships();
             } else if (id == R.id.nav_my_championships) {
                 callChampionshipList(mPlayer.getId(), mPlayer.getName());
             } else if (id == R.id.nav_show_players) {
+                LibraryClass.saveSP(this, "isShowingChampionships", "0");
                 canZoomMap = true;
                 getPlayers();
             } else if (id == R.id.nav_per_partner) {
@@ -1453,6 +1461,17 @@ public class MainActivity extends CommonActivity
     //@OnClick(R.id.fab_main)
     public void callChampionshipList(String userToList, String playerName){
         ChampionshipListActivity.start(this, mPlayer, userToList, playerName);
+    }
+
+    @OnClick(R.id.fab_main)
+    public void callAddChampionshipActivity(){
+        if (mPlayer != null) {
+            AddChampionshipActivity.start(this,
+                    null,
+                    mPlayer.getCategory(),
+                    mPlayer,
+                    true);
+        }
     }
 
     public static void start(Context c, Player player) {

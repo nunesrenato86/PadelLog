@@ -277,6 +277,7 @@ public class MatchInfoActivity extends CommonActivity {
 						@Override
 						public void onClick(DialogInterface dialogInterface, int i) {
 							deleteMatch();
+
 						}
 					})
 					.setNegativeButton(getResources().getString(R.string.btn_cancel), null)

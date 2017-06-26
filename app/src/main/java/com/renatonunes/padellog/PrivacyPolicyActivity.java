@@ -23,7 +23,8 @@ public class PrivacyPolicyActivity extends AppCompatActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
 
         WebView webView = (WebView) findViewById(R.id.wv_content);
-        webView.loadUrl("file:///android_asset/politicaprivacidade.html");
+        //webView.loadUrl("file:///android_asset/politicaprivacidade.html");
+        webView.loadUrl(getResources().getString(R.string.link_privacy));
     }
 
     public static void start(Context c){

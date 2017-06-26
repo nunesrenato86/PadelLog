@@ -65,10 +65,10 @@ public class ChampionshipListActivity extends CommonActivity {
         mProgressDialog.setMessage(getResources().getString(R.string.msg_loading));
         mProgressDialog.setIndeterminate(true);
 
-        if (mIsModeReadOnly){
+        //if (mIsModeReadOnly){
             //new Wait().execute();
             showProgressDialog();
-        }
+        //}
 
 
         recyclerView = (RecyclerView) findViewById(R.id.reciclerview_championships);
