@@ -119,6 +119,8 @@ public class AddMatchActivity extends CommonActivity {
 
     private Uri downloadUrl;
 
+    private boolean hasPhoto = false;
+
     private ArrayAdapter<String> dataAdapter;
     private Resources resources;
 //    private NetworkChangeReceiver mNetworkReceiver;
@@ -253,7 +255,9 @@ public class AddMatchActivity extends CommonActivity {
 
             if (mCurrentMatch.getPhotoUriDownloaded() != null) {
                 Picasso.with(getApplicationContext()).load(mCurrentMatch.getPhotoUriDownloaded().toString()).into(mThumbnailPreview);
+                hasPhoto = true;
             }else if (mCurrentMatch.isImgFirebase()) {
+                hasPhoto = true;
                 FirebaseStorage storage = FirebaseStorage.getInstance();
 
                 StorageReference httpsReference = storage.getReferenceFromUrl(mCurrentMatch.getPhotoUrl());
@@ -272,6 +276,7 @@ public class AddMatchActivity extends CommonActivity {
 
             }else if (((mCurrentMatchImageStr != null)) && (mCurrentMatchImageStr != "")){
                 mThumbnailPreview.setImageBitmap(ImageFactory.imgStrToImage(mCurrentMatchImageStr));
+                hasPhoto = true;
             }else {
                 deletePhoto();
             }
@@ -293,6 +298,8 @@ public class AddMatchActivity extends CommonActivity {
     public void deletePhoto(){
         toggleFabs();
 
+        hasPhoto = false;
+
         mCurrentMatchImageStr = "";
         mThumbnailPreview.setImageBitmap(null);
         mThumbnailPreview.setBackgroundResource(R.drawable.no_photo);
@@ -305,7 +312,7 @@ public class AddMatchActivity extends CommonActivity {
             File placeholderFile = ImageFactory.newFile();
             mCurrentPhotoUri = Uri.fromFile(placeholderFile);
 
-            if (!mPhotoTaker.takePhoto(placeholderFile)) {
+            if (!mPhotoTaker.takePhoto(placeholderFile, this)) {
                 displayPhotoError();
             }
         }
@@ -345,6 +352,7 @@ public class AddMatchActivity extends CommonActivity {
 
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoUri.getPath(), options);
         mThumbnailPreview.setImageBitmap(bitmap);
+        hasPhoto = true;
     }
 
     private void previewPickedImage(Intent data){
@@ -368,6 +376,7 @@ public class AddMatchActivity extends CommonActivity {
         }
 
         mThumbnailPreview.setImageBitmap(BitmapFactory.decodeFile(picturePath, options));
+        hasPhoto = true;
     }
 
     private void displayPhotoError() {
@@ -571,43 +580,38 @@ public class AddMatchActivity extends CommonActivity {
                         }
                     });
                 }else{
-                    mCurrentMatch.setImageStr(mCurrentMatchImageStr);
-
-                    if (isNewMatch) {
-                        mCurrentMatch.saveDB();
-                    }else{
-                        mCurrentMatch.updateDB();
-                    }
-
-                    currentChampionship.updateResult();
-
-                    ChampionshipInfoActivity.currentChampionship = currentChampionship;
-                    ChampionshipListActivity.mNeedToRefreshData = true;
-
-                    showSnackbar(fabMatchPhoto,
-                            getResources().getString(R.string.msg_match_saved)
-                    );
+                    saveMatchWithoutPhoto(isNewMatch);
                 }
             }else {
-                mCurrentMatch.setImageStr(mCurrentMatchImageStr);
-
-                if (isNewMatch) {
-                    mCurrentMatch.saveDB();
-                }else{
-                    mCurrentMatch.updateDB();
-                }
-
-                currentChampionship.updateResult();
-
-                ChampionshipInfoActivity.currentChampionship = currentChampionship;
-                ChampionshipListActivity.mNeedToRefreshData = true;
-
-                showSnackbar(fabMatchPhoto,
-                        getResources().getString(R.string.msg_match_saved)
-                );
+                saveMatchWithoutPhoto(isNewMatch);
             }
         }
 
+    }
+
+    private void saveMatchWithoutPhoto(Boolean isNew){
+        mCurrentMatch.setImageStr(mCurrentMatchImageStr);
+
+        if (!hasPhoto) {
+            mCurrentMatch.setPhotoUrl(null);
+            mCurrentMatch.setPhotoUriDownloaded(null);
+            mCurrentMatch.setImageStr(null);
+        }
+
+        if (isNew) {
+            mCurrentMatch.saveDB();
+        }else{
+            mCurrentMatch.updateDB();
+        }
+
+        currentChampionship.updateResult();
+
+        ChampionshipInfoActivity.currentChampionship = currentChampionship;
+        ChampionshipListActivity.mNeedToRefreshData = true;
+
+        showSnackbar(fabMatchPhoto,
+                getResources().getString(R.string.msg_match_saved)
+        );
     }
 
     protected void onDestroy() {

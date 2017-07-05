@@ -122,6 +122,8 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     private static Player currentPlayer = null;
     private boolean playerImageHasChanged = false;
 
+    private boolean mPhotoWasDeleted = false;
+
     private final Activity mActivity = this;
     private String mCurrentPlayerImageStr = "";
 
@@ -498,7 +500,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             File placeholderFile = ImageFactory.newFile();
             mCurrentPhotoUri = Uri.fromFile(placeholderFile);
 
-            if (!mPhotoTaker.takePhoto(placeholderFile)) {
+            if (!mPhotoTaker.takePhoto(placeholderFile, this)) {
                 displayPhotoError();
             }
         };

@@ -1,9 +1,12 @@
 package com.renatonunes.padellog.domain.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.BuildConfig;
+import android.support.v4.content.FileProvider;
 
 import java.io.File;
 
@@ -20,7 +23,7 @@ public class PhotoTaker {
         mActivity = activity;
     }
 
-    public boolean takePhoto(File outputFile) {
+    public boolean takePhoto(File outputFile, Context context) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         //takePictureIntent.putExtra("crop", "true");
@@ -29,7 +32,14 @@ public class PhotoTaker {
         if (takePictureIntent.resolveActivity(mActivity.getPackageManager()) != null) {
             // Continue only if the File was successfully created
             if (outputFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outputFile));
+
+                Uri photoURI = FileProvider.getUriForFile(context,
+                        //android.support.v4.BuildConfig.APPLICATION_ID + ".content.provider",
+                        "com.renatonunes.padellog.provider",
+                        outputFile);
+
+                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outputFile));
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 mActivity.startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 return true;
             }

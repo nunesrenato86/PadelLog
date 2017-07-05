@@ -121,6 +121,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+
                 accessFacebookLoginData( loginResult.getAccessToken() );
             }
 
@@ -493,7 +494,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     .getInstance()
                     .logInWithReadPermissions(
                             this,
-                            Arrays.asList("public_profile", "user_friends", "email")
+                            Arrays.asList("public_profile", "user_friends", "email", "user_location")
                     );
         }else{
             showSnackbar(btnLoginEmail, getResources().getString(R.string.msg_no_internet) );

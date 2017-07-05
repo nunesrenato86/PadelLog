@@ -107,6 +107,17 @@
             android:label="@string/title_activity_edit_profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.renatonunes.padellog.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:readPermission="com.renatonunes.padellog.fileprovider.READ">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
     </application>
 
 </manifest>

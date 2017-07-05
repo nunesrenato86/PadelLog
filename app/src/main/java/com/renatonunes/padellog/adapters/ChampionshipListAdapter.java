@@ -1,6 +1,7 @@
 package com.renatonunes.padellog.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -67,7 +74,10 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
         holder.isReadOnly = mIsReadOnly;
         holder.playerToListFirstName = mFirstName;
 
-        Picasso.with(context).cancelRequest(holder.championshipImage);
+        Picasso.with(holder.championshipImage.getContext()).cancelRequest(holder.championshipImage);
+
+        holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+        holder.championshipImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
 
         if (holder.currentChampionship.isImgFirebase()){
 
@@ -80,7 +90,11 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
                 public void onSuccess(Uri uri) {
                     holder.currentChampionship.setPhotoUriDownloaded(uri);
 
-                    Picasso.with(context).load(uri.toString()).into(holder.championshipImage);
+                    Picasso.with(context)
+                            .load(uri.toString())
+                            .placeholder(R.drawable.no_photo)
+                            .into(holder.championshipImage);
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -91,9 +105,11 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
 
         }else if (holder.currentChampionship.isImgStrValid()){
             holder.championshipImage.setImageBitmap(ImageFactory.imgStrToImage(holder.currentChampionship.getImageStr()));
+
         }else{
             holder.championshipImage.setImageBitmap(null);
-            holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+            //holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+            holder.championshipImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
         }
 
     }

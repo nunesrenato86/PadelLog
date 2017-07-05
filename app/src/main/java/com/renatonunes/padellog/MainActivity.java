@@ -30,6 +30,7 @@ import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -670,26 +671,47 @@ public class MainActivity extends CommonActivity
         }
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (!isLoading) {
+            int id = item.getItemId();
+
+            //noinspection SimplifiableIfStatement
+            if (id == R.id.action_championships) {
+                showChampionships();
+
+                return true;
+            } else if (id == R.id.action_players) {
+                showPlayers();
+
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showChampionships(){
+        LibraryClass.saveSP(this, "isShowingChampionships", "1");
+        canZoomMap = true;
+        getChampionships();
+    }
+
+    private void showPlayers(){
+        LibraryClass.saveSP(this, "isShowingChampionships", "0");
+        canZoomMap = true;
+        getPlayers();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -703,15 +725,11 @@ public class MainActivity extends CommonActivity
         if (!isLoading) {
 
             if (id == R.id.nav_show_championships) {
-                LibraryClass.saveSP(this, "isShowingChampionships", "1");
-                canZoomMap = true;
-                getChampionships();
+                showChampionships();
             } else if (id == R.id.nav_my_championships) {
                 callChampionshipList(mPlayer.getId(), mPlayer.getName());
             } else if (id == R.id.nav_show_players) {
-                LibraryClass.saveSP(this, "isShowingChampionships", "0");
-                canZoomMap = true;
-                getPlayers();
+                showPlayers();
             } else if (id == R.id.nav_per_partner) {
                 showNotDoneYet();
             } else if (id == R.id.nav_per_year) {
@@ -1273,8 +1291,8 @@ public class MainActivity extends CommonActivity
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //        final String userId = user.getUid();
 
-        //FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
-        FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
+        //FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 getPlayersUpdates(dataSnapshot);
@@ -1320,13 +1338,13 @@ public class MainActivity extends CommonActivity
             if (player.havePlace()){
                 markPlayerOnMap(player);
             }else{
-//                double longitude = Math.random() * Math.PI * 2;
-//                double latitude = Math.acos(Math.random() * 2 - 1);
-//
-//                player.setLat(latitude);
-//                player.setLng(longitude);
-//
-//                markPlayerOnMap(player);
+                double longitude = Math.random() * Math.PI * 2;
+                double latitude = Math.acos(Math.random() * 2 - 1);
+
+                player.setLat(latitude);
+                player.setLng(longitude);
+
+                markPlayerOnMap(player);
             }
 
         }

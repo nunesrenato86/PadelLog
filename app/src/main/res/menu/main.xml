@@ -2,8 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_championships"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="@string/nav_championships"
+        android:icon="@drawable/ic_menu_trophy_white"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_players"
+        android:orderInCategory="100"
+        android:title="@string/nav_players"
+        android:icon="@drawable/ic_players_white"
+        app:showAsAction="ifRoom" />
 </menu>
