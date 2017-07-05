@@ -1291,8 +1291,8 @@ public class MainActivity extends CommonActivity
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //        final String userId = user.getUid();
 
-        FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
-        //FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
+        //FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 getPlayersUpdates(dataSnapshot);
@@ -1338,13 +1338,13 @@ public class MainActivity extends CommonActivity
             if (player.havePlace()){
                 markPlayerOnMap(player);
             }else{
-                double longitude = Math.random() * Math.PI * 2;
-                double latitude = Math.acos(Math.random() * 2 - 1);
-
-                player.setLat(latitude);
-                player.setLng(longitude);
-
-                markPlayerOnMap(player);
+//                double longitude = Math.random() * Math.PI * 2;
+//                double latitude = Math.acos(Math.random() * 2 - 1);
+//
+//                player.setLat(latitude);
+//                player.setLng(longitude);
+//
+//                markPlayerOnMap(player);
             }
 
         }

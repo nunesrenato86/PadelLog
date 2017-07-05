@@ -228,6 +228,81 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
                 }
             }
         });
+
+        convertPhoto();
+    }
+
+    private void convertPhoto(){
+        if ((currentPlayer.isImgStrValid()) && (!currentPlayer.isImgFirebase())){
+            Bitmap bitmap = ImageFactory.imgStrToImage(currentPlayer.getImageStr());
+
+            if (bitmap != null) {
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                byte[] bytes = baos.toByteArray();
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                String Id = "images/players/";
+
+                Id = Id.concat(currentPlayer.getId()).concat(".jpg");
+
+                StorageReference playersRef = storageRef.child(Id);
+
+                final ProgressDialog progressDialog = new ProgressDialog(this);
+                //progressDialog.setTitle(getResources().getString(R.string.photo_processing));
+                progressDialog.show();
+
+                UploadTask uploadTask = playersRef.putBytes(bytes);
+
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        progressDialog.dismiss();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        currentPlayer.setPhotoUrl(downloadUrl.toString());
+                        currentPlayer.setImageStr(null);
+
+                        currentPlayer.updateDB();
+
+                        showSnackbar(linearLayout,
+                                getResources().getString(R.string.msg_championship_converted)
+                        );
+                    }
+                });
+
+                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                        Log.e("RNN", ((int) progress + "% " + getResources().getString(R.string.photo_complete)));
+
+                        progressDialog.setMessage(getResources().getString(R.string.msg_converting));
+                    }
+                }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                    }
+                });
+
+            }
+        }
     }
 
     private void updateUi(){

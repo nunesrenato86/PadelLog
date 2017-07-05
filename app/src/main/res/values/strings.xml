@@ -182,12 +182,14 @@
     <string name="msg_no_internet">Sem internet.</string>
 
     <string name="msg_championship_saved">Campeonato salvo.</string>
+    <string name="msg_championship_converted">Foto convertida.</string>
     <string name="msg_match_saved">Partida salva.</string>
     <string name="msg_profile_updated">Perfil atualizado.</string>
     <string name="msg_profile_cant_be_public">Perfil público deve ter uma foto e um local.</string>
 
     <string name="msg_photo_erros">Falha ao capturar imagem.</string>
     <string name="msg_saving">Salvando...</string>
+    <string name="msg_converting">Convertendo foto...</string>
 
     <string name="msg_loading">Carregando...</string>
     <string name="title_activity_chart">Resultados</string>

@@ -112,6 +112,8 @@
 
     <string name="msg_saving">Salvando...</string>
 
+    <string name="msg_converting">Convertir foto...</string>
+
     <string name="title_activity_add_match">Juego</string>
 
     <string name="str_you">vos</string>
@@ -183,6 +185,7 @@
     <string name="msg_no_internet">No hay Internet.</string>
 
     <string name="msg_championship_saved">Campeonato guardado.</string>
+    <string name="msg_championship_converted">Foto convertida.</string>
     <string name="msg_match_saved">Juego guardado.</string>
     <string name="msg_profile_updated">Perfil actualizado.</string>
     <string name="msg_profile_cant_be_public">Perfil público debe tener una foto.</string>

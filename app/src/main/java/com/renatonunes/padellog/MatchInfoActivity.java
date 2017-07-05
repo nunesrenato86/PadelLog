@@ -6,9 +6,11 @@
  */
 package com.renatonunes.padellog;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +19,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,12 +36,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -107,6 +115,8 @@ public class MatchInfoActivity extends CommonActivity {
 		});
 
 		setUIPermission();
+
+		convertPhoto();
 	}
 
 	private void setUIPermission(){
@@ -201,8 +211,6 @@ public class MatchInfoActivity extends CommonActivity {
         });
     }
 
-
-
 	private void updateUI(){
 		//setting top image
 		if (mCurrentMatch.getPhotoUriDownloaded() != null){
@@ -263,6 +271,81 @@ public class MatchInfoActivity extends CommonActivity {
 
 		//TEAM 2
 		textTeam2.setText(mCurrentMatch.getTeam2());
+	}
+
+	private void convertPhoto(){
+		if ((!mIsReadOnly) && (mCurrentMatch.isImgStrValid()) && (!mCurrentMatch.isImgFirebase())){
+			Bitmap bitmap = ImageFactory.imgStrToImage(mCurrentMatch.getImageStr());
+
+			if (bitmap != null) {
+
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+				bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+				byte[] bytes = baos.toByteArray();
+
+				FirebaseStorage storage = FirebaseStorage.getInstance();
+
+				StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+				String Id = "images/matches/";
+
+				Id = Id.concat(mCurrentMatch.getId()).concat(".jpg");
+
+				StorageReference playersRef = storageRef.child(Id);
+
+				final ProgressDialog progressDialog = new ProgressDialog(this);
+				//progressDialog.setTitle(getResources().getString(R.string.photo_processing));
+				progressDialog.show();
+
+				UploadTask uploadTask = playersRef.putBytes(bytes);
+
+				uploadTask.addOnFailureListener(new OnFailureListener() {
+					@Override
+					public void onFailure(@NonNull Exception exception) {
+						// Handle unsuccessful uploads
+						progressDialog.dismiss();
+					}
+				}).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+					@Override
+					public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+						progressDialog.dismiss();
+						// taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+						Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+						mCurrentMatch.setPhotoUrl(downloadUrl.toString());
+						mCurrentMatch.setImageStr(null);
+						mCurrentMatch.setOwner(mCurrentChampionship.getId());
+
+						mCurrentMatch.updateDB();
+						ChampionshipListActivity.mNeedToRefreshData = true;
+
+						showSnackbar(fabEditMatch,
+								getResources().getString(R.string.msg_championship_converted)
+						);
+					}
+				});
+
+				uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+					@Override
+					public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+						double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+						Log.e("RNN", ((int) progress + "% " + getResources().getString(R.string.photo_complete)));
+
+						progressDialog.setMessage(getResources().getString(R.string.msg_converting));
+					}
+				}).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+					@Override
+					public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+						progressDialog.dismiss();
+					}
+				});
+
+			}
+		}
 	}
 
 

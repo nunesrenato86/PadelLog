@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,11 +38,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -156,7 +162,83 @@ public class ChampionshipInfoActivity extends CommonActivity
         ButterKnife.bind(this);
 
         setUIPermission();
+
+        convertPhoto();
 	}
+
+    private void convertPhoto(){
+        if ((!mIsReadOnly) && (currentChampionship.isImgStrValid()) && (!currentChampionship.isImgFirebase())){
+            Bitmap bitmap = ImageFactory.imgStrToImage(currentChampionship.getImageStr());
+
+            if (bitmap != null) {
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                byte[] bytes = baos.toByteArray();
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                String Id = "images/championships/";
+
+                Id = Id.concat(currentChampionship.getId()).concat(".jpg");
+
+                StorageReference playersRef = storageRef.child(Id);
+
+                final ProgressDialog progressDialog = new ProgressDialog(this);
+                //progressDialog.setTitle(getResources().getString(R.string.photo_processing));
+                progressDialog.show();
+
+                UploadTask uploadTask = playersRef.putBytes(bytes);
+
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        progressDialog.dismiss();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        currentChampionship.setPhotoUrl(downloadUrl.toString());
+                        currentChampionship.setImageStr(null);
+
+                        currentChampionship.updateDB();
+                        ChampionshipListActivity.mNeedToRefreshData = true;
+
+                        showSnackbar(fabAddMatch,
+                                getResources().getString(R.string.msg_championship_converted)
+                        );
+                    }
+                });
+
+                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                        Log.e("RNN", ((int) progress + "% " + getResources().getString(R.string.photo_complete)));
+
+                        progressDialog.setMessage(getResources().getString(R.string.msg_converting));
+                    }
+                }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                    }
+                });
+
+            }
+        }
+    }
 
     private void setUIPermission(){
         if (mIsReadOnly){
