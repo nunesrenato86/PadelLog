@@ -700,7 +700,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
 
                 byte[] bytes = baos.toByteArray();
 
