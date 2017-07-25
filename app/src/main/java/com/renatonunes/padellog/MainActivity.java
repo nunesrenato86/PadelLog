@@ -2,6 +2,8 @@ package com.renatonunes.padellog;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +13,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -48,11 +52,18 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.AddressConstants;
+import com.google.android.gms.identity.intents.UserAddressRequest;
+import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -74,10 +85,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
@@ -92,9 +107,16 @@ import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -277,6 +299,7 @@ public class MainActivity extends CommonActivity
 
     }
 
+    private static final int REQUEST_CODE = 7860;
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
     ArrayList<Player> players = new ArrayList<Player>();
@@ -301,6 +324,7 @@ public class MainActivity extends CommonActivity
     ImageView imgMarker;
 
 
+    private ProgressDialog mProgressDialog;
     private IconGenerator mIconGenerator;
     private IconGenerator mClusterIconGenerator;
     private ImageView mImageView;
@@ -368,6 +392,8 @@ public class MainActivity extends CommonActivity
 
         mContext = this;
 
+        mProgressDialog = new ProgressDialog(mContext);
+
         mIconGenerator = new IconGenerator(mContext);
         mClusterIconGenerator = new IconGenerator(mContext);
 
@@ -422,6 +448,23 @@ public class MainActivity extends CommonActivity
             }
         });
 
+        //to get user address and logout
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
+
+        com.google.android.gms.identity.intents.Address.AddressOptions options =
+                new com.google.android.gms.identity.intents.Address.AddressOptions(AddressConstants.Themes.THEME_LIGHT);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(com.google.android.gms.identity.intents.Address.API, options)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+//to enable google logout
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+//                .build();
+
         if (mPlayer != null) {
             updateNavUi(mPlayer);
         }else{
@@ -444,12 +487,6 @@ public class MainActivity extends CommonActivity
                     });
         }
 
-        //para poder deslogar do gogle sign in
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
 
 //        String token = FirebaseInstanceId.getInstance().getToken();
 //        Log.e("TESTEMSG", "token no service: " + token);
@@ -657,6 +694,10 @@ public class MainActivity extends CommonActivity
             navUsername.setText("Não logado");
             navEmail.setText("");
         }
+
+        updatePlayerPlace();
+
+        convertPhoto();
 
         isLoading = false;
     }
@@ -1149,7 +1190,7 @@ public class MainActivity extends CommonActivity
             markChampionshipOnMap(championship);
         }
 
-        verifyPlayerProfile();
+        //verifyPlayerProfile();
 
 //        if (championships.size() > 0){
 //            adapter = new ChampionshipListAdapter(ChampionshipListActivity.this, championships);
@@ -1229,7 +1270,7 @@ public class MainActivity extends CommonActivity
         protected void onPostExecute(Boolean bool) {
             if (bool) {
                 closeProgressBar();
-                verifyPlayerProfile();
+                //verifyPlayerProfile();
             }
         }
     }
@@ -1556,4 +1597,235 @@ public class MainActivity extends CommonActivity
     }
 
 
+    private void updatePlayerPlace(){
+
+        if (!mPlayer.havePlace()){
+
+            AccessToken accessToken = AccessToken.getCurrentAccessToken();
+
+            if (accessToken != null) {
+                mProgressDialog.setMessage(getResources().getString(R.string.msg_update_place));
+
+                mProgressDialog.show();
+
+                Log.e("RNN2", accessToken.getToken());
+
+                new GraphRequest(
+                        accessToken,
+                        "/me?fields=location", //+ userProfile.getId(),
+                        null,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                //Log.d("RNN2", response.getRawResponse());
+
+                                try {
+                                    String rawJson = response.getJSONObject().getString("location");
+                                    //Log.d("RNN2", rawJson);
+                                    try {
+
+                                        JSONObject obj = new JSONObject(rawJson);
+
+                                        String city = obj.getString("name");
+
+                                        //Log.d("RNN2", "cidade:" + city);
+
+                                        if (city.equals("")){
+                                            mProgressDialog.dismiss();
+                                            verifyPlayerProfile();
+                                        } else {
+                                            getLatLng(city);
+                                        }
+
+                                    } catch (Throwable t) {
+                                        Log.e("RNN2", "Could not parse malformed JSON: \"" + rawJson + "\"");
+                                    }
+                                } catch (JSONException e) {
+                                    mProgressDialog.dismiss();
+                                    e.printStackTrace();
+                                    verifyPlayerProfile();
+                                }
+                            }
+                        }
+                ).executeAsync();
+            } else { //Google
+                UserAddressRequest request = UserAddressRequest.newBuilder().build();
+
+                com.google.android.gms.identity.intents.Address.requestUserAddress(mGoogleApiClient,
+                        request,
+                        REQUEST_CODE);
+            }
+        }
+    }
+
+    //https://stackoverflow.com/questions/10008108/how-to-get-the-latitude-and-longitude-from-city-name-in-android
+    private void getLatLng(String location){
+        try {
+            Geocoder gc = new Geocoder(this);
+            List<Address> addresses = gc.getFromLocationName(location, 1); // get the found Address Objects
+
+            //List<LatLng> ll = new ArrayList<LatLng>(addresses.size()); // A list to save the coordinates if they are available
+
+            if ((addresses == null) || (addresses.isEmpty())){
+                mProgressDialog.dismiss();
+                verifyPlayerProfile();
+            } else {
+                for (Address a : addresses) {
+                    if (a.hasLatitude() && a.hasLongitude()) {
+
+                        //Log.d("RNN", new LatLng(a.getLatitude(), a.getLongitude()).toString());
+
+                        mPlayer.setPlace(location);
+                        mPlayer.setLat(a.getLatitude());
+                        mPlayer.setLng(a.getLongitude());
+
+                        //Log.d("RNN", mPlayer.getPlace() + "/" + mPlayer.getLat() + "/" + mPlayer.getLng());
+
+                        mPlayer.updateDB(new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                mProgressDialog.dismiss();
+
+                                if (!isShowingChampionships) {
+                                    getPlayers();
+                                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mPlayer.getPosition(), 10));
+                                }
+                            }
+                        });
+                        //ll.add(new LatLng(a.getLatitude(), a.getLongitude()));
+                    } else {
+                        mProgressDialog.dismiss();
+                        verifyPlayerProfile();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            mProgressDialog.dismiss();
+            // handle the exception
+        }
+    }
+
+    private void convertPhoto(){
+        if ((mPlayer.isImgStrValid()) && (!mPlayer.isImgFirebase())){
+            Bitmap bitmap = ImageFactory.imgStrToImage(mPlayer.getImageStr());
+
+            if (bitmap != null) {
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+
+                byte[] bytes = baos.toByteArray();
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://padellog-b49b1.appspot.com");
+
+                String Id = "images/players/";
+
+                Id = Id.concat(mPlayer.getId()).concat(".jpg");
+
+                StorageReference playersRef = storageRef.child(Id);
+
+                final ProgressDialog progressDialog = new ProgressDialog(this);
+                //progressDialog.setTitle(getResources().getString(R.string.photo_processing));
+                progressDialog.show();
+
+                UploadTask uploadTask = playersRef.putBytes(bytes);
+
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        progressDialog.dismiss();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        mPlayer.setPhotoUrl(downloadUrl.toString());
+                        mPlayer.setImageStr(null);
+
+                        mPlayer.updateDB(new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                if (!isShowingChampionships){
+                                    getPlayers();
+                                }
+
+                                showSnackbar(navigationView,
+                                        getResources().getString(R.string.msg_championship_converted)
+                                );
+                            }
+                        });
+
+
+                    }
+                });
+
+                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                        Log.e("RNN", ((int) progress + "% " + getResources().getString(R.string.photo_complete)));
+
+                        progressDialog.setMessage(getResources().getString(R.string.msg_converting));
+                    }
+                }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                    }
+                });
+
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE){
+            switch (resultCode) {
+                case Activity.RESULT_OK:
+                    UserAddress userAddress = UserAddress.fromIntent(data);
+
+                    //b = (a > 0) ? 1 : 2;
+
+                    //String teste = (!userAddress.getAddress1().equals("") ? "," : "");
+
+                    String place = userAddress.getAddress1() //address
+                            + (!userAddress.getAddress1().equals("") ? "," : "")
+                            + userAddress.getLocality() //city
+                            + (!userAddress.getLocality().equals("") ? "," : "")
+                            + userAddress.getAdministrativeArea(); //UF
+
+                    Log.i("RNN", place);
+
+                    if (!place.equals("")) {
+                        getLatLng(place);
+                    } else {
+                        verifyPlayerProfile();
+                    }
+
+                    break;
+                case Activity.RESULT_CANCELED:
+                    Log.i("RNN", "cancel");
+                    verifyPlayerProfile();
+                    break;
+                default:
+                    //NO ADDRESS
+                    Log.i("RNN", "no address");
+                    verifyPlayerProfile();
+                    break;
+            }
+
+        }
+    }
 }

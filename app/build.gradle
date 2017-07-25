@@ -9,8 +9,8 @@ android {
         applicationId "com.renatonunes.padellog"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 26
-        versionName "3.8"
+        versionCode 30
+        versionName "4.2"
         multiDexEnabled true
 
     }
@@ -75,8 +75,10 @@ dependencies {
     compile 'com.google.firebase:firebase-storage:9.6.1'
     compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.android.support.constraint:constraint-layout:+'
+    compile 'com.google.android.gms:play-services-identity:9.8.0'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

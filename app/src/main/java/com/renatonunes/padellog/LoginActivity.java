@@ -1,11 +1,14 @@
 package com.renatonunes.padellog;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +28,9 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
@@ -32,7 +38,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
+//import com.google.android.gms.identity.intents.Address;
+import com.google.android.gms.identity.intents.AddressConstants;
+import com.google.android.gms.identity.intents.UserAddressRequest;
+import com.google.android.gms.identity.intents.model.UserAddress;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,6 +60,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -58,8 +74,13 @@ import com.renatonunes.padellog.domain.util.PermissionUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,6 +88,7 @@ import butterknife.ButterKnife;
 public class LoginActivity extends CommonActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final int RC_SIGN_IN_GOOGLE = 7859;
+    //private static final int REQUEST_CODE = 7860;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -118,7 +140,10 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         // FACEBOOK
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
+        LoginManager
+                .getInstance()
+                .registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
 
@@ -138,14 +163,29 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
             }
         });
 
+//        LoginManager
+//                .getInstance()
+//                .logInWithReadPermissions(
+//                        this,
+//                        Arrays.asList("public_profile", "email", "user_location")
+//                );
+
         // GOOGLE SIGN IN
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN))
+                //.requestScopes(new Scope("https://www.googleapis.com/auth/user.addresses.read"))
+                //.requestScopes(new Scope(Scopes.PROFILE))
                 .build();
+
+        //com.google.android.gms.identity.intents.Address.AddressOptions options =
+        //        new com.google.android.gms.identity.intents.Address.AddressOptions(AddressConstants.Themes.THEME_LIGHT);
+
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
+                //.addApi(com.google.android.gms.identity.intents.Address.API, options)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
@@ -178,6 +218,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
             GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent( data );
             GoogleSignInAccount account = googleSignInResult.getSignInAccount();
 
+
             if( account == null ){
                 showSnackbar(btnLoginEmail, resources.getString(R.string.msg_google_login_error));
                 return;
@@ -206,6 +247,9 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 
 
     private void accessFacebookLoginData(AccessToken accessToken){
+
+        Log.e("RNN2", accessToken.getToken());
+
         accessLoginData(
                 "facebook",
                 (accessToken != null ? accessToken.getToken() : null)
@@ -213,6 +257,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
     }
 
     private void accessGoogleLoginData(String accessToken){
+
         accessLoginData(
                 "google",
                 accessToken
@@ -308,19 +353,22 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                                 player.setPhotoUrl(downloadUrl.toString());
                                 player.setImageStr(null);
 
-                                player.saveDB();
-
-                                MainActivity.start(context, player);
-                                finish();
+                                player.saveDB(new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                        updatePlaceAndCallMainActivity();
+                                    }
+                                });
                             }
                         });
                     } else {
-                        player.saveDB();
-                        MainActivity.start(context, player);
-                        finish();
+                        player.saveDB(new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                updatePlaceAndCallMainActivity();
+                            }
+                        });
                     }
-
-                    //callMainActivity();
                 }
 
                 @Override
@@ -336,6 +384,109 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
         }
     }
 
+    private void callMainActivityAndFinish(){
+        MainActivity.start(context, player);
+        finish();
+    }
+
+    private void updatePlaceAndCallMainActivity(){
+
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+
+        if (accessToken != null) {
+            //mProgressDialog.setMessage(getResources().getString(R.string.msg_update_place));
+
+            //mProgressDialog.show();
+
+            //Log.e("RNN2", accessToken.getToken());
+
+            new GraphRequest(
+                    accessToken,
+                    "/me?fields=location", //+ userProfile.getId(),
+                    null,
+                    HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        public void onCompleted(GraphResponse response) {
+                            //Log.d("RNN2", response.getRawResponse());
+
+                            try {
+                                String rawJson = response.getJSONObject().getString("location");
+                                //Log.d("RNN2", rawJson);
+                                try {
+
+                                    JSONObject obj = new JSONObject(rawJson);
+
+                                    String city = obj.getString("name");
+
+                                    //Log.d("RNN2", "cidade:" + city);
+
+                                    if (city.equals("")){
+                                        callMainActivityAndFinish();
+                                    }else {
+                                        getLatLng(city);
+                                    }
+
+                                } catch (Throwable t) {
+                                    Log.e("RNN2", "Could not parse malformed JSON: \"" + rawJson + "\"");
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                callMainActivityAndFinish();
+                            }
+                        }
+                    }
+            ).executeAsync();
+        } else {
+            callMainActivityAndFinish();
+        }
+    }
+
+
+    //https://stackoverflow.com/questions/10008108/how-to-get-the-latitude-and-longitude-from-city-name-in-android
+    private void getLatLng(String location){
+        try {
+            Geocoder gc = new Geocoder(this);
+            List<android.location.Address> addresses = gc.getFromLocationName(location, 1); // get the found Address Objects
+
+            //List<LatLng> ll = new ArrayList<LatLng>(addresses.size()); // A list to save the coordinates if they are available
+
+            if ((addresses == null) || (addresses.isEmpty())){
+                callMainActivityAndFinish();
+            } else {
+                for (Address a : addresses) {
+                    if (a.hasLatitude() && a.hasLongitude()) {
+
+                        //Log.d("RNN", new LatLng(a.getLatitude(), a.getLongitude()).toString());
+
+                        player.setPlace(location);
+                        player.setLat(a.getLatitude());
+                        player.setLng(a.getLongitude());
+
+                        //Log.d("RNN", mPlayer.getPlace() + "/" + mPlayer.getLat() + "/" + mPlayer.getLng());
+
+                        player.updateDB(new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                callMainActivityAndFinish();
+                            }
+                        });
+                        //ll.add(new LatLng(a.getLatitude(), a.getLongitude()));
+                    } else {
+                        callMainActivityAndFinish();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            callMainActivityAndFinish();
+            // handle the exception
+        }
+    }
+
+//    private void updatePlaceAndCallMainActivity(){
+//        MainActivity.start(context, player);
+//        finish();
+//    }
+
     private void initPlayerAndCallMainActivity(final FirebaseUser userFirebase){
         final String playerId = userFirebase.getUid();
 
@@ -347,8 +498,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
 
                         if (player != null) {
                             player.setId(playerId);
-                            MainActivity.start(context, player);
-                            finish();
+                            callMainActivityAndFinish();
                         }else{
                             createNewPlayerAndCallMainActivity(userFirebase);
                         }
@@ -494,7 +644,7 @@ public class LoginActivity extends CommonActivity implements GoogleApiClient.OnC
                     .getInstance()
                     .logInWithReadPermissions(
                             this,
-                            Arrays.asList("public_profile", "user_friends", "email", "user_location")
+                            Arrays.asList("public_profile", "email", "user_location")
                     );
         }else{
             showSnackbar(btnLoginEmail, getResources().getString(R.string.msg_no_internet) );

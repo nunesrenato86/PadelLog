@@ -114,6 +114,8 @@
 
     <string name="msg_converting">Convertir foto...</string>
 
+    <string name="msg_update_place">Actualizando local...</string>
+
     <string name="title_activity_add_match">Juego</string>
 
     <string name="str_you">vos</string>

@@ -229,7 +229,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             }
         });
 
-        convertPhoto();
+        //convertPhoto();
     }
 
     private void convertPhoto(){
