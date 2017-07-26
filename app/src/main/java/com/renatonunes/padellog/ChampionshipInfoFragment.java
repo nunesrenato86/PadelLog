@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.renatonunes.padellog.adapters.ChampionshipInfoAdapter;
 import com.renatonunes.padellog.domain.Championship;
 
 public class ChampionshipInfoFragment extends Fragment {

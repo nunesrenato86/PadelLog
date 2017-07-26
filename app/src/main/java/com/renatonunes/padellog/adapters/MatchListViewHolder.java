@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package com.renatonunes.padellog;
+package com.renatonunes.padellog.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.renatonunes.padellog.MatchInfoActivity;
+import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 
@@ -26,6 +28,7 @@ public class MatchListViewHolder extends RecyclerView.ViewHolder {
 //    public String currentKey;
     public ImageView matchImage;
     public TextView matchRound;
+    public TextView matchOpponent;
     public TextView matchScore;
     public Boolean isReadOnly;
     public String firstName;
@@ -35,6 +38,7 @@ public class MatchListViewHolder extends RecyclerView.ViewHolder {
 
         matchImage = (ImageView)itemView.findViewById(R.id.item_match_image);
         matchRound = (TextView)itemView.findViewById(R.id.item_match_round);
+        matchOpponent = (TextView)itemView.findViewById(R.id.item_match_opponent);
         matchScore = (TextView)itemView.findViewById(R.id.item_match_score);
 
         context = itemView.getContext();

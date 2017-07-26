@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.renatonunes.padellog;
+package com.renatonunes.padellog.adapters;
 
 import android.content.Context;
 import android.net.Uri;
@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.util.ImageFactory;
@@ -54,6 +55,7 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> 
         holder.currentChampionship = mCurrentChampionship;
 
         holder.matchRound.setText(holder.currentMatch.getRoundStr());
+        holder.matchOpponent.setText(holder.currentMatch.getTeam2());
         holder.matchScore.setText(holder.currentMatch.getScoreStr());
 
         //Ver aqui

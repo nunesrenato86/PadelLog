@@ -4,12 +4,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package com.renatonunes.padellog;
+package com.renatonunes.padellog.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+
+import com.renatonunes.padellog.R;
 
 public class ChampioshipInfoViewHolder extends RecyclerView.ViewHolder {
 

@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.renatonunes.padellog.adapters.MatchListAdapter;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
 

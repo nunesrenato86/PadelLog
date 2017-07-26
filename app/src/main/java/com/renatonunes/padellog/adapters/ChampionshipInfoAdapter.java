@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.renatonunes.padellog;
+package com.renatonunes.padellog.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Championship;
 
 public class ChampionshipInfoAdapter extends RecyclerView.Adapter<ChampioshipInfoViewHolder> {
