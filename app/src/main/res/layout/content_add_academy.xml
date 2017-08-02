@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.renatonunes.padellog.AddAcademyActivity"
+    tools:showIn="@layout/activity_add_academy"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linear_layout_top_add_academy"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:layout_gravity="bottom">
+
+        <ImageView
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:layout_width="match_parent"
+            android:id="@+id/img_academy"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/no_photo"
+            android:scaleType="centerCrop"
+            />
+
+        <LinearLayout
+            android:id="@+id/linear_layout_bottom_add_academy"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.6"
+            android:orientation="vertical"
+            android:layout_gravity="bottom"
+            android:paddingLeft="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/activity_vertical_margin"
+            android:paddingEnd="@dimen/activity_vertical_margin">
+
+            <EditText
+                android:id="@+id/edt_add_academy_place"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/lbl_edt_place"
+                android:focusable="false"
+                android:imeOptions="actionUnspecified"
+                android:inputType="date"
+                android:paddingTop="@dimen/activity_horizontal_margin"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edt_add_academy_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edt_championship_name"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="textCapWords"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edt_add_academy_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edt_academy_phone"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="textCapWords"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edt_add_academy_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edt_academy_email"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="textCapWords"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_anchor="@id/img_academy"
+        app:layout_anchorGravity="bottom|right|end">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_academy_photo_camera"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                app:fabSize="mini"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
+                android:src="@drawable/ic_camera_white"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_academy_photo_gallery"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
+                android:src="@drawable/ic_folder_image_white"
+                app:fabSize="mini"
+                android:visibility="visible"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_academy_photo_add"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
+                android:src="@drawable/ic_fab_plus"
+                android:visibility="visible"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_academy_photo_delete"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
+                android:src="@drawable/ic_delete"
+                app:fabSize="mini"
+                android:visibility="visible"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_photo_distance"
+                android:src="@drawable/ic_delete"
+                app:fabSize="mini"
+                android:visibility="invisible"
+                />
+
+
+        </LinearLayout>
+
+
+
+
+    </FrameLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>
+

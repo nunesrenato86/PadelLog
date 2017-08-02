@@ -60,7 +60,7 @@
 
     <string name="facebook_app_id">1748665178734590</string>
 
-    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
+    <string name="my_google_app_id">AIzaSyB9Khl6hPjAQ_BOpLTk7cZ1v1l1fq18Jfc</string>
 
     <!-- release
     <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
@@ -74,12 +74,13 @@
 
     <string name="chk_unique_token">Unique token id</string>
 
-     <string name="link_privacy">file:///android_asset/politicaprivacidade.html</string>
+    <string name="link_privacy">file:///android_asset/politicaprivacidade.html</string>
 
     <string name="nav_logout">Logout</string>
     <string name="nav_policy">Política de privacidade</string>
     <string name="nav_championships">Campeonatos</string>
     <string name="nav_my_championships">Meus campeonatos</string>
+    <string name="nav_academies">Academias</string>
     <string name="nav_players">Jogadores</string>
     <string name="nav_statistics">Estatísticas</string>
     <string name="nav_show">Mostrar</string>
@@ -92,6 +93,9 @@
     <string name="edt_championship_name">Nome</string>
     <string name="edt_partner_name">Parceiro</string>
     <string name="edt_category">Categoria</string>
+
+    <string name="edt_academy_phone">Telefone</string>
+    <string name="edt_academy_email">E-mail</string>
 
     <string name="edt_match_round">Fase</string>
     <string name="edt_match_opponent_drive">Adversário direita</string>
@@ -187,6 +191,8 @@
     <string name="msg_profile_updated">Perfil atualizado.</string>
     <string name="msg_profile_cant_be_public">Perfil público deve ter uma foto e um local.</string>
 
+    <string name="msg_academy_saved">Academia salva.</string>
+
     <string name="msg_photo_erros">Falha ao capturar imagem.</string>
     <string name="msg_saving">Salvando...</string>
     <string name="msg_converting">Convertendo foto...</string>
@@ -206,7 +212,8 @@
 
     <string name="title_dlg_confirm_delete">Confirmação de exclusão</string>
 
-    <string name="msg_game_delete">O jogo será excluído.</string>
+    <string name="msg_match_delete">O jogo será excluído.</string>
+    <string name="msg_academy_delete">A academia será excluída.</string>
     <string name="msg_championship_delete">O campeonato será excluído.</string>
     <string name="btn_delete">Excluir</string>
     <string name="btn_cancel">Cancelar</string>
@@ -225,6 +232,10 @@
     <string name="msg_profile_incomplete">Seu perfil ainda não está completo.</string>
     <string name="btn_complete">Completar</string>
     <string name="btn_later">Mais tarde</string>
+    <string name="title_activity_academy_list">AcademyListActivity</string>
+
+    <string name="control_key">FYNaXQMkPSPo17AELcgncX5Y5Ei2</string>
+    <string name="title_activity_add_academy">Academia</string>
 
 
 </resources>

@@ -755,6 +755,14 @@ public class MainActivity extends CommonActivity
         getPlayers();
     }
 
+    private void callAcademyList(){
+        AcademyListActivity.start(this, !isMasterUser());
+    }
+
+    private boolean isMasterUser(){
+        return mPlayer.getId().equals(getResources().getString(R.string.control_key));
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -769,6 +777,8 @@ public class MainActivity extends CommonActivity
                 showChampionships();
             } else if (id == R.id.nav_my_championships) {
                 callChampionshipList(mPlayer.getId(), mPlayer.getName());
+            } else if (id == R.id.nav_academies) {
+                callAcademyList();
             } else if (id == R.id.nav_show_players) {
                 showPlayers();
             } else if (id == R.id.nav_per_partner) {

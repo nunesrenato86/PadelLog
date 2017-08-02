@@ -9,8 +9,8 @@ android {
         applicationId "com.renatonunes.padellog"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 31
-        versionName "4.3"
+        versionCode 32
+        versionName "4.4"
         multiDexEnabled true
 
     }
@@ -51,6 +51,7 @@ dependencies {
     //compile 'com.getbase:floatingactionbutton:1.10.0'
     //compile 'com.github.clans:fab:1.6.4'
 
+
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.android.support:design:25.0.0'
     compile 'com.firebase:firebase-client-android:+'
@@ -74,11 +75,10 @@ dependencies {
     compile 'com.android.support:multidex:1.0.0'
     compile 'com.google.firebase:firebase-storage:9.6.1'
     compile 'com.github.bumptech.glide:glide:3.6.0'
-    compile 'com.android.support.constraint:constraint-layout:+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-identity:9.8.0'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
-
 }
 
 apply plugin: 'com.google.gms.google-services'

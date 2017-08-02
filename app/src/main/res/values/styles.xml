@@ -31,7 +31,6 @@
     </style>
 
 
-
     <style name="AppTheme.NoActionBar.Full" parent="AppTheme.NoActionBar">
         <item name="android:windowFullscreen">true</item>
     </style>

@@ -79,6 +79,7 @@
     <string name="nav_logout">Logout</string>
     <string name="nav_championships">Campeonatos</string>
     <string name="nav_my_championships">Mis campeonatos</string>
+    <string name="nav_academies">Academias</string>
     <string name="nav_players">Jugadores</string>
     <string name="nav_statistics">Estadísticas</string>
     <string name="nav_show">Mostrar</string>
@@ -91,6 +92,9 @@
     <string name="edt_championship_name">Nombre</string>
     <string name="edt_partner_name">Pareja</string>
     <string name="edt_category">Classe</string>
+
+    <string name="edt_academy_phone">Telefone</string>
+    <string name="edt_academy_email">E-mail</string>
 
     <string name="edt_match_round">Fase</string>
     <string name="edt_match_opponent_drive">Adversario drive</string>
@@ -192,6 +196,8 @@
     <string name="msg_profile_updated">Perfil actualizado.</string>
     <string name="msg_profile_cant_be_public">Perfil público debe tener una foto.</string>
 
+    <string name="msg_academy_saved">Academia guardada.</string>
+
     <string name="msg_photo_erros">No se pudo capturar la imagen.</string>
 
     <string name="msg_loading">Cargando...</string>
@@ -208,7 +214,8 @@
 
     <string name="title_dlg_confirm_delete">Confirmación de la eliminación</string>
 
-    <string name="msg_game_delete">Se eliminará el partido.</string>
+    <string name="msg_match_delete">Se eliminará el partido.</string>
+    <string name="msg_academy_delete">Se eliminará la academia.</string>
     <string name="msg_championship_delete">Se eliminará el campeonato.</string>
     <string name="btn_delete">Excluir</string>
     <string name="btn_cancel">Cancelar</string>
@@ -227,6 +234,9 @@
     <string name="msg_profile_incomplete">Su perfil no es completa.</string>
     <string name="btn_complete">Completa</string>
     <string name="btn_later">Más tarde</string>
+    <string name="title_activity_academy_list">Academia</string>
+
+    <string name="control_key">FYNaXQMkPSPo17AELcgncX5Y5Ei2</string>
 
 
 </resources>

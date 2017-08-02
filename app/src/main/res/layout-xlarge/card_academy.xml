@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/cardview_academy"
+    android:layout_margin="5dp"
+    card_view:cardCornerRadius="@dimen/cardview_default_radius"
+    card_view:cardElevation="@dimen/cardview_default_elevation"
+    android:foreground="?selectableItemBackground"
+    android:clickable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.80">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:id="@+id/item_image"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/no_photo"
+                android:scaleType="centerCrop"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_title"
+                android:textSize="25sp"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:layout_gravity="start|bottom"
+                android:textColor="@color/colorFacebookButtonText"
+                android:text="Academy name"
+                />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.20"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/cardview_margin"
+            android:paddingRight="@dimen/cardview_margin"
+            android:paddingTop="@dimen/cardview_margin">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.92"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_detail"
+                android:layout_gravity="center"
+                android:text="Academy place"
+                android:textSize="15sp"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="0.08"
+                android:layout_height="20dp"
+                android:id="@+id/item_image_trophy"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

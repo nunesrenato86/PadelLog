@@ -355,7 +355,7 @@ public class MatchInfoActivity extends CommonActivity {
 
 			AlertDialog dialogo = new AlertDialog.Builder(this)
 					.setTitle(getResources().getString(R.string.title_dlg_confirm_delete))
-					.setMessage(getResources().getString(R.string.msg_game_delete))
+					.setMessage(getResources().getString(R.string.msg_match_delete))
 					.setPositiveButton(getResources().getString(R.string.btn_delete), new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialogInterface, int i) {

@@ -8,6 +8,11 @@
             android:id="@+id/nav_my_championships"
             android:icon="@drawable/ic_menu_trophy_outline"
             android:title="@string/nav_my_championships" />
+
+        <item
+            android:id="@+id/nav_academies"
+            android:icon="@drawable/ic_home"
+            android:title="@string/nav_academies" />
     </group>
 
     <group android:checkableBehavior="single"

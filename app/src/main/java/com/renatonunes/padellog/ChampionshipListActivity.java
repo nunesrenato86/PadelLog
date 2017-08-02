@@ -59,6 +59,9 @@ public class ChampionshipListActivity extends CommonActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        ButterKnife.setDebug(true);
+        ButterKnife.bind(this);
+
         mIsModeReadOnly = isModeReadOnly();
 
         mProgressDialog = new ProgressDialog(this);
@@ -92,11 +95,6 @@ public class ChampionshipListActivity extends CommonActivity {
                 }
             }
         });
-
-        ButterKnife.setDebug(true);
-        ButterKnife.bind(this);
-
-
 
         fabAddChampionship.setOnClickListener(new View.OnClickListener() {
             @Override

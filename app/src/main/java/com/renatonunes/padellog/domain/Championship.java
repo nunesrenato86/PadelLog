@@ -75,6 +75,10 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     }
 
     public Integer getResult() {
+        if (this.result == null){
+            this.result = -1;
+        }
+
         return result;
     }
 
@@ -181,18 +185,32 @@ public class Championship extends MyMapItem{//implements ClusterItem {
 
     @Exclude
     public String getResultStr() {
-        switch(this.result) {
-            case 0: return context.getResources().getString(R.string.round_draw);
-            case 1: return context.getResources().getString(R.string.round_64);
-			case 2: return context.getResources().getString(R.string.round_32);
-            case 3: return context.getResources().getString(R.string.round_16);
-            case 4: return context.getResources().getString(R.string.round_8);
-            case 5: return context.getResources().getString(R.string.round_4);
-            case 6: return context.getResources().getString(R.string.round_semi);
-            case 7: return context.getResources().getString(R.string.result_name_vice);
-            case 8: return context.getResources().getString(R.string.result_name_champion);
+        if (this.result == null){
+            this.result = -1;
+        }
+
+        switch (this.result) {
+            case 0:
+                return context.getResources().getString(R.string.round_draw);
+            case 1:
+                return context.getResources().getString(R.string.round_64);
+            case 2:
+                return context.getResources().getString(R.string.round_32);
+            case 3:
+                return context.getResources().getString(R.string.round_16);
+            case 4:
+                return context.getResources().getString(R.string.round_8);
+            case 5:
+                return context.getResources().getString(R.string.round_4);
+            case 6:
+                return context.getResources().getString(R.string.round_semi);
+            case 7:
+                return context.getResources().getString(R.string.result_name_vice);
+            case 8:
+                return context.getResources().getString(R.string.result_name_champion);
         }
         return context.getResources().getString(R.string.result_name_none);
+
     }
 
     @Exclude
