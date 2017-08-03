@@ -10,6 +10,8 @@ import com.renatonunes.padellog.AcademyInfoActivity;
 import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Academy;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by renatonunes on 26/07/17.
  */

@@ -49,22 +49,11 @@ public class AcademyListAdapter extends RecyclerView.Adapter<AcademyListViewHold
         holder.currentAcademy = academies.get(position);
 
         holder.academyName.setText(academies.get(position).getName());
-        //holder.academyPlace.setText(academies.get(position).getPlace());
-
-//        if (championships.get(position).getResult() == 8){
-//            holder.championshipTrophyImage.setVisibility(View.VISIBLE);
-//            holder.championshipTrophyImage.setImageResource(R.drawable.trophy_gold);
-//        }else if (championships.get(position).getResult() == 7){
-//            holder.championshipTrophyImage.setVisibility(View.VISIBLE);
-//            holder.championshipTrophyImage.setImageResource(R.drawable.trophy_silver);
-//        }else
-//            holder.championshipTrophyImage.setVisibility(View.INVISIBLE);
 
         holder.isReadOnly = mIsReadOnly;
 
         Picasso.with(holder.academyName.getContext()).cancelRequest(holder.academyImage);
 
-        holder.academyImage.setBackgroundResource(R.drawable.no_photo);
         holder.academyImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
 
         if (holder.currentAcademy.isImgFirebase()){
@@ -92,9 +81,9 @@ public class AcademyListAdapter extends RecyclerView.Adapter<AcademyListViewHold
             });
 
         }else{
-            holder.academyImage.setImageBitmap(null);
+            //holder.academyImage.setImageResource(null);
             //holder.academyImage.setBackgroundResource(R.drawable.no_photo);
-            holder.academyImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
+            holder.academyImage.setImageResource(R.drawable.no_photo);
         }
 
     }
