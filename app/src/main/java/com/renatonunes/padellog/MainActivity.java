@@ -760,7 +760,11 @@ public class MainActivity extends CommonActivity
     }
 
     private boolean isMasterUser(){
-        return mPlayer.getId().equals(getResources().getString(R.string.control_key));
+        if (mPlayer == null){
+            return false;
+        }else{
+            return mPlayer.getId().equals(getResources().getString(R.string.control_key));
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -1342,18 +1346,31 @@ public class MainActivity extends CommonActivity
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //        final String userId = user.getUid();
 
-        //FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
-        FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                getPlayersUpdates(dataSnapshot);
-            }
+        if (isMasterUser()) {
+            FirebaseDatabase.getInstance().getReference().child("players").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    getPlayersUpdates(dataSnapshot);
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }else{
+            FirebaseDatabase.getInstance().getReference().child("players").orderByChild("isPublic").equalTo(true).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    getPlayersUpdates(dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
 
@@ -1389,13 +1406,15 @@ public class MainActivity extends CommonActivity
             if (player.havePlace()){
                 markPlayerOnMap(player);
             }else{
-//                double longitude = Math.random() * Math.PI * 2;
-//                double latitude = Math.acos(Math.random() * 2 - 1);
-//
-//                player.setLat(latitude);
-//                player.setLng(longitude);
-//
-//                markPlayerOnMap(player);
+                if (isMasterUser()) {
+                    double longitude = Math.random() * Math.PI * 2;
+                    double latitude = Math.acos(Math.random() * 2 - 1);
+
+                    player.setLat(latitude);
+                    player.setLng(longitude);
+
+                    markPlayerOnMap(player);
+                }
             }
 
         }

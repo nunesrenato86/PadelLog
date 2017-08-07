@@ -50,10 +50,10 @@
             app:layout_scrollFlags="scroll"
             /!-->
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <!--de.hdodenhof.circleimageview.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/img_top_academy"
-            android:src="@drawable/com_facebook_profile_picture_blank_square"
+            android:src="@drawable/no_photo"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             android:layout_width="130dp"
             android:layout_height="130dp"
@@ -63,7 +63,24 @@
             app:border_width="1dp"
             app:border_color="#FFF"
             app:layout_scrollFlags="scroll"
-            />
+            /!-->
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/img_top_academy"
+            android:src="@drawable/no_photo"
+            android:padding="4dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="-70dp"
+            android:layout_gravity="center_horizontal"
+            android:elevation="8dp"
+            android:scaleType="centerCrop"
+            app:riv_corner_radius="100dip"
+            app:riv_border_width="1dp"
+            app:riv_border_color="#FFF"
+            app:riv_mutate_background="true"
+            app:riv_oval="false" />
         ​
         <android.support.v7.widget.Toolbar
             android:id="@+id/academy_info_toolbar"
@@ -193,7 +210,7 @@
         android:layout_width="wrap_content"
         android:elevation="8dp"
         android:layout_gravity="bottom|right|end"
-        android:src="@drawable/ic_fab_plus"
+        android:src="@drawable/ic_navigation"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:clickable="true"
         />

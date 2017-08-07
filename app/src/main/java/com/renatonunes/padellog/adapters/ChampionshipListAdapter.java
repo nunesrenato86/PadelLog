@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.koushikdutta.ion.Ion;
 import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
@@ -57,6 +58,53 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
     public void onBindViewHolder(final ChampionshipListViewHolder holder, int position) {
         holder.currentChampionship = championships.get(position);
 
+        //Picasso.with(holder.championshipImage.getContext()).cancelRequest(holder.championshipImage);
+
+        //holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+        //holder.championshipImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
+
+        if (holder.currentChampionship.isImgFirebase()){
+
+            Ion.with(holder.championshipImage)
+                    .placeholder(R.drawable.no_photo)
+                    .load(holder.currentChampionship.getPhotoUrl());
+
+//            Picasso.with(context)
+//                    .load(holder.currentChampionship.getPhotoUrl())
+//                    .placeholder(R.drawable.no_photo)
+//                    .into(holder.championshipImage);
+
+//            FirebaseStorage storage = FirebaseStorage.getInstance();
+//
+//            StorageReference httpsReference = storage.getReferenceFromUrl(holder.currentChampionship.getPhotoUrl());
+//
+//            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                @Override
+//                public void onSuccess(Uri uri) {
+//                    holder.currentChampionship.setPhotoUriDownloaded(uri);
+//
+//                    Picasso.with(context)
+//                            .load(uri.toString())
+//                            .placeholder(R.drawable.no_photo)
+//                            .into(holder.championshipImage);
+//
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    // Handle any errors
+//                }
+//            });
+
+        }else if (holder.currentChampionship.isImgStrValid()){
+            holder.championshipImage.setImageBitmap(ImageFactory.imgStrToImage(holder.currentChampionship.getImageStr()));
+
+        }else{
+            holder.championshipImage.setImageBitmap(null);
+            //holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+            holder.championshipImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
+        }
+
         holder.championshipTitle.setText(championships.get(position).getName());
         holder.championshipDetail.setText(championships.get(position).getInitialDateStr()
                 + " até "
@@ -74,43 +122,7 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
         holder.isReadOnly = mIsReadOnly;
         holder.playerToListFirstName = mFirstName;
 
-        Picasso.with(holder.championshipImage.getContext()).cancelRequest(holder.championshipImage);
 
-        holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
-        holder.championshipImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
-
-        if (holder.currentChampionship.isImgFirebase()){
-
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-
-            StorageReference httpsReference = storage.getReferenceFromUrl(holder.currentChampionship.getPhotoUrl());
-
-            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    holder.currentChampionship.setPhotoUriDownloaded(uri);
-
-                    Picasso.with(context)
-                            .load(uri.toString())
-                            .placeholder(R.drawable.no_photo)
-                            .into(holder.championshipImage);
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
-
-        }else if (holder.currentChampionship.isImgStrValid()){
-            holder.championshipImage.setImageBitmap(ImageFactory.imgStrToImage(holder.currentChampionship.getImageStr()));
-
-        }else{
-            holder.championshipImage.setImageBitmap(null);
-            //holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
-            holder.championshipImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
-        }
 
     }
 

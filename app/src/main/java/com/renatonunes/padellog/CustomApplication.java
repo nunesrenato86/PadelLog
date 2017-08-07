@@ -7,6 +7,7 @@ import android.support.multidex.MultiDex;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.firebase.client.Firebase;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by Renato on 26/07/2016.
@@ -22,6 +23,10 @@ public class CustomApplication extends Application {
         AppEventsLogger.activateApp(this);
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //para trabalhar offline tb
 
+//        Picasso picasso = new Picasso.Builder(getApplicationContext())
+//                .indicatorsEnabled(true)
+//                .build();
+//        Picasso.setSingletonInstance(picasso);
     }
 
     @Override

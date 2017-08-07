@@ -27,6 +27,7 @@ import com.renatonunes.padellog.adapters.ChampionshipListAdapter;
 import com.renatonunes.padellog.domain.Academy;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Player;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -163,7 +164,7 @@ public class AcademyListActivity extends CommonActivity {
         mDidLoad = true;
         academies.clear();
 
-        FirebaseDatabase.getInstance().getReference().child("academies").addChildEventListener(new ChildEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("name").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
                 getUpdates(dataSnapshot);

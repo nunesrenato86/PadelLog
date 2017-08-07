@@ -40,6 +40,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.koushikdutta.ion.Ion;
 import com.renatonunes.padellog.domain.Academy;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
@@ -58,10 +59,10 @@ public class AcademyInfoActivity extends CommonActivity
     private GoogleMap mMap;
     private int mMaxScrollSize;
     private static final int PERCENTAGE_TO_ANIMATE_AVATAR = 20;
-    private static final int PERCENTAGE_TO_ANIMATE_TITLES = 80;
+    //private static final int PERCENTAGE_TO_ANIMATE_TITLES = 100;
     private static Context context;
     private boolean mIsAvatarShown = true;
-    private boolean mIsTitlesShown = true;
+    //private boolean mIsTitlesShown = true;
 
     public static Academy mCurrentAcademy;
     public static Context mContext;
@@ -138,7 +139,22 @@ public class AcademyInfoActivity extends CommonActivity
         fabEditAcademy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editAcademy();
+                //editAcademy();
+
+//                String uri = "http://maps.google.com/maps?q=loc:"+mCurrentAcademy.getLat()+","+mCurrentAcademy.getLng()+" ("+mCurrentAcademy.getPlace()+")";
+//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+//                intent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+//                intent.setData(Uri.parse(uri));
+//                startActivity(intent);
+
+                Uri gmmIntentUri = Uri.parse("google.navigation:q=" + mCurrentAcademy.getLat() + "," + mCurrentAcademy.getLng() + "");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                }
+
             }
         });
 
@@ -242,21 +258,25 @@ public class AcademyInfoActivity extends CommonActivity
             Picasso.with(mContext).load(mCurrentAcademy.getPhotoUriDownloaded().toString()).into(TopImage);
         } else if (mCurrentAcademy.isImgFirebase()){
 
-            FirebaseStorage storage = FirebaseStorage.getInstance();
+            Ion.with(TopImage)
+                    .placeholder(R.drawable.no_photo)
+                    .load(mCurrentAcademy.getPhotoUrl());
 
-            StorageReference httpsReference = storage.getReferenceFromUrl(mCurrentAcademy.getPhotoUrl());
-
-            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Picasso.with(getApplicationContext()).load(uri.toString()).into(TopImage);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
+//            FirebaseStorage storage = FirebaseStorage.getInstance();
+//
+//            StorageReference httpsReference = storage.getReferenceFromUrl(mCurrentAcademy.getPhotoUrl());
+//
+//            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                @Override
+//                public void onSuccess(Uri uri) {
+//                    Picasso.with(getApplicationContext()).load(uri.toString()).into(TopImage);
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    // Handle any errors
+//                }
+//            });
 
         }else{
             TopImage.setImageResource(R.drawable.no_photo);
@@ -330,22 +350,22 @@ public class AcademyInfoActivity extends CommonActivity
                     .start();
         }
 
-        if (percentage >= PERCENTAGE_TO_ANIMATE_TITLES && mIsTitlesShown) {
-            mIsTitlesShown = false;
-            textName.animate().scaleY(0).scaleX(0).setDuration(200).start();
-            //textSubtitle.animate().scaleY(0).scaleX(0).setDuration(200).start();
-        }
-
-        if (percentage <= PERCENTAGE_TO_ANIMATE_TITLES && !mIsTitlesShown) {
-            mIsTitlesShown = true;
-
-            textName.animate()
-                    .scaleY(1).scaleX(1)
-                    .start();
-
-//            textSubtitle.animate()
-//                    .scaleY(1).scaleX(1)
-//                    .start();
-        }
+//        if (percentage >= PERCENTAGE_TO_ANIMATE_TITLES && mIsTitlesShown) {
+//            mIsTitlesShown = false;
+//            //textName.animate().scaleY(0).scaleX(0).setDuration(200).start();
+//            //textSubtitle.animate().scaleY(0).scaleX(0).setDuration(200).start();
+//        }
+//
+//        if (percentage <= PERCENTAGE_TO_ANIMATE_TITLES && !mIsTitlesShown) {
+//            mIsTitlesShown = true;
+//
+////            textName.animate()
+////                    .scaleY(1).scaleX(1)
+////                    .start();
+//
+////            textSubtitle.animate()
+////                    .scaleY(1).scaleX(1)
+////                    .start();
+//        }
     }
 }

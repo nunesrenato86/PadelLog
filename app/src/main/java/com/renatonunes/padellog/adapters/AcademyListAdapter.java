@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.koushikdutta.ion.Ion;
 import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Academy;
 import com.renatonunes.padellog.domain.util.ImageFactory;
@@ -48,43 +49,53 @@ public class AcademyListAdapter extends RecyclerView.Adapter<AcademyListViewHold
     public void onBindViewHolder(final AcademyListViewHolder holder, int position) {
         holder.currentAcademy = academies.get(position);
 
-        holder.academyName.setText(academies.get(position).getName());
+        //Picasso.with(holder.academyName.getContext()).cancelRequest(holder.academyImage);
 
-        holder.isReadOnly = mIsReadOnly;
-
-        Picasso.with(holder.academyName.getContext()).cancelRequest(holder.academyImage);
-
-        holder.academyImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
+        //holder.academyImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
 
         if (holder.currentAcademy.isImgFirebase()){
 
-            FirebaseStorage storage = FirebaseStorage.getInstance();
+            Ion.with(holder.academyImage)
+                    .placeholder(R.drawable.no_photo)
+                    .load(holder.currentAcademy.getPhotoUrl());
 
-            StorageReference httpsReference = storage.getReferenceFromUrl(holder.currentAcademy.getPhotoUrl());
+//            Picasso.with(context)
+//                            .load(holder.currentAcademy.getPhotoUrl())
+//                            .placeholder(R.drawable.no_photo)
+//                            .into(holder.academyImage);
 
-            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    holder.currentAcademy.setPhotoUriDownloaded(uri);
 
-                    Picasso.with(context)
-                            .load(uri.toString())
-                            .placeholder(R.drawable.no_photo)
-                            .into(holder.academyImage);
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
+//            FirebaseStorage storage = FirebaseStorage.getInstance();
+//
+//            StorageReference httpsReference = storage.getReferenceFromUrl(holder.currentAcademy.getPhotoUrl());
+//
+//            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                @Override
+//                public void onSuccess(Uri uri) {
+//                    holder.currentAcademy.setPhotoUriDownloaded(uri);
+//
+//                    Picasso.with(context)
+//                            .load(uri.toString())
+//                            .placeholder(R.drawable.no_photo)
+//                            .into(holder.academyImage);
+//
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    // Handle any errors
+//                }
+//            });
 
         }else{
             //holder.academyImage.setImageResource(null);
             //holder.academyImage.setBackgroundResource(R.drawable.no_photo);
             holder.academyImage.setImageResource(R.drawable.no_photo);
         }
+
+        holder.academyName.setText(academies.get(position).getName());
+
+        holder.isReadOnly = mIsReadOnly;
 
     }
 

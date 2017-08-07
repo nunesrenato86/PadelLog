@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.koushikdutta.ion.Ion;
 import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Match;
@@ -54,31 +55,33 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> 
         holder.currentMatch = matches.get(position);
         holder.currentChampionship = mCurrentChampionship;
 
-        holder.matchRound.setText(holder.currentMatch.getRoundStr());
-        holder.matchOpponent.setText(holder.currentMatch.getTeam2());
-        holder.matchScore.setText(holder.currentMatch.getScoreStr());
-
-        //Ver aqui
+        //Picasso.with(holder.matchImage.getContext()).cancelRequest(holder.matchImage);
 
         if (holder.currentMatch.isImgFirebase()){
 
-            FirebaseStorage storage = FirebaseStorage.getInstance();
+            //Picasso.with(context).load(holder.currentMatch.getPhotoUrl()).into(holder.matchImage);
 
-            StorageReference httpsReference = storage.getReferenceFromUrl(holder.currentMatch.getPhotoUrl());
+            Ion.with(holder.matchImage)
+                    .placeholder(R.drawable.no_photo)
+                    .load(holder.currentMatch.getPhotoUrl());
 
-            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    holder.currentMatch.setPhotoUriDownloaded(uri);
-
-                    Picasso.with(context).load(uri.toString()).into(holder.matchImage);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
+//            FirebaseStorage storage = FirebaseStorage.getInstance();
+//
+//            StorageReference httpsReference = storage.getReferenceFromUrl(holder.currentMatch.getPhotoUrl());
+//
+//            httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                @Override
+//                public void onSuccess(Uri uri) {
+//                    holder.currentMatch.setPhotoUriDownloaded(uri);
+//
+//                    Picasso.with(context).load(uri.toString()).into(holder.matchImage);
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    // Handle any errors
+//                }
+//            });
 
         }else if (holder.currentMatch.isImgStrValid()){
             holder.matchImage.setImageBitmap(ImageFactory.imgStrToImage(holder.currentMatch.getImageStr()));
@@ -86,6 +89,11 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchListViewHolder> 
             holder.matchImage.setImageBitmap(null);
             holder.matchImage.setBackgroundResource(R.drawable.no_photo);
         }
+
+        holder.matchRound.setText(holder.currentMatch.getRoundStr());
+        holder.matchOpponent.setText(holder.currentMatch.getTeam2());
+        holder.matchScore.setText(holder.currentMatch.getScoreStr());
+
 
         holder.isReadOnly = mIsReadOnly;
         holder.firstName = mFirstName;

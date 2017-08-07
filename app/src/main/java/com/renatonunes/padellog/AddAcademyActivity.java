@@ -669,10 +669,10 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
             edtPhone.requestFocus();
             edtPhone.setError(resources.getString(R.string.msg_field_required));
             return true;
-        } else if (TextUtils.isEmpty(email)) {
-            edtEmail.requestFocus();
-            edtEmail.setError(resources.getString(R.string.msg_field_required));
-            return true;
+//        } else if (TextUtils.isEmpty(email)) {
+//            edtEmail.requestFocus();
+//            edtEmail.setError(resources.getString(R.string.msg_field_required));
+//            return true;
         }
 
         return false;
