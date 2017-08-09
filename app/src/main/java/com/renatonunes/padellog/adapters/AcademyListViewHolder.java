@@ -13,6 +13,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.renatonunes.padellog.AcademyInfoActivity;
+import com.renatonunes.padellog.AcademyListActivity;
+import com.renatonunes.padellog.AddChampionshipActivity;
 import com.renatonunes.padellog.R;
 import com.renatonunes.padellog.domain.Academy;
 
@@ -27,6 +29,7 @@ public class AcademyListViewHolder extends RecyclerView.ViewHolder {
     private final Context context;
 
     public Academy currentAcademy;
+    public Boolean isPickingAcademy;
 
     public ImageView academyImage;
     //public ImageView championshipTrophyImage;
@@ -70,7 +73,14 @@ public class AcademyListViewHolder extends RecyclerView.ViewHolder {
 //                    AcademyInfoActivity.start(context, currentAcademy, isReadOnly);
 //                }
 
-                AcademyInfoActivity.start(context, currentAcademy, isReadOnly);
+                if (isPickingAcademy){
+                    AddChampionshipActivity.selectedAcademy = currentAcademy;
+
+                    ((AcademyListActivity)context).finish();
+                }else{
+                    AcademyInfoActivity.start(context, currentAcademy, isReadOnly);
+                }
+
             }
         });
     }

@@ -29,11 +29,14 @@ public class AcademyListAdapter extends RecyclerView.Adapter<AcademyListViewHold
     Context context;
     ArrayList<Academy> academies;
     Boolean mIsReadOnly;
+    Boolean mIsPickingAcademy;
 
-    public AcademyListAdapter(Context context, ArrayList<Academy> academies, Boolean isReadOnly) {
+    public AcademyListAdapter(Context context, ArrayList<Academy> academies, Boolean isReadOnly,
+                              Boolean isPickingAcademy) {
         this.academies = academies;
         this.context = context;
         this.mIsReadOnly = isReadOnly;
+        this.mIsPickingAcademy = isPickingAcademy;
     }
 
     @Override
@@ -96,6 +99,7 @@ public class AcademyListAdapter extends RecyclerView.Adapter<AcademyListViewHold
         holder.academyName.setText(academies.get(position).getName());
 
         holder.isReadOnly = mIsReadOnly;
+        holder.isPickingAcademy = mIsPickingAcademy;
 
     }
 

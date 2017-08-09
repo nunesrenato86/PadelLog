@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="location_type">
+        <item>Academia</item>
+        <item>Dirección</item>
+    </array>
+</resources>

@@ -36,6 +36,7 @@ import butterknife.ButterKnife;
 
 public class AcademyListActivity extends CommonActivity {
 
+
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter adapter;
@@ -44,6 +45,7 @@ public class AcademyListActivity extends CommonActivity {
 
     private static Boolean mIsModeReadOnly = false;
     private static Context mContext;
+    private static Boolean mPickingAcademy;
     boolean mDidLoad = false;
 
     public static Boolean mNeedToRefreshData = true;
@@ -209,7 +211,7 @@ public class AcademyListActivity extends CommonActivity {
         academies.add(academy);
 
         if (academies.size() > 0){
-            adapter = new AcademyListAdapter(AcademyListActivity.this, academies, mIsModeReadOnly);
+            adapter = new AcademyListAdapter(AcademyListActivity.this, academies, mIsModeReadOnly, mPickingAcademy);
             recyclerView.setAdapter(adapter);
         }else{
             Toast.makeText(AcademyListActivity.this, getResources().getString(R.string.msg_chart_no_data), Toast.LENGTH_SHORT).show();
@@ -219,11 +221,12 @@ public class AcademyListActivity extends CommonActivity {
 
     }
 
-    public static void start(Context c, Boolean isReadOnly) {
+    public static void start(Context c, Boolean isReadOnly, Boolean pickingAcademy) {
 
         mNeedToRefreshData = true;
         mIsModeReadOnly = isReadOnly;
         mContext = c;
+        mPickingAcademy = pickingAcademy;
 
         c.startActivity(new Intent(c, AcademyListActivity.class));
     }

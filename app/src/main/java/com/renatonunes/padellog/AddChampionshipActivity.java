@@ -26,6 +26,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.*;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
@@ -39,6 +40,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -62,6 +64,7 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.renatonunes.padellog.domain.Academy;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
@@ -123,11 +126,16 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
     @BindView(R.id.fab_championship_photo_add)
     FloatingActionButton fabMenuChampionshipPhotoAdd;
 
+    Context mContext;
+
     private Boolean isVisible = false;
+    private Boolean isPickingAcademy = false;
 
     private final Activity mActivity = this;
     private static Championship currentChampionship = null;
     private String mCurrentChampionshipImageStr = "";
+
+    public static Academy selectedAcademy = null;
 
     private boolean hasPhoto = false;
 
@@ -189,6 +197,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
             }
         }
 
+        mContext = this;
+
         resources = getResources();
 
         mPhotoTaker = new PhotoTaker(this);
@@ -225,23 +235,24 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         edtPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Construct an intent for the place picker
-                try {
-                    PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
-                    Intent intent = intentBuilder.build(mActivity);
 
-                    //intent.putExtra("primary_color", getResources().getColor(R.color.colorPrimary));
-                    //intent.putExtra("primary_color_dark", getResources().getColor(R.color.colorPrimaryDark));
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+                dialogBuilder.setTitle(resources.getString(R.string.title_dlg_select_place));
+                dialogBuilder.setItems(resources.getStringArray(R.array.location_type), new DialogInterface.OnClickListener() {
 
-                    // Start the intent by requesting a result,
-                    // identified by a request code.
-                    startActivityForResult(intent, REQUEST_PLACE_PICKER);
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch(which) {
+                            case 0:
+                                callAcademyList();
+                                break;
+                            default:
+                                openPlacePicker();
+                                break;
+                        }
+                    }
 
-                } catch (GooglePlayServicesRepairableException e) {
-                    // ...
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    // ...
-                }
+                });
+                dialogBuilder.create().show();
             }
         });
 
@@ -264,6 +275,56 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         fabRotateAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
 
         updateUI();
+    }
+
+    private void openPlacePicker(){
+        // Construct an intent for the place picker
+        try {
+            PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+            Intent intent = intentBuilder.build(mActivity);
+
+            //intent.putExtra("primary_color", getResources().getColor(R.color.colorPrimary));
+            //intent.putExtra("primary_color_dark", getResources().getColor(R.color.colorPrimaryDark));
+
+            // Start the intent by requesting a result,
+            // identified by a request code.
+            startActivityForResult(intent, REQUEST_PLACE_PICKER);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            // ...
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // ...
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (isPickingAcademy){
+            isPickingAcademy = false;
+
+            if (selectedAcademy != null){
+                edtPlace.setText(selectedAcademy.getName());
+                mCurrentLatLng = new LatLng(selectedAcademy.getLat(), selectedAcademy.getLng());
+
+                selectedAcademy = null;
+            }
+        }
+    }
+
+    private void callAcademyList(){
+        isPickingAcademy = true;
+        AcademyListActivity.start(this, !isMasterUser(), true);
+    }
+
+    private boolean isMasterUser(){
+        if (mPlayer == null){
+            return false;
+        }else{
+            return mPlayer.getId().equals(getResources().getString(R.string.control_key));
+        }
     }
 
     private void initSpinner(){

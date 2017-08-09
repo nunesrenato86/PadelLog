@@ -756,7 +756,7 @@ public class MainActivity extends CommonActivity
     }
 
     private void callAcademyList(){
-        AcademyListActivity.start(this, !isMasterUser());
+        AcademyListActivity.start(this, !isMasterUser(), false);
     }
 
     private boolean isMasterUser(){
