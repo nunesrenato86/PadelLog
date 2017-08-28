@@ -4,4 +4,9 @@
         <item>Academia</item>
         <item>Endereço</item>
     </array>
+
+    <array name="filter_type">
+        <item>Verificadas</item>
+        <item>Pendentes</item>
+    </array>
 </resources>

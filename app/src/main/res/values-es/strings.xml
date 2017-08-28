@@ -9,6 +9,7 @@
     <string name="action_delete">Eliminar</string>
     <string name="action_save">Guardar</string>
     <string name="action_edit">Editar</string>
+    <string name="action_filter">Filtrar</string>
 
     <string name="title_activity_login">PadelLog</string>
     <string name="title_activity_sign_up">Crear cuenta</string>
@@ -207,6 +208,10 @@
     <string name="lbl_edt_place">Local</string>
     <string name="lbl_see_championships">%1$s campeonato(s)</string>
     <string name="lbl_switch_public_profile">Perfil público</string>
+    <string name="lbl_switch_verified">Verificado</string>
+
+    <string name="msg_academy_saved_temp">La Academia enviada para el análisis y cuando sea aprobada estará disponible para uso.</string>
+    <string name="msg_academy_need_photo">Añada una foto.</string>
 
     <string name="img_camera">Cámara</string>
     <string name="img_gallery">Galería</string>
@@ -237,6 +242,7 @@
     <string name="title_activity_academy_list">Academia</string>
 
     <string name="control_key">FYNaXQMkPSPo17AELcgncX5Y5Ei2</string>
+    <string name="title_activity_add_academy">Academia</string>
 
     <string name="title_dlg_select_place">Seleccionar</string>
 

@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Switch;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -74,6 +75,7 @@ import butterknife.OnClick;
 public class AddAcademyActivity extends CommonActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
 
+
     //fields
     @BindView(R.id.edt_add_academy_name)
     EditText edtName;
@@ -86,6 +88,9 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
 
     @BindView(R.id.edt_add_academy_email)
     EditText edtEmail;
+
+    @BindView(R.id.switch_academy_verified)
+    Switch switchVerified;
 
     static final int REQUEST_PLACE_PICKER = 103;
 
@@ -106,6 +111,7 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
     private final Activity mActivity = this;
     private static Academy currentAcademy = null;
     private String mCurrentAcademyImageStr = "";
+    private static Boolean mIsModeReadOnly = true;
 
     private boolean hasPhoto = false;
 
@@ -245,16 +251,18 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
     }
 
     private void updateUI(){
+        if (mIsModeReadOnly){
+            switchVerified.setVisibility(View.GONE);
+        }else{
+            switchVerified.setVisibility(View.VISIBLE);
+        }
+
+
         fabMenuAcademyPhotoDelete.animate().scaleY(0).scaleX(0).setDuration(0).start();
         fabMenuAcademyPhotoGallery.animate().scaleY(0).scaleX(0).setDuration(0).start();
         fabMenuAcademyPhoto.animate().scaleY(0).scaleX(0).setDuration(0).start();
 
         if (currentAcademy != null){
-            edtName.setText(currentAcademy.getName());
-            edtPhone.setText(currentAcademy.getPhone());
-            edtPlace.setText(currentAcademy.getPlace());
-            edtEmail.setText(currentAcademy.getEmail());
-
 
             if (currentAcademy.getPhotoUriDownloaded() != null) {
                 Picasso.with(getApplicationContext()).load(currentAcademy.getPhotoUriDownloaded().toString()).into(mThumbnailPreview);
@@ -280,6 +288,12 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
             }else {
                 deletePhoto();
             }
+
+            edtName.setText(currentAcademy.getName());
+            edtPhone.setText(currentAcademy.getPhone());
+            edtPlace.setText(currentAcademy.getPlace());
+            edtEmail.setText(currentAcademy.getEmail());
+            switchVerified.setChecked(currentAcademy.getVerified());
         }
     }
 
@@ -440,9 +454,9 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
     }
 
     public void uploadPhotoAndSaveToDB(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (user != null) {
+        //if (user != null) {
             Boolean isNewAcademy = false;
 
             if (currentAcademy == null) { //not editing
@@ -454,6 +468,7 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
             currentAcademy.setPhone(edtPhone.getText().toString());
             currentAcademy.setEmail(edtEmail.getText().toString());
             currentAcademy.setPlace(edtPlace.getText().toString());
+            currentAcademy.setVerified(switchVerified.isChecked());
 
             if (mCurrentLatLng != null){
                 currentAcademy.setLat(mCurrentLatLng.latitude);
@@ -484,7 +499,7 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
 
                     String Id = "images/academies/";
 
-                    if (isNewAcademy){
+                    if (currentAcademy.getId() == null){
                         DatabaseReference firebase = FirebaseDatabase.getInstance().getReference();
 
                         String academyId = firebase.child("academies").push().getKey();
@@ -528,9 +543,16 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
                             //AcademyInfoActivity.currentAcademy.setPhotoUriDownloaded(downloadUrl);
                             AcademyListActivity.mNeedToRefreshData = true;
 
-                            showSnackbar(fabMenuAcademyPhoto,
-                                    getResources().getString(R.string.msg_academy_saved)
-                            );
+                            if (mIsModeReadOnly){
+                                showSnackbar(fabMenuAcademyPhoto,
+                                        getResources().getString(R.string.msg_academy_saved_temp)
+                                );
+                            }else{
+                                showSnackbar(fabMenuAcademyPhoto,
+                                        getResources().getString(R.string.msg_academy_saved)
+                                );
+                            }
+
                         }
                     });
 
@@ -551,13 +573,17 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
                         }
                     });
                 }else{
-                    saveAcademyWithoutPhoto(isNewAcademy);
+                    //saveAcademyWithoutPhoto(isNewAcademy);
+                    showSnackbar(fabMenuAcademyPhoto, getResources().getString(R.string.msg_academy_need_photo));
                 }
             }else {
-                saveAcademyWithoutPhoto(isNewAcademy);
+                if (!mIsModeReadOnly){
+                    saveAcademyWithoutPhoto(isNewAcademy);
+                }else
+                    showSnackbar(fabMenuAcademyPhoto, getResources().getString(R.string.msg_academy_need_photo));
             }
 
-        }
+        //}
     }
 
     private void saveAcademyWithoutPhoto(Boolean isNew){
@@ -578,9 +604,15 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
         //AcademyInfoActivity.currentAcademy = currentAcademy;
         AcademyListActivity.mNeedToRefreshData = true;
 
-        showSnackbar(fabMenuAcademyPhoto,
-                getResources().getString(R.string.msg_academy_saved)
-        );
+        if (mIsModeReadOnly){
+            showSnackbar(fabMenuAcademyPhoto,
+                    getResources().getString(R.string.msg_academy_saved_temp)
+            );
+        }else{
+            showSnackbar(fabMenuAcademyPhoto,
+                    getResources().getString(R.string.msg_academy_saved)
+            );
+        }
 
     }
 
@@ -619,20 +651,21 @@ public class AddAcademyActivity extends CommonActivity implements GoogleApiClien
         Log.d("RNN", "failed");
     }
 
-    public static void start(Context c) {
+    public static void start(Context c, Academy academy, Boolean isReadOnly) {
 
 //        mNeedToRefreshData = true;
-//        mIsModeReadOnly = isReadOnly;
-
-        c.startActivity(new Intent(c, AddAcademyActivity.class));
-    }
-
-    public static void start(Context c,
-                             Academy academy) {
+        mIsModeReadOnly = isReadOnly;
         currentAcademy = academy;
 
         c.startActivity(new Intent(c, AddAcademyActivity.class));
     }
+
+//    public static void start(Context c,
+//                             Academy academy) {
+//        currentAcademy = academy;
+//
+//        c.startActivity(new Intent(c, AddAcademyActivity.class));
+//    }
 
     private void callClearErrors(Editable s) {
         if (!s.toString().isEmpty()) {

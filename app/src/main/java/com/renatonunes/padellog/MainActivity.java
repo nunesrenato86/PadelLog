@@ -435,6 +435,7 @@ public class MainActivity extends CommonActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         headerView = navigationView.getHeaderView(0);
+
         navUsername = (TextView) headerView.findViewById(R.id.textview_nav_name);
         navEmail = (TextView) headerView.findViewById(R.id.textview_nav_email);
         navImage = (ImageView) headerView.findViewById(R.id.img_nav_player);
@@ -687,6 +688,8 @@ public class MainActivity extends CommonActivity
 
             }else if (player.isImgStrValid()){
                 navImage.setImageBitmap(ImageFactory.imgStrToImage(player.getImageStr()));
+
+                convertPhoto();
             }else {
                 navImage.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
             }
@@ -697,7 +700,7 @@ public class MainActivity extends CommonActivity
 
         updatePlayerPlace();
 
-        convertPhoto();
+        //convertPhoto();
 
         isLoading = false;
     }
@@ -1628,7 +1631,7 @@ public class MainActivity extends CommonActivity
 
     private void updatePlayerPlace(){
 
-        if (!mPlayer.havePlace()){
+        if ((mPlayer != null) && (!mPlayer.havePlace())){
 
             AccessToken accessToken = AccessToken.getCurrentAccessToken();
 
@@ -1735,7 +1738,7 @@ public class MainActivity extends CommonActivity
     }
 
     private void convertPhoto(){
-        if ((mPlayer.isImgStrValid()) && (!mPlayer.isImgFirebase())){
+        if ((mPlayer != null) && (mPlayer.isImgStrValid()) && (!mPlayer.isImgFirebase())){
             Bitmap bitmap = ImageFactory.imgStrToImage(mPlayer.getImageStr());
 
             if (bitmap != null) {
@@ -1858,3 +1861,10 @@ public class MainActivity extends CommonActivity
         }
     }
 }
+
+
+//if (isLoading){
+//        updatePlayerPlace();
+//
+//        convertPhoto();
+//        }

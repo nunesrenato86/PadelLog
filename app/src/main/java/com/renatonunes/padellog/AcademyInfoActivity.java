@@ -72,7 +72,7 @@ public class AcademyInfoActivity extends CommonActivity
     CollapsingToolbarLayout collapsingToolbarLayout;
 
     @BindView(R.id.fab_edit_academy)
-    FloatingActionButton fabEditAcademy;
+    FloatingActionButton fabNavigate;
 
     @BindView(R.id.img_top_academy)
     ImageView TopImage;
@@ -136,7 +136,7 @@ public class AcademyInfoActivity extends CommonActivity
 
         collapsingToolbarLayout.setTitle("");
 
-        fabEditAcademy.setOnClickListener(new View.OnClickListener() {
+        fabNavigate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //editAcademy();
@@ -167,17 +167,17 @@ public class AcademyInfoActivity extends CommonActivity
         appbarLayout.addOnOffsetChangedListener(this);
         mMaxScrollSize = appbarLayout.getTotalScrollRange();
 
-        setUIPermission();
+        //setUIPermission();
 
     }
 
-    private void setUIPermission(){
-        if (mIsReadOnly){
-            fabEditAcademy.setVisibility(View.INVISIBLE);
-        }else{
-            fabEditAcademy.setVisibility(View.VISIBLE);
-        }
-    }
+//    private void setUIPermission(){
+//        if (mIsReadOnly){
+//            fabNavigate.setVisibility(View.INVISIBLE);
+//        }else{
+//            fabNavigate.setVisibility(View.VISIBLE);
+//        }
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -227,7 +227,7 @@ public class AcademyInfoActivity extends CommonActivity
     }
 
     private void editAcademy(){
-        AddAcademyActivity.start(mContext, mCurrentAcademy);
+        AddAcademyActivity.start(mContext, mCurrentAcademy, mIsReadOnly);
     }
 
     private void deleteAcademy(){
@@ -326,7 +326,7 @@ public class AcademyInfoActivity extends CommonActivity
             dialogo.show();
 
         }else{
-            showSnackbar(fabEditAcademy, getResources().getString(R.string.msg_no_internet) );
+            showSnackbar(fabNavigate, getResources().getString(R.string.msg_no_internet) );
         }
     }
 

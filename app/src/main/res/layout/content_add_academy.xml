@@ -104,6 +104,14 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:paddingTop="@dimen/activity_horizontal_margin"
+                android:text="@string/lbl_switch_verified"
+                android:id="@+id/switch_academy_verified" />
+
 
 
 

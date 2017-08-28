@@ -27,6 +27,8 @@ public class Academy extends MyMapItem{
     private Double lat;
     private Double lng;
     private Uri photoUriDownloaded;
+    private Boolean verified;
+    private String verified_name;
 
     public Academy() {}
 
@@ -115,6 +117,31 @@ public class Academy extends MyMapItem{
         this.lng = lng;
     }
 
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public String getVerified_name() {
+        //return verified_name;
+        if (this.verified) {
+            return '1' + this.name;
+        } else {
+            return '0' + this.name;
+        }
+    }
+
+//    public void setVerified_name(String verified_name) {
+//        if (this.verified) {
+//            this.verified_name = '1' + this.name;
+//        } else {
+//            this.verified_name = '0' + this.name;
+//        }
+//    }
+
     @Exclude
     @Override
     public LatLng getPosition() {
@@ -173,6 +200,10 @@ public class Academy extends MyMapItem{
             map.put( "email", getEmail() );
         }
 
+        if( getVerified_name() != null ){
+            map.put( "verified_name", getVerified_name() );
+        }
+
         if( getPhone() != null ){
             map.put( "phone", getPhone() );
         }
@@ -193,11 +224,12 @@ public class Academy extends MyMapItem{
             map.put( "place", getPlace() );
         }
 
+        if( getVerified() != null ){
+            map.put( "verified", getVerified() );
+        }
+
         setPhotoUrlInMap(map);
 
-//        if( getResult() != null ){
-//            map.put( "result", getResult() );
-//        }
     }
 
     @Exclude

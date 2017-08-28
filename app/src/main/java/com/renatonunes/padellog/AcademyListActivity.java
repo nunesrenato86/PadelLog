@@ -2,16 +2,19 @@ package com.renatonunes.padellog;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -100,7 +103,7 @@ public class AcademyListActivity extends CommonActivity {
         fabAddAcademy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddAcademyActivity.start(mContext);
+                AddAcademyActivity.start(mContext, null ,mIsModeReadOnly);
             }
         });
 
@@ -113,11 +116,11 @@ public class AcademyListActivity extends CommonActivity {
 
         actionbar.setTitle(getResources().getString(R.string.nav_academies));
 
-        if (mIsModeReadOnly){
-            fabAddAcademy.setVisibility(View.INVISIBLE);
-        }else{
-            fabAddAcademy.setVisibility(View.VISIBLE);
-        }
+//        if (mIsModeReadOnly){
+//            fabAddAcademy.setVisibility(View.INVISIBLE);
+//        }else{
+//            fabAddAcademy.setVisibility(View.VISIBLE);
+//        }
 
     }
 
@@ -127,11 +130,11 @@ public class AcademyListActivity extends CommonActivity {
 
         if (mIsModeReadOnly) {
             if (!mDidLoad) {
-                this.refreshData();
+                this.refreshData("1");
             }
         } else {
             if (mNeedToRefreshData) {
-                this.refreshData();
+                this.refreshData("1");
                 mNeedToRefreshData = false;
             }
         }
@@ -144,7 +147,28 @@ public class AcademyListActivity extends CommonActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == android.R.id.home) {
+        if (id == R.id.action_filter) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            dialogBuilder.setTitle(getResources().getString(R.string.title_dlg_select_place));
+            dialogBuilder.setItems(getResources().getStringArray(R.array.filter_type), new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    switch(which) {
+                        case 0:
+                            refreshData("1");
+                            break;
+                        default:
+                            refreshData("0");
+                            break;
+                    }
+                }
+
+            });
+            dialogBuilder.create().show();
+
+
+            return true;
+        }else if (id == android.R.id.home) {
             finish();
             return true;
         } else  //else if (id == R.id.action_deletar_todos){
@@ -161,12 +185,30 @@ public class AcademyListActivity extends CommonActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        if (!mIsModeReadOnly) {
+            getMenuInflater().inflate(R.menu.menu_academy_list, menu);
+        }
+        return true;
+    }
+
     //retrieve data
-    private void refreshData(){
+    private void refreshData(String value){
         mDidLoad = true;
         academies.clear();
 
-        FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("name").addChildEventListener(new ChildEventListener() {
+        String filter;
+
+        if (mIsModeReadOnly) {
+            filter = "1";
+        }else{
+            filter = value;
+        }
+
+        //FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("verified").equalTo(true).addChildEventListener(new ChildEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("verified_name").startAt(filter).endAt(filter + "\uf8ff").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
                 getUpdates(dataSnapshot);
@@ -193,6 +235,72 @@ public class AcademyListActivity extends CommonActivity {
             }
         });
 
+
+        //fazer o filtro
+//
+//        if (mIsModeReadOnly) { //not masteruser - show only verified academies
+//            //FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("name").orderByChild("verified").equalTo(true).addChildEventListener(new ChildEventListener() {
+//            //FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("verified").equalTo(true).addChildEventListener(new ChildEventListener() {
+//            FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("verified_name").startAt(value).endAt(value + "\uf8ff").addChildEventListener(new ChildEventListener() {
+//                @Override
+//                public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//                    getUpdates(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//                    getUpdates(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onChildRemoved(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//                    getUpdates(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onChildMoved(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+//
+//        }else{
+//            //FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("name").addChildEventListener(new ChildEventListener() {
+//            FirebaseDatabase.getInstance().getReference().child("academies").orderByChild("verified_name").startAt(value).endAt(value + "\uf8ff").addChildEventListener(new ChildEventListener() {
+//                @Override
+//                public void onChildAdded(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//                    getUpdates(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onChildChanged(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//                    getUpdates(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onChildRemoved(com.google.firebase.database.DataSnapshot dataSnapshot) {
+//                    getUpdates(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onChildMoved(com.google.firebase.database.DataSnapshot dataSnapshot, String s) {
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+//
+//        }
+
+
+
     }
 
     private void getUpdates(com.google.firebase.database.DataSnapshot dataSnapshot){
@@ -205,6 +313,7 @@ public class AcademyListActivity extends CommonActivity {
         academy.setPhone(dataSnapshot.getValue(Academy.class).getPhone());
         academy.setEmail(dataSnapshot.getValue(Academy.class).getEmail());
         academy.setPhotoUrl(dataSnapshot.getValue(Academy.class).getPhotoUrl());
+        academy.setVerified(dataSnapshot.getValue(Academy.class).getVerified());
 
         academy.setContext(this);
 
