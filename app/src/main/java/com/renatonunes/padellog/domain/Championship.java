@@ -41,6 +41,7 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     private Integer result;
     private Match lastMatch;
     private Player player;
+    private String trophyUrl;
 
     private Bitmap markerBitmap;
 
@@ -72,6 +73,14 @@ public class Championship extends MyMapItem{//implements ClusterItem {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getTrophyUrl() {
+        return trophyUrl;
+    }
+
+    public void setTrophyUrl(String trophyUrl) {
+        this.trophyUrl = trophyUrl;
     }
 
     public Integer getResult() {
@@ -389,6 +398,12 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         //}
     }
 
+    private void setTrophyUrlInMap( Map<String, Object> map ) {
+        //if( getPhotoUrl() != null ){
+        map.put( "trophyUrl", getTrophyUrl() );
+        //}
+    }
+
     private void setDataInMap( Map<String, Object> map ) {
         //if( getImageStr() != null ){
             map.put( "imageStr", getImageStr() );
@@ -431,6 +446,8 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         }
 
         setPhotoUrlInMap(map);
+
+        setTrophyUrlInMap(map);
 
 //        if( getResult() != null ){
 //            map.put( "result", getResult() );
@@ -488,6 +505,11 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     @Exclude
     public boolean isImgFirebase(){
         return ((this.getPhotoUrl() != null) && (this.getPhotoUrl().contains("firebasestorage")));
+    }
+
+    @Exclude
+    public boolean haveTrophy(){
+        return (this.getTrophyUrl() != null);
     }
 
     @Exclude

@@ -216,6 +216,7 @@ public class ChampionshipListActivity extends CommonActivity {
         championship.setFinalDate(dataSnapshot.getValue(Championship.class).getFinalDate());
         championship.setPhotoUrl(dataSnapshot.getValue(Championship.class).getPhotoUrl());
         championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
+        championship.setTrophyUrl(dataSnapshot.getValue(Championship.class).getTrophyUrl());
 
         championship.setPlayer(mPlayer);
 

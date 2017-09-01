@@ -42,6 +42,7 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.koushikdutta.ion.Ion;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.util.ImageFactory;
 import com.renatonunes.padellog.domain.util.LibraryClass;
@@ -83,6 +84,9 @@ public class ChampionshipInfoActivity extends CommonActivity
 
     @BindView(R.id.materialup_profile_image)
 	ImageView mProfileImage;
+
+    @BindView(R.id.img_gold_silver_trophy)
+    ImageView mTrophyGoldSilverImage;
 
 	private int mMaxScrollSize;
 
@@ -349,6 +353,7 @@ public class ChampionshipInfoActivity extends CommonActivity
 		if (percentage >= PERCENTAGE_TO_ANIMATE_AVATAR && mIsAvatarShown) {
 			mIsAvatarShown = false;
 			mProfileImage.animate().scaleY(0).scaleX(0).setDuration(200).start();
+            mTrophyGoldSilverImage.animate().scaleY(0).scaleX(0).setDuration(200).start();
 		}
 
 		if (percentage <= PERCENTAGE_TO_ANIMATE_AVATAR && !mIsAvatarShown) {
@@ -357,6 +362,10 @@ public class ChampionshipInfoActivity extends CommonActivity
 			mProfileImage.animate()
 				.scaleY(1).scaleX(1)
 				.start();
+
+            mTrophyGoldSilverImage.animate()
+                    .scaleY(1).scaleX(1)
+                    .start();
 		}
 
         if (percentage >= PERCENTAGE_TO_ANIMATE_TITLES && mIsTitlesShown) {
@@ -429,14 +438,38 @@ public class ChampionshipInfoActivity extends CommonActivity
 				+ currentChampionship.getFinalDateStr());
 
 		if (currentChampionship.getResult() == 8){
-			mProfileImage.setVisibility(View.VISIBLE);
-			mProfileImage.setImageResource(R.drawable.trophy_gold);
+            if (currentChampionship.haveTrophy()){
+                loadTrophy();
+            }else {
+                mProfileImage.setVisibility(View.INVISIBLE);
+                mTrophyGoldSilverImage.setVisibility(View.VISIBLE);
+
+                mTrophyGoldSilverImage.setImageResource(R.drawable.trophy_gold);
+            }
 		}else if (currentChampionship.getResult() == 7){
-			mProfileImage.setVisibility(View.VISIBLE);
-			mProfileImage.setImageResource(R.drawable.trophy_silver);
-		}else
-			mProfileImage.setVisibility(View.INVISIBLE);
+
+            if (currentChampionship.haveTrophy()){
+                loadTrophy();
+            }else {
+                mProfileImage.setVisibility(View.INVISIBLE);
+                mTrophyGoldSilverImage.setVisibility(View.VISIBLE);
+
+                mTrophyGoldSilverImage.setImageResource(R.drawable.trophy_silver);
+            }
+		}else {
+            mProfileImage.setVisibility(View.INVISIBLE);
+            mTrophyGoldSilverImage.setVisibility(View.INVISIBLE);
+        }
 	}
+
+	private void loadTrophy(){
+        mProfileImage.setVisibility(View.VISIBLE);
+        mTrophyGoldSilverImage.setVisibility(View.INVISIBLE);
+
+        Ion.with(mProfileImage)
+                .placeholder(R.drawable.no_trophy2)
+                .load(currentChampionship.getTrophyUrl());
+    }
 
 	class TabsAdapter extends FragmentPagerAdapter {
 		public TabsAdapter(FragmentManager fm) {

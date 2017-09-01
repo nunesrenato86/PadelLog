@@ -230,6 +230,70 @@
 
     </FrameLayout>
 
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_anchor="@id/img_championship"
+        app:layout_anchorGravity="center">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/img_edit_trophy"
+            android:src="@drawable/no_trophy2"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="left|bottom"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            app:border_color="@color/colorFacebookButtonText"
+            app:border_width="1dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_edit_trophy_gallery"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_margin="2dp"
+            android:src="@drawable/ic_folder_image_white"
+            app:layout_anchor="@id/img_edit_trophy"
+            app:layout_anchorGravity="top|right|end"
+            app:fabSize="mini"
+            android:visibility="visible"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_edit_trophy_camera"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_margin="2dp"
+            app:layout_anchor="@id/img_edit_trophy"
+            app:layout_anchorGravity="top|left|start"
+            app:fabSize="mini"
+            android:src="@drawable/ic_camera_white"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_edit_trophy_delete"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_margin="2dp"
+            android:src="@drawable/ic_delete"
+            app:layout_anchor="@id/img_edit_trophy"
+            app:layout_anchorGravity="bottom|left|end"
+            app:fabSize="mini"
+            android:visibility="visible"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_edit_trophy_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            app:layout_anchor="@id/img_edit_trophy"
+            app:layout_anchorGravity="bottom|right|end"
+            app:fabSize="mini"
+            android:src="@drawable/ic_fab_plus" />
+    </android.support.design.widget.CoordinatorLayout>
 
 </android.support.design.widget.CoordinatorLayout>
 

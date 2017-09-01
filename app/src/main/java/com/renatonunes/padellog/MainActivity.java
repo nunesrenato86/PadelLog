@@ -1197,6 +1197,7 @@ public class MainActivity extends CommonActivity
             championship.setFinalDate(ds.getValue(Championship.class).getFinalDate());
             championship.setCategory(ds.getValue(Championship.class).getCategory());
             championship.setPhotoUrl(ds.getValue(Championship.class).getPhotoUrl());
+            championship.setTrophyUrl(ds.getValue(Championship.class).getTrophyUrl());
 
             //championship.setPlayer(mPlayer);
 

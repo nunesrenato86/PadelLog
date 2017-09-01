@@ -37,8 +37,44 @@
 				app:layout_collapseMode="parallax"
 				/>
 		</android.support.design.widget.CollapsingToolbarLayout>
+
+		<FrameLayout
+			android:layout_width="96dp"
+			android:layout_height="96dp"
+			android:elevation="8dp"
+			android:layout_gravity="center_horizontal"
+			android:layout_marginTop="-48dp">
+
+			<ImageView
+			android:id="@+id/img_gold_silver_trophy"
+			android:layout_width="96dp"
+			android:layout_height="96dp"
+			android:layout_gravity="center_horizontal"
+			android:src="@drawable/trophy_gold"
+			android:elevation="8dp"
+			app:layout_scrollFlags="scroll"
+			/>
+
+			<com.makeramen.roundedimageview.RoundedImageView
+				android:id="@+id/materialup.profile_image"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:src="@drawable/no_trophy2"
+                android:scaleType="centerCrop"
+                app:riv_corner_radius="30dip"
+                app:riv_border_width="1dp"
+                app:riv_border_color="#FFF"
+                app:riv_mutate_background="true"
+                app:riv_oval="true"
+                android:layout_gravity="center_horizontal"
+                android:elevation="8dp"
+                app:layout_scrollFlags="scroll"
+                app:border_color="@color/colorFacebookButtonText"
+                app:border_width="1dp"/>
+		</FrameLayout>>
 		​
-		<ImageView
+		<!--ImageView
 			android:id="@+id/materialup.profile_image"
 			android:layout_width="96dp"
 			android:layout_height="96dp"
@@ -49,8 +85,27 @@
 			app:border_width="2dp"
 			app:border_color="#FFF"
 			app:layout_scrollFlags="scroll"
-			/>
-		​
+			/!-->
+
+		<!--com.makeramen.roundedimageview.RoundedImageView
+			android:layout_width="96dp"
+			android:layout_height="96dp"
+			xmlns:app="http://schemas.android.com/apk/res-auto"
+			android:id="@+id/materialup.profile_image"
+			android:src="@drawable/no_trophy2"
+			android:scaleType="centerCrop"
+			app:riv_corner_radius="30dip"
+			app:riv_border_width="1dp"
+			app:riv_border_color="#FFF"
+			app:riv_mutate_background="true"
+			app:riv_oval="true"
+			android:layout_marginTop="-48dp"
+			android:layout_gravity="center_horizontal"
+			android:elevation="8dp"
+			app:layout_scrollFlags="scroll"
+			app:border_color="@color/colorFacebookButtonText"
+			app:border_width="1dp"/!-->
+
 		<android.support.v7.widget.Toolbar
 			android:id="@+id/championship_info_toolbar"
 			android:layout_width="match_parent"
