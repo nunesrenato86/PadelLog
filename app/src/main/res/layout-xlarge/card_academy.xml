@@ -14,66 +14,69 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:weightSum="1">
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:padding="8dp">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.80">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.10"
+            android:orientation="horizontal"
+            >
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/item_image"
+                android:src="@drawable/no_photo"
+                android:scaleType="centerCrop"
+                app:riv_corner_radius="30dip"
+                app:riv_border_width="1dp"
+                app:riv_border_color="#FFF"
+                app:riv_mutate_background="true"
+                app:riv_oval="true" />
+
+            <!--ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:id="@+id/item_image"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:background="@drawable/no_photo"
                 android:scaleType="centerCrop"
-                />
+                /!-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/item_title"
-                android:textSize="25sp"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:layout_gravity="start|bottom"
-                android:textColor="@color/colorFacebookButtonText"
-                android:text="Academy name"
-                />
-
-        </FrameLayout>
+            <!--de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/item_image"
+                android:src="@drawable/no_photo"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:elevation="8dp"
+                android:layout_gravity="center_horizontal"
+                app:border_width="1dp"
+                app:border_color="#FFF"
+                app:layout_scrollFlags="scroll"
+                android:scaleType="centerCrop" /!-->
+        </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.20"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/cardview_margin"
-            android:paddingRight="@dimen/cardview_margin"
-            android:paddingTop="@dimen/cardview_margin">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.9"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight="0.92"
-                android:layout_height="wrap_content"
-                android:id="@+id/item_detail"
-                android:layout_gravity="center"
-                android:text="Academy place"
-                android:textSize="15sp"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                />
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_weight="0.08"
+                android:layout_width="match_parent"
                 android:layout_height="20dp"
-                android:id="@+id/item_image_trophy"
-                android:layout_gravity="center"
-                android:scaleType="centerInside"
-                />
+                android:id="@+id/item_detail"
+                android:textSize="16sp"
+                android:layout_gravity="start|center_vertical"
+                android:text="Academy name"
+                android:paddingLeft="@dimen/activity_horizontal_margin"/>
 
         </LinearLayout>
     </LinearLayout>

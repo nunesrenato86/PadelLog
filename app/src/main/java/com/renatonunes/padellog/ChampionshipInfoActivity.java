@@ -20,9 +20,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -168,6 +170,38 @@ public class ChampionshipInfoActivity extends CommonActivity
         setUIPermission();
 
         convertPhoto();
+
+        mProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (currentChampionship.haveTrophy()) {
+
+//                    FirebaseStorage storage = FirebaseStorage.getInstance();
+//
+//                    StorageReference httpsReference = storage.getReferenceFromUrl(currentChampionship.getTrophyUrl());
+//
+//                    httpsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                        @Override
+//                        public void onSuccess(Uri uri) {
+//
+//                            loadPhoto(uri);
+//
+//                            //Picasso.with(getApplicationContext()).load(uri.toString()).into(imgProfile);
+//                        }
+//                    }).addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception exception) {
+//                            // Handle any errors
+//                        }
+//                    });
+
+                    loadPhoto();
+
+                    //loadPhoto(mProfileImage);
+                }
+            }
+        });
 	}
 
     private void convertPhoto(){
@@ -643,6 +677,32 @@ public class ChampionshipInfoActivity extends CommonActivity
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+    }
+
+    private void loadPhoto() {
+        AlertDialog.Builder imageDialog = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View layout = inflater.inflate(R.layout.img_dialog,
+                (ViewGroup) findViewById(R.id.layout_root));
+
+        ImageView image = (ImageView) layout.findViewById(R.id.fullimage);
+
+        Picasso.with(getApplicationContext())
+                .load(currentChampionship.getTrophyUrl())
+                .placeholder(R.drawable.no_trophy2)
+                .into(image);
+
+        imageDialog.setView(layout);
+        imageDialog.setPositiveButton(getResources().getString(R.string.msg_alert_OK), new DialogInterface.OnClickListener(){
+
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        imageDialog.create();
+        imageDialog.show();
     }
 
 

@@ -156,6 +156,7 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
 
     private boolean hasPhoto = false;
     private boolean hasTrophyPhoto = false;
+    //private boolean hasDeletedTrophyPhoto = false;
 
     private ArrayAdapter<String> dataAdapter;
 
@@ -548,6 +549,8 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         toggleTrophyFabs();
 
         hasTrophyPhoto = false;
+        currentChampionship.setTrophyUrl(null);
+        //hasDeletedTrophyPhoto = true;
 
         Picasso.with(getApplicationContext())
                 .load(R.drawable.no_trophy2)
@@ -664,7 +667,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         }
     }
 
-    //falta fazer
     private void previewPickedImage(Intent data){
         Uri selectedImage = data.getData();
         String[] filePathColumn = { MediaStore.Images.Media.DATA };
@@ -673,20 +675,35 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         String picturePath = cursor.getString(columnIndex);
         cursor.close();
-        mCurrentPhotoUri = Uri.parse(picturePath);
+
+        Uri uri;
+
+        if (isTakingTrophyPhoto){
+            mCurrentTrophyUri = Uri.parse(picturePath);
+            uri = mCurrentTrophyUri;
+        }else{
+            mCurrentPhotoUri = Uri.parse(picturePath);
+            uri = mCurrentPhotoUri;
+        }
 
         BitmapFactory.Options options = new BitmapFactory.Options();
 
-        if (ImageFactory.imgIsLarge(mCurrentPhotoUri)) {
+        if (ImageFactory.imgIsLarge(uri)) {
             //options.inSampleSize = 8;
 
             ImageFactory.mContext = this;
             picturePath = ImageFactory.compressImage(picturePath);
-            mCurrentPhotoUri = Uri.parse(picturePath);
-        }
 
-        mThumbnailPreview.setImageBitmap(BitmapFactory.decodeFile(picturePath, options));
-        hasPhoto = true;
+            if (isTakingTrophyPhoto){
+                mCurrentTrophyUri = Uri.parse(picturePath);
+                hasTrophyPhoto = true;
+                imgTrophy.setImageBitmap(BitmapFactory.decodeFile(picturePath, options));
+            }else{
+                mCurrentPhotoUri = Uri.parse(picturePath);
+                hasPhoto = true;
+                mThumbnailPreview.setImageBitmap(BitmapFactory.decodeFile(picturePath, options));
+            }
+        }
     }
 
     private void displayPhotoError() {
@@ -774,8 +791,6 @@ public class AddChampionshipActivity extends CommonActivity implements GoogleApi
                 currentChampionship.setLat(mCurrentLatLng.latitude);
                 currentChampionship.setLng(mCurrentLatLng.longitude);
             }
-
-            //falta salvar a foto do trofeu
 
 
             if (mCurrentPhotoUri != null) {
