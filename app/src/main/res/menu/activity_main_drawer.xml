@@ -37,8 +37,12 @@
             <menu>
                 <item
                     android:id="@+id/nav_per_year"
-                    android:icon="@drawable/ic_ranking"
+                    android:icon="@drawable/ic_chart_arc_black"
                     android:title="@string/nav_per_result" />
+                <item
+                    android:id="@+id/nav_ranking"
+                    android:icon="@drawable/ic_ranking"
+                    android:title="@string/nav_ranking" />
                 <item
                     android:id="@+id/nav_per_partner"
                     android:icon="@drawable/ic_menu_partner"

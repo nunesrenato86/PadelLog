@@ -121,6 +121,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     private boolean hasPhoto = false;
     private static Player currentPlayer = null;
     private boolean playerImageHasChanged = false;
+    private static Boolean mIsReadOnly = false;
 
     private boolean mPhotoWasDeleted = false;
 
@@ -306,9 +307,21 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     }
 
     private void updateUi(){
-        fabProfilePhotoDelete.animate().scaleY(0).scaleX(0).setDuration(0).start();
-        fabProfilePhotoGallery.animate().scaleY(0).scaleX(0).setDuration(0).start();
-        fabProfilePhotoCamera.animate().scaleY(0).scaleX(0).setDuration(0).start();
+        if (mIsReadOnly){
+            fabProfilePhotoDelete.setVisibility(View.GONE);
+            fabProfilePhotoGallery.setVisibility(View.GONE);
+            fabProfilePhotoCamera.setVisibility(View.GONE);
+            fabProfilePhotoAdd.setVisibility(View.GONE);
+
+            spinnerCategory.setEnabled(false);
+            switchProfilePublic.setVisibility(View.GONE);
+            edtProfilePlace.setEnabled(false);
+        } else {
+            fabProfilePhotoDelete.animate().scaleY(0).scaleX(0).setDuration(0).start();
+            fabProfilePhotoGallery.animate().scaleY(0).scaleX(0).setDuration(0).start();
+            fabProfilePhotoCamera.animate().scaleY(0).scaleX(0).setDuration(0).start();
+
+        }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -319,7 +332,12 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
                 lblProfileDisplayName.setText(user.getDisplayName());
             }
 
-            lblProfileEmail.setText(user.getEmail());
+            if (!mIsReadOnly) { //only show logged suer email
+                lblProfileEmail.setText(user.getEmail());
+            }else{
+                lblProfileEmail.setVisibility(View.GONE);
+            }
+
             spinnerCategory.setSelection(currentPlayer.getCategory());
             edtProfilePlace.setText(currentPlayer.getPlace());
             switchProfilePublic.setChecked(currentPlayer.getIsPublic());
@@ -464,7 +482,10 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_activity, menu);
+
+        if (!mIsReadOnly) {
+            getMenuInflater().inflate(R.menu.menu_add_activity, menu);
+        }
         return true;
     }
 
@@ -632,8 +653,9 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
                 resources.getString(R.string.msg_error_img_file));
     }
 
-    public static void start(Context c, Player player) {
+    public static void start(Context c, Player player, Boolean isReadOnly) {
         currentPlayer = player;
+        mIsReadOnly = isReadOnly;
 
         c.startActivity(new Intent(c, EditProfileActivity.class));
     }

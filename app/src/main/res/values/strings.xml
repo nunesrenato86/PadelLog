@@ -87,6 +87,7 @@
     <string name="nav_show">Mostrar</string>
     <string name="nav_per_result">Por resultados</string>
     <string name="nav_per_partner">Por parceiro</string>
+    <string name="nav_ranking">Ranking</string>
 
 
     <string name="title_activity_championship_list">Meus campeonatos</string>
@@ -242,6 +243,7 @@
     <string name="title_activity_add_academy">Academia</string>
 
     <string name="title_dlg_select_place">Selecionar</string>
+    <string name="title_activity_ranking">RankingActivity</string>
 
 
 </resources>

@@ -9,4 +9,10 @@
         <item>Verificadas</item>
         <item>Pendientes</item>
     </array>
+
+    <array name="ranking_type">
+        <item>Todos</item>
+        <item>Campeón</item>
+        <item>Sub-campeón</item>
+    </array>
 </resources>

@@ -27,6 +27,7 @@ import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ import static com.renatonunes.padellog.MainActivity.playerImageHasChanged;
 /**
  * Created by Renato on 26/07/2016.
  */
-public class Player extends MyMapItem{ //implements ClusterItem{
+public class Player extends MyMapItem { //implements ClusterItem{
     public static String TOKEN = "com.renatonunes.padellog.domain.Player.TOKEN";
     public static String PROVIDER = "com.renatonunes.padellog.domain.Player.PROVIDER";
 
@@ -685,8 +686,5 @@ public class Player extends MyMapItem{ //implements ClusterItem{
     public boolean isImgFirebase(){
         return ((this.getPhotoUrl() != null) && (this.getPhotoUrl().contains("firebasestorage")));
     }
-
-
-
 
 }

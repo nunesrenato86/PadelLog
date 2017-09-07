@@ -86,6 +86,7 @@
     <string name="nav_show">Mostrar</string>
     <string name="nav_per_result">Por resultados</string>
     <string name="nav_per_partner">Por pareja</string>
+    <string name="nav_ranking">Ranking</string>
 
 
     <string name="title_activity_championship_list">Mis campeonatos</string>

@@ -444,7 +444,7 @@ public class MainActivity extends CommonActivity
             @Override
             public void onClick(View view) {
                 if (!isLoading) {
-                    EditProfileActivity.start(mContext, mPlayer);
+                    EditProfileActivity.start(mContext, mPlayer, false);
                 }
             }
         });
@@ -762,6 +762,10 @@ public class MainActivity extends CommonActivity
         AcademyListActivity.start(this, !isMasterUser(), false);
     }
 
+    private void callRanking(){
+        RankingActivity.start(this, !isMasterUser(), false);
+    }
+
     private boolean isMasterUser(){
         if (mPlayer == null){
             return false;
@@ -788,8 +792,8 @@ public class MainActivity extends CommonActivity
                 callAcademyList();
             } else if (id == R.id.nav_show_players) {
                 showPlayers();
-            } else if (id == R.id.nav_per_partner) {
-                showNotDoneYet();
+            } else if (id == R.id.nav_ranking) {
+                callRanking();
             } else if (id == R.id.nav_per_year) {
                 Intent intent = new Intent(this, ChartActivity.class);
                 startActivity(intent);
@@ -1301,7 +1305,7 @@ public class MainActivity extends CommonActivity
                     .setPositiveButton(getResources().getString(R.string.btn_complete), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            EditProfileActivity.start(mContext, mPlayer);
+                            EditProfileActivity.start(mContext, mPlayer, false);
                         }
                     })
                     .setNegativeButton(getResources().getString(R.string.btn_later), null)
@@ -1593,7 +1597,7 @@ public class MainActivity extends CommonActivity
                                     if (mPlayer.canBePublic()) {
                                         //mPlayer.makePublic();
                                         //mPlayer.setIsPublic(true);
-                                        EditProfileActivity.start(mContext, mPlayer);
+                                        EditProfileActivity.start(mContext, mPlayer, false);
                                     }else{
                                         Snackbar snackbar = Snackbar
                                                 .make(navigationView,
@@ -1602,7 +1606,7 @@ public class MainActivity extends CommonActivity
                                                 .setAction(getResources().getString(R.string.title_activity_edit_profile), new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View view) {
-                                                        EditProfileActivity.start(mContext, mPlayer);
+                                                        EditProfileActivity.start(mContext, mPlayer, false);
                                                     }
                                                 });
 

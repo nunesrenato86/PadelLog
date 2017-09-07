@@ -48,11 +48,9 @@
         <activity
             android:name=".MatchInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".AcademyInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".SignUpActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -103,6 +101,10 @@
         <activity
             android:name=".ChartActivity"
             android:label="@string/title_activity_chart"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".RankingActivity"
+            android:label="@string/title_activity_ranking"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EditProfileActivity"
