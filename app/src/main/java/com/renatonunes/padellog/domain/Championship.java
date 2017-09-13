@@ -43,6 +43,10 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     private Player player;
     private String trophyUrl;
 
+    private Integer win;
+    private Integer loss;
+    private Double ratio;
+
     private Bitmap markerBitmap;
 
     private Uri photoUriDownloaded;
@@ -66,6 +70,36 @@ public class Championship extends MyMapItem{//implements ClusterItem {
     }
 
     public Championship() {}
+
+    public Integer getWin() {
+        setWinIfNull();
+
+        return win;
+    }
+
+    public void setWin(Integer win) {
+        this.win = win;
+    }
+
+    public Integer getLoss() {
+        setLossIfNull();
+
+        return loss;
+    }
+
+    public void setLoss(Integer loss) {
+        this.loss = loss;
+    }
+
+    public Double getRatio() {
+        setRatioIfNull();
+
+        return ratio;
+    }
+
+    public void setRatio(Double ratio) {
+        this.ratio = ratio;
+    }
 
     public String getPhotoUrl() {
         return photoUrl;
@@ -445,6 +479,18 @@ public class Championship extends MyMapItem{//implements ClusterItem {
             map.put( "place", getPlace() );
         }
 
+        if( getWin() != null ){
+            map.put( "win", getWin());
+        }
+
+        if( getLoss() != null ){
+            map.put( "loss", getLoss());
+        }
+
+        if( getRatio() != null ){
+            map.put( "ratio", getRatio());
+        }
+
         setPhotoUrlInMap(map);
 
         setTrophyUrlInMap(map);
@@ -452,6 +498,24 @@ public class Championship extends MyMapItem{//implements ClusterItem {
 //        if( getResult() != null ){
 //            map.put( "result", getResult() );
 //        }
+    }
+
+    private void setWinIfNull() {
+        if( this.win == null ){
+            this.win = 0;
+        }
+    }
+
+    private void setLossIfNull() {
+        if( this.loss == null ){
+            this.loss = 0;
+        }
+    }
+
+    private void setRatioIfNull() {
+        if( this.ratio == null ){
+            this.ratio = 0.0;
+        }
     }
 
     @Exclude
@@ -517,4 +581,94 @@ public class Championship extends MyMapItem{//implements ClusterItem {
         return (this.getImageStr() != null) && (!this.getImageStr().isEmpty());
     }
 
+    public void incWin(){
+        setWinIfNull();
+
+        this.win = this.win + 1;
+
+        updateTotalWin();
+
+        this.getPlayer().incWin();
+    }
+
+    public void incLoss(){
+        setLossIfNull();
+
+        this.loss = this.loss + 1;
+
+        updateTotalLoss();
+
+        this.getPlayer().incLoss();
+    }
+
+    public void decWin(Integer count){
+        setWinIfNull();
+
+        this.win = this.win - count;
+
+        if (this.win < 0){
+            this.win = 0;
+        }
+
+        updateTotalWin();
+
+        this.getPlayer().decWin(count);
+    }
+
+    public void decLoss(Integer count){
+        setLossIfNull();
+
+        this.loss = this.loss - count;
+
+        if (this.loss < 0){
+            this.loss = 0;
+        }
+
+        updateTotalLoss();
+
+        this.getPlayer().decLoss(count);
+    }
+
+    private void updateTotalWin(){
+        Map<String, Object> mResult = new HashMap<String, Object>();
+
+        mResult.put("win", this.win);
+
+        calcRatio();
+
+        mResult.put("ratio", this.ratio);
+
+        FirebaseDatabase.getInstance().getReference().child("championships")
+                .child(this.getOwner())
+                .child(getId())
+                .updateChildren(mResult);
+    }
+
+    private void calcRatio(){
+        setWinIfNull();
+        setLossIfNull();
+
+        Integer total = this.win + this.loss;
+
+        if (total > 0){
+            this.ratio = ((double)this.win / ((double)total)) * 100.00;
+        }else{
+            this.ratio = 0.00;
+        }
+    }
+
+    private void updateTotalLoss(){
+        Map<String, Object> mResult = new HashMap<String, Object>();
+
+        mResult.put("loss", this.loss);
+
+        calcRatio();
+
+        mResult.put("ratio", this.ratio);
+
+        FirebaseDatabase.getInstance().getReference().child("championships")
+                .child(this.getOwner())
+                .child(getId())
+                .updateChildren(mResult);
+    }
 }

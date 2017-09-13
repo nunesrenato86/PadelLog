@@ -201,6 +201,7 @@
     <string name="msg_saving">Salvando...</string>
     <string name="msg_converting">Convertendo foto...</string>
     <string name="msg_update_place">Atualizando local...</string>
+    <string name="msg_update_count">Contando jogos...</string>
 
     <string name="msg_loading">Carregando...</string>
     <string name="title_activity_chart">Resultados</string>
@@ -243,7 +244,7 @@
     <string name="title_activity_add_academy">Academia</string>
 
     <string name="title_dlg_select_place">Selecionar</string>
-    <string name="title_activity_ranking">RankingActivity</string>
+    <string name="title_activity_ranking">Ranking</string>
 
 
 </resources>

@@ -59,6 +59,10 @@ public class Player extends MyMapItem { //implements ClusterItem{
     private long totalFirstPlace;
     private long totalSecondPlace;
 
+    private Integer win;
+    private Integer loss;
+    private Double ratio;
+
     private Bitmap markerBitmap;
 
     private Uri photoUriDownloaded;
@@ -87,6 +91,30 @@ public class Player extends MyMapItem { //implements ClusterItem{
 
     public void setTotalChampionship(long totalChampionship) {
         this.totalChampionship = totalChampionship;
+    }
+
+    public Integer getWin() {
+        return win;
+    }
+
+    public void setWin(Integer win) {
+        this.win = win;
+    }
+
+    public Integer getLoss() {
+        return loss;
+    }
+
+    public void setLoss(Integer loss) {
+        this.loss = loss;
+    }
+
+    public Double getRatio() {
+        return ratio;
+    }
+
+    public void setRatio(Double ratio) {
+        this.ratio = ratio;
     }
 
     //@Exclude
@@ -259,6 +287,24 @@ public class Player extends MyMapItem { //implements ClusterItem{
         }
     }
 
+    private void setWinInMap( Map<String, Object> map ) {
+        if( getWin() != null ){
+            map.put( "win", getWin());
+        }
+    }
+
+    private void setLossInMap( Map<String, Object> map ) {
+        if( getLoss() != null ){
+            map.put( "loss", getLoss());
+        }
+    }
+
+    private void setRatioInMap( Map<String, Object> map ) {
+        if( getRatio() != null ){
+            map.put( "ratio", getRatio());
+        }
+    }
+
     private void setLatInMap( Map<String, Object> map ) {
         if( getLat() != null ){
             map.put( "lat", getLat() );
@@ -360,6 +406,24 @@ public class Player extends MyMapItem { //implements ClusterItem{
         }
     }
 
+    private void setWinIfNull() {
+        if( this.win == null ){
+            this.win = 0;
+        }
+    }
+
+    private void setLossIfNull() {
+        if( this.loss == null ){
+            this.loss = 0;
+        }
+    }
+
+    private void setRatioIfNull() {
+        if( this.ratio == null ){
+            this.ratio = 0.0;
+        }
+    }
+
     private void initDataAux(){
         setCategoryIfNull();
         setLatIfNull();
@@ -367,6 +431,9 @@ public class Player extends MyMapItem { //implements ClusterItem{
         setImageStrIfNull();
         setIsPublicIfNull();
         setPlaceIfNull();
+        setWinIfNull();
+        setLossIfNull();
+        setRatioIfNull();
     }
 
     /*
@@ -483,6 +550,9 @@ public class Player extends MyMapItem { //implements ClusterItem{
         setIsPublicInMap(map);
         setPlaceInMap(map);
         setPhotoUrlInMap(map);
+        setWinInMap(map);
+        setLossInMap(map);
+        setRatioInMap(map);
 
         if( map.isEmpty() ){
             return;
@@ -534,6 +604,22 @@ public class Player extends MyMapItem { //implements ClusterItem{
         updateTotalChampionships();
     }
 
+    public void incWin(){
+        setWinIfNull();
+
+        this.win = this.win + 1;
+
+        updateTotalWin();
+    }
+
+    public void incLoss(){
+        setLossIfNull();
+
+        this.loss = this.loss + 1;
+
+        updateTotalLoss();
+    }
+
     public void decTotalChampionship(){
         this.totalChampionship = this.totalChampionship - 1;
 
@@ -544,10 +630,75 @@ public class Player extends MyMapItem { //implements ClusterItem{
         updateTotalChampionships();
     }
 
+    public void decWin(Integer count){
+        setWinIfNull();
+
+        this.win = this.win - count;
+
+        if (this.win < 0){
+            this.win = 0;
+        }
+
+        updateTotalWin();
+    }
+
+    public void decLoss(Integer count){
+        setLossIfNull();
+
+        this.loss = this.loss - count;
+
+        if (this.loss < 0){
+            this.loss = 0;
+        }
+
+        updateTotalLoss();
+    }
+
     private void updateTotalChampionships(){
         Map<String, Object> mResult = new HashMap<String, Object>();
 
         mResult.put("totalChampionship", this.totalChampionship);
+
+        FirebaseDatabase.getInstance().getReference().child("players")
+                .child(getId())
+                .updateChildren(mResult);
+    }
+
+    private void updateTotalWin(){
+        Map<String, Object> mResult = new HashMap<String, Object>();
+
+        mResult.put("win", this.win);
+
+        calcRatio();
+
+        mResult.put("ratio", this.ratio);
+
+        FirebaseDatabase.getInstance().getReference().child("players")
+                .child(getId())
+                .updateChildren(mResult);
+    }
+
+    private void calcRatio(){
+        setWinIfNull();
+        setLossIfNull();
+
+        Integer total = this.win + this.loss;
+
+        if (total > 0){
+            this.ratio = ((double)this.win / ((double)total)) * 100.00;
+        }else{
+            this.ratio = 0.00;
+        }
+    }
+
+    private void updateTotalLoss(){
+        Map<String, Object> mResult = new HashMap<String, Object>();
+
+        mResult.put("loss", this.loss);
+
+        calcRatio();
+
+        mResult.put("ratio", this.ratio);
 
         FirebaseDatabase.getInstance().getReference().child("players")
                 .child(getId())
@@ -576,6 +727,14 @@ public class Player extends MyMapItem { //implements ClusterItem{
 //                });
 //    }
 //
+
+    public void updateChampionshipsCount(){
+
+        //this.countChamps();
+        this.countFirstPlace();
+        this.countSecondPlace();
+    }
+
     public void countFirstPlace(){
 
 // tornar isso privado e usar no metodo updateplayercount, nas properties com exclude, e tirar o que foi
@@ -625,12 +784,7 @@ public class Player extends MyMapItem { //implements ClusterItem{
 
     }
 
-    public void updateChampionshipsCount(){
 
-        //this.countChamps();
-        this.countFirstPlace();
-        this.countSecondPlace();
-    }
 
 
 //    private void getPlayersUpdates(com.google.firebase.database.DataSnapshot dataSnapshot) {
@@ -659,6 +813,13 @@ public class Player extends MyMapItem { //implements ClusterItem{
         FirebaseDatabase.getInstance().getReference().child("players")
                 .child(getId())
                 .updateChildren(mResult);
+    }
+
+    @Exclude
+    public String getTotalMatches(){
+        Integer total = this.getWin() + this.getLoss();
+
+        return String.valueOf(total);
     }
 
     public void makePublic(){

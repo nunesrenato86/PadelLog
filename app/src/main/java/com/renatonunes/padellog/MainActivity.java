@@ -44,6 +44,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -96,8 +97,10 @@ import com.google.firebase.storage.UploadTask;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.renatonunes.padellog.adapters.RankingAdapter;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.ChampionshipSummary;
+import com.renatonunes.padellog.domain.Match;
 import com.renatonunes.padellog.domain.MyMapItem;
 import com.renatonunes.padellog.domain.Player;
 import com.renatonunes.padellog.domain.util.AlertUtils;
@@ -114,6 +117,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -303,6 +307,12 @@ public class MainActivity extends CommonActivity
 
     ArrayList<Championship> championships = new ArrayList<Championship>();
     ArrayList<Player> players = new ArrayList<Player>();
+
+    ArrayList<Championship> myChampionships = new ArrayList<Championship>();
+    ArrayList<Match> myMatches = new ArrayList<Match>();
+
+    private Boolean alreadyCounted = false;
+    private Boolean alreadyCalledProfile = false;
 
     HashMap<String, MyMapItem> mMarkerPlayerMap = new HashMap<String, MyMapItem>();
 
@@ -699,6 +709,8 @@ public class MainActivity extends CommonActivity
         }
 
         updatePlayerPlace();
+
+        countMatches();// testar isso aqui e testar no user do google
 
         //convertPhoto();
 
@@ -1203,6 +1215,10 @@ public class MainActivity extends CommonActivity
             championship.setPhotoUrl(ds.getValue(Championship.class).getPhotoUrl());
             championship.setTrophyUrl(ds.getValue(Championship.class).getTrophyUrl());
 
+            championship.setWin(ds.getValue(Championship.class).getWin());
+            championship.setLoss(ds.getValue(Championship.class).getLoss());
+            championship.setRatio(ds.getValue(Championship.class).getRatio());
+
             //championship.setPlayer(mPlayer);
 
             championship.setContext(this);
@@ -1567,6 +1583,8 @@ public class MainActivity extends CommonActivity
                     mPlayer.getCategory(),
                     mPlayer,
                     true);
+
+            //countMatches();
         }
     }
 
@@ -1865,11 +1883,173 @@ public class MainActivity extends CommonActivity
 
         }
     }
+
+    private void countMatches(){
+        if ((mPlayer.getWin() == null) && (mPlayer.getTotalChampionship() > 0)) {
+
+            mProgressDialog.setMessage(getResources().getString(R.string.msg_update_count));
+
+            mProgressDialog.show();
+
+            myChampionships.clear();
+            myMatches.clear();
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+            final String userId = user.getUid();
+
+            FirebaseDatabase.getInstance().getReference().child("championships").child(userId).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!alreadyCounted) {
+                        getMyChampionshipsUpdates(dataSnapshot);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+    }
+
+    private void getMyChampionshipsUpdates(com.google.firebase.database.DataSnapshot dataSnapshot) {
+
+        for (com.google.firebase.database.DataSnapshot ds: dataSnapshot.getChildren()) {
+            Championship championship = new Championship();
+            championship.setId(ds.getKey());
+            championship.setName(ds.getValue(Championship.class).getName());
+
+            String owner = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            championship.setOwner(owner);
+            championship.setPartner(ds.getValue(Championship.class).getPartner());
+            championship.setPlace(ds.getValue(Championship.class).getPlace());
+            championship.setResult(ds.getValue(Championship.class).getResult());
+            championship.setImageStr(ds.getValue(Championship.class).getImageStr());
+            championship.setLat(ds.getValue(Championship.class).getLat());
+            championship.setLng(ds.getValue(Championship.class).getLng());
+            championship.setInitialDate(ds.getValue(Championship.class).getInitialDate());
+            championship.setFinalDate(ds.getValue(Championship.class).getFinalDate());
+            championship.setCategory(ds.getValue(Championship.class).getCategory());
+            championship.setPhotoUrl(ds.getValue(Championship.class).getPhotoUrl());
+            championship.setTrophyUrl(ds.getValue(Championship.class).getTrophyUrl());
+
+            championship.setWin(ds.getValue(Championship.class).getWin());
+            championship.setLoss(ds.getValue(Championship.class).getLoss());
+            championship.setRatio(ds.getValue(Championship.class).getRatio());
+
+            championship.setPlayer(mPlayer);
+
+            championship.setContext(this);
+
+            myChampionships.add(championship);
+        }
+
+        for (final Championship mChampionship: myChampionships){
+            //Log.d("RNN", key);
+
+            FirebaseDatabase.getInstance().getReference().child("matches").child(mChampionship.getId()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    getMyMatchesUpdates(dataSnapshot, mChampionship);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    private void getMyMatchesUpdates(com.google.firebase.database.DataSnapshot dataSnapshot, Championship championship) {
+
+        //aqui ta chegando a chave Kq5kovhzz_wVmMW8t3A q eh a do torneio
+        //        tem q chegar a Kqm__FuHq-aPPlNL_ik q eh a da partida
+        //Integer win = 0;
+        //Integer loss = 0;
+
+        for (com.google.firebase.database.DataSnapshot ds : dataSnapshot.getChildren()) {
+            Match match = new Match();
+
+            String key = ds.getKey();
+
+            match.setId(key);
+            match.setOpponentBackdrive(ds.getValue(Match.class).getOpponentBackdrive());
+            match.setOpponentDrive(ds.getValue(Match.class).getOpponentDrive());
+            match.setOwner(ds.getValue(Match.class).getOwner());
+            match.setSet1Score1(ds.getValue(Match.class).getSet1Score1());
+            match.setSet1Score2(ds.getValue(Match.class).getSet1Score2());
+            match.setSet2Score1(ds.getValue(Match.class).getSet2Score1());
+            match.setSet2Score2(ds.getValue(Match.class).getSet2Score2());
+            match.setSet3Score1(ds.getValue(Match.class).getSet3Score1());
+            match.setSet3Score2(ds.getValue(Match.class).getSet3Score2());
+            match.setRound(ds.getValue(Match.class).getRound());
+            match.setImageStr(ds.getValue(Match.class).getImageStr());
+            match.setPhotoUrl(ds.getValue(Match.class).getPhotoUrl());
+            //match.setTeam1(myName + " / " + mCurrentChampionship.getPartner());
+            match.setContext(mContext);
+            match.setChampionship(championship);
+
+            //if (player.getIsPublic()){
+            //    myMatches.add(match);
+            //}
+
+//            if (match.isVictory()){
+//                win = win++;
+//            }else{
+//                loss = loss++;
+//            }
+
+            if (match.getChampionship() != null){
+                if (match.isVictory()) {
+                    //this.getChampionship().getPlayer().incWin();
+                    match.getChampionship().incWin();
+                }else{
+                    //this.getChampionship().getPlayer().incLoss();
+                    match.getChampionship().incLoss();
+                }
+            }
+        }
+
+        alreadyCounted = true;
+        mProgressDialog.dismiss();
+
+        if (!alreadyCalledProfile) {
+            EditProfileActivity.start(mContext, mPlayer, false);
+            alreadyCalledProfile = true;
+        }
+
+        //TODO:fazer abrir o perfil para mostrar o numero de jogos e o ratio
+        //TODO: layout do numero de jogos no perfil
+
+//        if (isShowingChampionships){
+//            getChampionships();
+//        }else{
+//            getPlayers();
+//        }
+
+//        for(Match m: myMatches){
+//            if (m.isVictory()){
+//                win = win + 1;
+//            }else{
+//                loss = loss + 1;
+//            }
+//
+//
+//        }
+
+
+//        Toast.makeText(mContext,
+//                "W: " + String.valueOf(win) + "/ L: " + String.valueOf(loss)
+//                , Toast.LENGTH_SHORT).show();
+
+
+        //hideProgressDialog();
+
+    }
 }
 
 
-//if (isLoading){
-//        updatePlayerPlace();
-//
-//        convertPhoto();
-//        }

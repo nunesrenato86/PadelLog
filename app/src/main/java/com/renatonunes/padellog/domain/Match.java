@@ -35,6 +35,18 @@ public class Match {
     private Integer set3Score1;
     private Integer set3Score2;
 
+    @Exclude
+    public Championship getChampionship() {
+        return championship;
+    }
+
+    @Exclude
+    public void setChampionship(Championship championship) {
+        this.championship = championship;
+    }
+
+    private Championship championship;
+
     private Uri photoUriDownloaded;
 
     public Uri getPhotoUriDownloaded() {
@@ -275,6 +287,17 @@ public class Match {
         else{
             firebase.setValue(this, completionListener[0]);
         }
+
+        if (this.getChampionship() != null){
+            if (this.isVictory()) {
+                //this.getChampionship().getPlayer().incWin();
+                this.getChampionship().incWin();
+            }else{
+                //this.getChampionship().getPlayer().incLoss();
+                this.getChampionship().incLoss();
+            }
+        }
+
     }
 
     public void updateDB( DatabaseReference.CompletionListener... completionListener ){
@@ -282,6 +305,7 @@ public class Match {
         DatabaseReference firebase = FirebaseDatabase.getInstance().getReference().child("matches").child(getOwner()).child( getId() );
 
         Map<String, Object> map = new HashMap<>();
+
         setDataInMap(map);
 
         if( map.isEmpty() ){

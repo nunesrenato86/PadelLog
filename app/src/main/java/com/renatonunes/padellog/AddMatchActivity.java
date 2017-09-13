@@ -430,14 +430,18 @@ public class AddMatchActivity extends CommonActivity {
 
         if (currentChampionship != null) {
             boolean isNewMatch = false;
+            boolean wasVictory = false;
 
             if (mCurrentMatch == null) { //not editing
                 isNewMatch = true;
                 mCurrentMatch = new Match();
+            }else{
+                wasVictory = mCurrentMatch.isVictory();
             }
             mCurrentMatch.setOpponentBackdrive(edtOpponentBackdrive.getText().toString());
             mCurrentMatch.setOpponentDrive(edtOpponentDrive.getText().toString());
             mCurrentMatch.setOwner(currentChampionship.getId());
+            mCurrentMatch.setChampionship(currentChampionship);
 
             int value;
 
@@ -531,6 +535,7 @@ public class AddMatchActivity extends CommonActivity {
                     UploadTask uploadTask = playersRef.putBytes(bytes);
                     final boolean finalIsNewMatch = isNewMatch;
 
+                    final boolean finalWasVictory = wasVictory;
                     uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
@@ -553,6 +558,7 @@ public class AddMatchActivity extends CommonActivity {
                                 mCurrentMatch.saveDB();
                             }else{
                                 mCurrentMatch.updateDB();
+                                updateWinLoss(finalWasVictory);
                                 MatchInfoActivity.mCurrentMatch.setPhotoUriDownloaded(downloadUrl);
                             }
 
@@ -580,17 +586,18 @@ public class AddMatchActivity extends CommonActivity {
                         }
                     });
                 }else{
-                    saveMatchWithoutPhoto(isNewMatch);
+                    saveMatchWithoutPhoto(isNewMatch, wasVictory);
                 }
             }else {
-                saveMatchWithoutPhoto(isNewMatch);
+                saveMatchWithoutPhoto(isNewMatch, wasVictory);
             }
         }
 
     }
 
-    private void saveMatchWithoutPhoto(Boolean isNew){
+    private void saveMatchWithoutPhoto(Boolean isNew, Boolean wasVictory){
         mCurrentMatch.setImageStr(mCurrentMatchImageStr);
+        mCurrentMatch.setChampionship(currentChampionship);
 
         if (!hasPhoto) {
             mCurrentMatch.setPhotoUrl(null);
@@ -602,6 +609,8 @@ public class AddMatchActivity extends CommonActivity {
             mCurrentMatch.saveDB();
         }else{
             mCurrentMatch.updateDB();
+
+            updateWinLoss(wasVictory);
         }
 
         currentChampionship.updateResult();
@@ -612,6 +621,17 @@ public class AddMatchActivity extends CommonActivity {
         showSnackbar(fabMatchPhoto,
                 getResources().getString(R.string.msg_match_saved)
         );
+    }
+
+    private void updateWinLoss(Boolean wasVictory){
+        if ((mCurrentMatch.isVictory()) && (!wasVictory)){ //eh vitoria agora, e nao era vitoria
+            mCurrentMatch.getChampionship().incWin();
+            mCurrentMatch.getChampionship().decLoss(1);
+
+        }else if ((!mCurrentMatch.isVictory()) && (wasVictory)){ //eh derrota agora, e era vitoria
+            mCurrentMatch.getChampionship().incLoss();
+            mCurrentMatch.getChampionship().decWin(1);
+        }
     }
 
     protected void onDestroy() {

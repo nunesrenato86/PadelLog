@@ -336,6 +336,8 @@ public class ChampionshipInfoActivity extends CommonActivity
 
     public void deleteChampionship(){
         currentChampionship.getPlayer().decTotalChampionship();
+        currentChampionship.getPlayer().decWin(currentChampionship.getWin());
+        currentChampionship.getPlayer().decLoss(currentChampionship.getLoss());
 
         FirebaseDatabase.getInstance().getReference()
                 .child("championships")
@@ -460,7 +462,15 @@ public class ChampionshipInfoActivity extends CommonActivity
             //https://stackoverflow.com/questions/41404478/how-to-get-a-bitmap-from-an-imageview
         }
         else{
-            TopImage.setImageResource(R.drawable.no_photo);
+            if (currentChampionship.haveTrophy()){
+                Ion.with(TopImage)
+                        .placeholder(R.drawable.no_photo)
+                        .load(currentChampionship.getTrophyUrl());
+
+            }else{
+                TopImage.setImageResource(R.drawable.no_photo);
+            }
+
         }
 
 		//setting championship title

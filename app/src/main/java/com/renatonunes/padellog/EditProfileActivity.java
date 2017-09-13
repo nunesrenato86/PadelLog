@@ -8,6 +8,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -20,6 +22,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -37,6 +40,17 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -73,10 +87,17 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class EditProfileActivity extends CommonActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener,
+        OnChartValueSelectedListener {
 
     Animation fabRotateClockwise;
     Animation fabRotateAntiClockwise;
+
+    @BindView(R.id.chart_winloss)
+    PieChart mChart;
+
+    protected Typeface mTfRegular;
+    protected Typeface mTfLight;
 
     @BindView(R.id.edit_profile_layout)
     LinearLayout linearLayout;
@@ -344,6 +365,7 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
             lblChampionCount.setText( String.valueOf(currentPlayer.getTotalFirstPlace()));
             lblVicesCount.setText( String.valueOf(currentPlayer.getTotalSecondPlace()));
+
             lblAllChampionshipsCount.setText( String.valueOf(currentPlayer.getTotalChampionship()));
 
             if (currentPlayer.getPhotoUriDownloaded() != null) {
@@ -382,6 +404,153 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
                 //}
             }
         }
+
+        populateChart();
+    }
+
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+        if (e == null)
+            return;
+        Log.i("VAL SELECTED",
+                "Value: " + e.getY() + ", index: " + h.getX()
+                        + ", DataSet index: " + h.getDataSetIndex());
+    }
+
+    @Override
+    public void onNothingSelected() {
+
+        Log.i("PieChart", "nothing selected");
+    }
+
+    private SpannableString generateCenterSpannableText() {
+
+        SpannableString s = new SpannableString(String.valueOf(currentPlayer.getRatio()));//\ndeveloped by Philipp Jahoda");
+//        SpannableString s = new SpannableString("MPAndroidChart\ndeveloped by Philipp Jahoda");
+//        s.setSpan(new RelativeSizeSpan(1.7f), 0, 14, 0);
+//        s.setSpan(new StyleSpan(Typeface.NORMAL), 14, s.length() - 15, 0);
+//        s.setSpan(new ForegroundColorSpan(Color.GRAY), 14, s.length() - 15, 0);
+//        s.setSpan(new RelativeSizeSpan(.8f), 14, s.length() - 15, 0);
+//        s.setSpan(new StyleSpan(Typeface.ITALIC), s.length() - 14, s.length(), 0);
+//        s.setSpan(new ForegroundColorSpan(ColorTemplate.getHoloBlue()), s.length() - 14, s.length(), 0);
+        return s;
+    }
+
+    private void populateChart(){
+        if (currentPlayer != null) {
+
+            mChart.setUsePercentValues(true);
+            mChart.setDescription(currentPlayer.getTotalMatches() + " " + getResources().getString(R.string.tab_matches));
+            mChart.setExtraOffsets(0, 0, 0, 0);
+
+            mChart.setDragDecelerationFrictionCoef(0.95f);
+
+            //mChart.setCenterTextTypeface(mTfLight);
+            //mChart.setCenterText(generateCenterSpannableText());
+
+            mChart.setDrawHoleEnabled(true);
+            mChart.setHoleColor(Color.WHITE);
+
+            mChart.setTransparentCircleColor(Color.WHITE);
+            mChart.setTransparentCircleAlpha(110);
+
+            mChart.setHoleRadius(58f);
+            mChart.setTransparentCircleRadius(61f);
+
+            //mChart.setDrawCenterText(true);
+
+            mChart.setRotationAngle(0);
+            // enable rotation of the chart by touch
+            mChart.setRotationEnabled(true);
+            mChart.setHighlightPerTapEnabled(true);
+
+            // mChart.setUnit(" €");
+            // mChart.setDrawUnitsInChart(true);
+
+            // add a selection listener
+            mChart.setOnChartValueSelectedListener(this);
+
+            setData();
+
+            mChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+// mChart.spin(2000, 0, 360);
+
+//            Legend l = mChart.getLegend();
+//            l.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
+//            l.setXEntrySpace(7f);
+//            l.setYEntrySpace(0f);
+//            l.setYOffset(0f);
+
+            // entry label styling
+            //mChart.setEntryLabelColor(Color.WHITE);
+            mChart.setEntryLabelColor(Color.BLACK);
+            mChart.setEntryLabelTypeface(mTfRegular);
+            mChart.setEntryLabelTextSize(10f);
+        }
+    }
+
+    private void setData() {
+
+        ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
+
+        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
+        // the chart.
+        if (currentPlayer.getWin() > 0){
+            entries.add(new PieEntry(currentPlayer.getWin(), "Vitórias: " + String.valueOf(currentPlayer.getWin())));//getResources().getString(R.string.result_name_none)));
+        }
+
+        if (currentPlayer.getLoss() > 0){
+            entries.add(new PieEntry(currentPlayer.getLoss(), "Derrotas: " + String.valueOf(currentPlayer.getLoss())));//getResources().getString(R.string.round_4)));
+        }
+
+//        if (currentPlayer.getRatio() > 0){
+//            entries.add(new PieEntry(currentPlayer.getRatio(), getResources().getString(R.string.round_8)));
+//        }
+
+        PieDataSet dataSet = new PieDataSet(entries, "");
+        dataSet.setSliceSpace(3f);
+        dataSet.setSelectionShift(5f);
+
+        // add a lot of colors
+
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+
+//        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+//            colors.add(c);
+//
+//        for (int c : ColorTemplate.JOYFUL_COLORS)
+//            colors.add(c);
+//
+//        for (int c : ColorTemplate.COLORFUL_COLORS)
+//            colors.add(c);
+//
+//        for (int c : ColorTemplate.LIBERTY_COLORS)
+//            colors.add(c);
+//
+//        for (int c : ColorTemplate.PASTEL_COLORS)
+//            colors.add(c);
+
+        //colors.add(ColorTemplate.getHoloBlue());
+
+        colors.add(Color.GREEN);
+        colors.add(Color.RED);
+
+        dataSet.setColors(colors);
+        //dataSet.setSelectionShift(0f);
+
+        PieData data = new PieData(dataSet);
+        data.setValueFormatter(new PercentFormatter());
+        data.setValueTextSize(11f);
+        //data.setValueTextColor(Color.WHITE);
+        data.setValueTextColor(Color.BLACK);
+        data.setValueTypeface(mTfLight);
+
+        mChart.setData(data);
+
+        // undo all highlights
+        mChart.highlightValues(null);
+
+        mChart.invalidate();
     }
 
     private void initSpinner(){

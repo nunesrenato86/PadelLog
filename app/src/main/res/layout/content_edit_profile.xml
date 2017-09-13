@@ -139,76 +139,115 @@
         android:weightSum="1"
         android:layout_marginTop="15dp"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="fill_parent">
 
-
-        <ImageView
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:weightSum="1"
+            android:layout_marginTop="15dp"
             android:layout_width="0dp"
-            android:layout_weight="0.34"
-            android:layout_height="wrap_content"
-            android:id="@+id/img_allchampionships_count"
-            android:layout_gravity="center"
-            android:visibility="visible"
-            android:src="@drawable/all_champs"/>
+            android:layout_weight="0.6"
+            android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_weight="0.33"
-            android:layout_height="wrap_content"
-            android:id="@+id/img_champion_count"
-            android:layout_gravity="center"
-            android:visibility="visible"
-            android:src="@drawable/trophy_gold_32"/>
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:layout_marginTop="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
 
-        <ImageView
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.34"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/img_allchampionships_count"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:src="@drawable/all_champs"/>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.33"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/img_champion_count"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:src="@drawable/trophy_gold_32"/>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.33"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/img_vice_count"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:src="@drawable/trophy_silver_32"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:layout_marginTop="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.34"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lbl_all_championships"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:textAlignment="center"
+                    android:text="13"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.33"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lbl_champions"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:textAlignment="center"
+                    android:text="3"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.33"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lbl_vices"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:visibility="visible"
+                    android:text="1"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:layout_marginTop="15dp"
             android:layout_width="0dp"
-            android:layout_weight="0.33"
-            android:layout_height="wrap_content"
-            android:id="@+id/img_vice_count"
-            android:layout_gravity="center"
-            android:visibility="visible"
-            android:src="@drawable/trophy_silver_32"/>
+            android:layout_weight="0.4"
+            android:layout_height="fill_parent">
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chart_winloss"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/menu_save" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
-        android:weightSum="1"
-        android:layout_marginTop="15dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.34"
-            android:layout_height="wrap_content"
-            android:id="@+id/lbl_all_championships"
-            android:layout_gravity="center"
-            android:visibility="visible"
-            android:textAlignment="center"
-            android:text="13"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.33"
-            android:layout_height="wrap_content"
-            android:id="@+id/lbl_champions"
-            android:layout_gravity="center"
-            android:visibility="visible"
-            android:textAlignment="center"
-            android:text="3"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.33"
-            android:layout_height="wrap_content"
-            android:id="@+id/lbl_vices"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:visibility="visible"
-            android:text="1"/>
 
-    </LinearLayout>
 
 </LinearLayout>

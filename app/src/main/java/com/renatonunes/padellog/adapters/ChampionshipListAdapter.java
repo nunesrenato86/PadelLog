@@ -100,9 +100,16 @@ public class ChampionshipListAdapter extends RecyclerView.Adapter<ChampionshipLi
             holder.championshipImage.setImageBitmap(ImageFactory.imgStrToImage(holder.currentChampionship.getImageStr()));
 
         }else{
-            holder.championshipImage.setImageBitmap(null);
-            //holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
-            holder.championshipImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
+            if (holder.currentChampionship.haveTrophy()){
+                Ion.with(holder.championshipImage)
+                        .placeholder(R.drawable.no_photo)
+                        .load(holder.currentChampionship.getTrophyUrl());
+
+            }else {
+                holder.championshipImage.setImageBitmap(null);
+                //holder.championshipImage.setBackgroundResource(R.drawable.no_photo);
+                holder.championshipImage.setImageDrawable(context.getResources().getDrawable(R.drawable.no_photo));
+            }
         }
 
         holder.championshipTitle.setText(championships.get(position).getName());

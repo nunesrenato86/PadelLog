@@ -218,6 +218,10 @@ public class ChampionshipListActivity extends CommonActivity {
         championship.setCategory(dataSnapshot.getValue(Championship.class).getCategory());
         championship.setTrophyUrl(dataSnapshot.getValue(Championship.class).getTrophyUrl());
 
+        championship.setWin(dataSnapshot.getValue(Championship.class).getWin());
+        championship.setLoss(dataSnapshot.getValue(Championship.class).getLoss());
+        championship.setRatio(dataSnapshot.getValue(Championship.class).getRatio());
+
         championship.setPlayer(mPlayer);
 
         championship.setContext(this);

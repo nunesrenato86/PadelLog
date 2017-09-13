@@ -182,6 +182,19 @@ public class MatchInfoActivity extends CommonActivity {
     }
 
     private void deleteMatch(){
+		if (mCurrentMatch.isVictory()){
+			//mCurrentChampionship.getPlayer().decWin(1);
+			mCurrentChampionship.decWin(1);
+		}else{
+			//mCurrentChampionship.getPlayer().decLoss(1);
+			mCurrentChampionship.decLoss(1);
+		}
+
+		//TODO: falta quando troca de vitoria para derrota e vice versa
+		//TODO: fatta quando deleta um campeonato inteiro
+		// - para isso salvar o numero de win e loss e ratio tb no campeonato e usar declos(champ.qtdloss)
+		//calc ratio do camponato tb
+
         FirebaseDatabase.getInstance().getReference()
                 .child("matches")
                 .child(mCurrentChampionship.getId())
