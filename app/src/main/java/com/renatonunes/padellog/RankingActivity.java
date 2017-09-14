@@ -116,7 +116,14 @@ public class RankingActivity extends CommonActivity {
                             case 1:
                                 refreshData("totalFirstPlace");
                                 break;
+//                            case 2:
+//                                refreshData("totalSecondPlace");
+//                                break;
+//                            case 3:
+//                                refreshData("win");
+//                                break;
                             default:
+                                //refreshData("ratio");
                                 refreshData("totalSecondPlace");
                                 break;
                         }
@@ -260,6 +267,10 @@ public class RankingActivity extends CommonActivity {
             player.setTotalChampionship(ds.getValue(Player.class).getTotalChampionship());
             player.setTotalFirstPlace(ds.getValue(Player.class).getTotalFirstPlace());
             player.setTotalSecondPlace(ds.getValue(Player.class).getTotalSecondPlace());
+
+            player.setWin(ds.getValue(Player.class).getWin());
+            player.setLoss(ds.getValue(Player.class).getLoss());
+            player.setRatio(ds.getValue(Player.class).getRatio());
 
             //player.setContext(this);
 

@@ -2022,8 +2022,6 @@ public class MainActivity extends CommonActivity
             alreadyCalledProfile = true;
         }
 
-        //TODO:fazer abrir o perfil para mostrar o numero de jogos e o ratio
-        //TODO: layout do numero de jogos no perfil
 
 //        if (isShowingChampionships){
 //            getChampionships();

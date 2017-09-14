@@ -11,8 +11,10 @@
     </array>
 
     <array name="ranking_type">
-        <item>Todos</item>
+        <item>Todos campeonatos</item>
         <item>Campeão</item>
         <item>Vice-campeão</item>
+        <!--item>Nº vitórias</item>
+        <item>% vitórias</item!-->
     </array>
 </resources>

@@ -9,8 +9,8 @@ android {
         applicationId "com.renatonunes.padellog"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 36
-        versionName "4.7"
+        versionCode 37
+        versionName "4.8"
         multiDexEnabled true
 
     }

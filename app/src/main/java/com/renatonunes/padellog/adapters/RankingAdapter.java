@@ -63,14 +63,25 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingViewHolder> {
 
         switch(mRankingFilter) {
             case "totalChampionship":
+                holder.imgTrophy.setVisibility(View.VISIBLE);
                 holder.imgTrophy.setImageResource(R.drawable.all_champs);
                 holder.number.setText(String.valueOf(holder.currentPlayer.getTotalChampionship()));
                 break;
             case "totalFirstPlace":
+                holder.imgTrophy.setVisibility(View.VISIBLE);
                 holder.imgTrophy.setImageResource(R.drawable.trophy_gold_32);
                 holder.number.setText(String.valueOf(holder.currentPlayer.getTotalFirstPlace()));
                 break;
+//            case "win":
+//                holder.imgTrophy.setVisibility(View.GONE);
+//                holder.number.setText(String.valueOf(holder.currentPlayer.getWin()));
+//                break;
+//            case "ratio":
+//                holder.imgTrophy.setVisibility(View.GONE);
+//                holder.number.setText(String.valueOf(holder.currentPlayer.getRatio()));
+//                break;
             default:
+                holder.imgTrophy.setVisibility(View.VISIBLE);
                 holder.imgTrophy.setImageResource(R.drawable.trophy_silver_32);
                 holder.number.setText(String.valueOf(holder.currentPlayer.getTotalSecondPlace()));
                 break;

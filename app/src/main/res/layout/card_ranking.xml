@@ -83,12 +83,12 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="20dp"
+                android:layout_width="30dp"
                 android:layout_height="20dp"
                 android:id="@+id/item_number"
                 android:textSize="16sp"
                 android:layout_gravity="start|center_vertical"
-                android:text="14"/>
+                android:text="999"/>
 
             <ImageView
                 android:layout_width="0dp"
