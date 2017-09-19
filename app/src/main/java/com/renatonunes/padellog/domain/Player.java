@@ -27,6 +27,8 @@ import com.renatonunes.padellog.domain.util.LibraryClass;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -97,6 +99,14 @@ public class Player extends MyMapItem { //implements ClusterItem{
         return win;
     }
 
+    public Integer getWinForUI() {
+        if (win == null){
+            return 0;
+        }else{
+            return win;
+        }
+    }
+
     public void setWin(Integer win) {
         this.win = win;
     }
@@ -105,12 +115,30 @@ public class Player extends MyMapItem { //implements ClusterItem{
         return loss;
     }
 
+    public Integer getLossForUI() {
+        if (loss == null){
+            return 0;
+        }else{
+            return loss;
+        }
+    }
+
     public void setLoss(Integer loss) {
         this.loss = loss;
     }
 
     public Double getRatio() {
         return ratio;
+    }
+
+    public String getRatioForUI() {
+        if (ratio == null){
+            return "0,00%";
+        }else{
+            NumberFormat formatter = new DecimalFormat("#0.00");
+
+            return formatter.format(ratio) + "%";
+        }
     }
 
     public void setRatio(Double ratio) {
@@ -817,9 +845,18 @@ public class Player extends MyMapItem { //implements ClusterItem{
 
     @Exclude
     public String getTotalMatches(){
-        Integer total = this.getWin() + this.getLoss();
+        Integer win = 0;
+        Integer loss = 0;
 
-        return String.valueOf(total);
+        if (this.win != null){
+            win = this.win;
+        }
+
+        if (this.loss != null){
+            loss = this.loss;
+        }
+
+        return String.valueOf(win + loss);
     }
 
     public void makePublic(){

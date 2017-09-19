@@ -109,22 +109,29 @@ public class RankingActivity extends CommonActivity {
                 dialogBuilder.setItems(getResources().getStringArray(R.array.ranking_type), new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
+                        ActionBar actionbar = getSupportActionBar();
+
                         switch(which) {
                             case 0:
+                                actionbar.setSubtitle(getResources().getString(R.string.subtitle_ranking_all));
                                 refreshData("totalChampionship");
                                 break;
                             case 1:
+                                actionbar.setSubtitle(getResources().getString(R.string.subtitle_ranking_firstplace));
                                 refreshData("totalFirstPlace");
                                 break;
-//                            case 2:
-//                                refreshData("totalSecondPlace");
-//                                break;
-//                            case 3:
-//                                refreshData("win");
-//                                break;
-                            default:
-                                //refreshData("ratio");
+                            case 2:
+                                actionbar.setSubtitle(getResources().getString(R.string.subtitle_ranking_secondplace));
                                 refreshData("totalSecondPlace");
+                                break;
+                            case 3:
+                                actionbar.setSubtitle(getResources().getString(R.string.subtitle_ranking_victory));
+                                refreshData("win");
+                                break;
+                            default:
+                                actionbar.setSubtitle(getResources().getString(R.string.subtitle_ranking_percent));
+                                refreshData("ratio");
+                                //refreshData("totalSecondPlace");
                                 break;
                         }
                     }
@@ -142,6 +149,7 @@ public class RankingActivity extends CommonActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
 
         actionbar.setTitle(getResources().getString(R.string.nav_ranking));
+        actionbar.setSubtitle(getResources().getString(R.string.subtitle_ranking_all));
 
 //        if (mIsModeReadOnly){
 //            fabAddAcademy.setVisibility(View.INVISIBLE);

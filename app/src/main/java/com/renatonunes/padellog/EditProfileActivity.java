@@ -363,10 +363,10 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
             edtProfilePlace.setText(currentPlayer.getPlace());
             switchProfilePublic.setChecked(currentPlayer.getIsPublic());
 
-            lblChampionCount.setText( String.valueOf(currentPlayer.getTotalFirstPlace()));
-            lblVicesCount.setText( String.valueOf(currentPlayer.getTotalSecondPlace()));
+            lblChampionCount.setText(String.valueOf(currentPlayer.getTotalFirstPlace()));
+            lblVicesCount.setText(String.valueOf(currentPlayer.getTotalSecondPlace()));
 
-            lblAllChampionshipsCount.setText( String.valueOf(currentPlayer.getTotalChampionship()));
+            lblAllChampionshipsCount.setText(String.valueOf(currentPlayer.getTotalChampionship()));
 
             if (currentPlayer.getPhotoUriDownloaded() != null) {
                 Picasso.with(getApplicationContext()).load(currentPlayer.getPhotoUriDownloaded().toString()).into(imgProfile);
@@ -495,12 +495,12 @@ public class EditProfileActivity extends CommonActivity implements GoogleApiClie
 
         // NOTE: The order of the entries when being added to the entries array determines their position around the center of
         // the chart.
-        if (currentPlayer.getWin() > 0){
-            entries.add(new PieEntry(currentPlayer.getWin(), "Vitórias: " + String.valueOf(currentPlayer.getWin())));//getResources().getString(R.string.result_name_none)));
+        if (currentPlayer.getWinForUI() > 0){
+            entries.add(new PieEntry(currentPlayer.getWinForUI(), "Vitórias: " + String.valueOf(currentPlayer.getWinForUI())));//getResources().getString(R.string.result_name_none)));
         }
 
-        if (currentPlayer.getLoss() > 0){
-            entries.add(new PieEntry(currentPlayer.getLoss(), "Derrotas: " + String.valueOf(currentPlayer.getLoss())));//getResources().getString(R.string.round_4)));
+        if (currentPlayer.getLossForUI() > 0){
+            entries.add(new PieEntry(currentPlayer.getLossForUI(), "Derrotas: " + String.valueOf(currentPlayer.getLossForUI())));//getResources().getString(R.string.round_4)));
         }
 
 //        if (currentPlayer.getRatio() > 0){

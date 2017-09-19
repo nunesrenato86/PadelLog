@@ -61,7 +61,7 @@
 
     <string name="facebook_app_id">1748665178734590</string>
 
-    <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
+    <string name="my_google_app_id">AIzaSyB9Khl6hPjAQ_BOpLTk7cZ1v1l1fq18Jfc</string>
 
     <!-- release
     <string name="my_google_app_id">AIzaSyDrEQq26elrCB-MxLsry5VmrYu8JqpG9gc</string>
@@ -245,6 +245,12 @@
 
     <string name="title_dlg_select_place">Selecionar</string>
     <string name="title_activity_ranking">Ranking</string>
+    <string name="subtitle_ranking_all">Todos campeonatos</string>
+    <string name="subtitle_ranking_firstplace">Campeões</string>
+    <string name="subtitle_ranking_secondplace">Vice-campeões</string>
+    <string name="subtitle_ranking_victory">Nº de vitórias</string>
+    <string name="subtitle_ranking_percent">% de vitórias</string>
+
 
 
 </resources>

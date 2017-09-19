@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.koushikdutta.ion.Ion;
 import com.renatonunes.padellog.R;
@@ -61,6 +62,9 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingViewHolder> {
             holder.playerImage.setImageResource(R.drawable.com_facebook_profile_picture_blank_square);
         }
 
+        LinearLayout.LayoutParams loparams = (LinearLayout.LayoutParams) holder.number.getLayoutParams();
+        loparams.weight = (float)0.6;
+
         switch(mRankingFilter) {
             case "totalChampionship":
                 holder.imgTrophy.setVisibility(View.VISIBLE);
@@ -72,20 +76,30 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingViewHolder> {
                 holder.imgTrophy.setImageResource(R.drawable.trophy_gold_32);
                 holder.number.setText(String.valueOf(holder.currentPlayer.getTotalFirstPlace()));
                 break;
-//            case "win":
-//                holder.imgTrophy.setVisibility(View.GONE);
-//                holder.number.setText(String.valueOf(holder.currentPlayer.getWin()));
-//                break;
-//            case "ratio":
-//                holder.imgTrophy.setVisibility(View.GONE);
-//                holder.number.setText(String.valueOf(holder.currentPlayer.getRatio()));
-//                break;
+            case "win":
+                holder.imgTrophy.setVisibility(View.GONE);
+
+                // Set only target params:
+                loparams.weight = 1;
+
+                holder.number.setText(String.valueOf(holder.currentPlayer.getWinForUI()));
+                break;
+            case "ratio":
+                holder.imgTrophy.setVisibility(View.GONE);
+
+                // Set only target params:
+                loparams.weight = 1;
+
+                holder.number.setText(String.valueOf(holder.currentPlayer.getRatioForUI()));
+                break;
             default:
                 holder.imgTrophy.setVisibility(View.VISIBLE);
                 holder.imgTrophy.setImageResource(R.drawable.trophy_silver_32);
                 holder.number.setText(String.valueOf(holder.currentPlayer.getTotalSecondPlace()));
                 break;
         }
+
+        holder.number.setLayoutParams(loparams);
 
         holder.playerName.setText(players.get(position).getName());
 

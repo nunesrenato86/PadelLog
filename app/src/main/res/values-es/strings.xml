@@ -248,6 +248,11 @@
 
     <string name="title_dlg_select_place">Seleccionar</string>
     <string name="title_activity_ranking">Ranking</string>
+    <string name="subtitle_ranking_all">Todos campeonatos</string>
+    <string name="subtitle_ranking_firstplace">Campeones</string>
+    <string name="subtitle_ranking_secondplace">Subcampeones</string>
+    <string name="subtitle_ranking_victory">Nº de victorias</string>
+    <string name="subtitle_ranking_percent">% de victorias</string>
 
 
 </resources>

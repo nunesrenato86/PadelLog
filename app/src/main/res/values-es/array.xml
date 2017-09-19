@@ -14,7 +14,7 @@
         <item>Todos campeonatos</item>
         <item>Campeón</item>
         <item>Sub-campeón</item>
-        <!--item>Nº victorias</item>
-        <item>% victorias</item!-->
+        <item>Nº de victorias</item>
+        <item>% de victorias</item>
     </array>
 </resources>
