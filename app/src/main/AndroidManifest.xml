@@ -32,6 +32,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/my_google_app_id" />
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/app_id" />
 
         <activity
             android:name=".MainActivity"
@@ -134,7 +137,10 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-
+        <activity
+            android:name=".AchievmentsActivity"
+            android:label="@string/title_activity_achievments"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

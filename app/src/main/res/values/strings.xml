@@ -88,6 +88,7 @@
     <string name="nav_per_result">Por resultados</string>
     <string name="nav_per_partner">Por parceiro</string>
     <string name="nav_ranking">Ranking</string>
+    <string name="nav_awards">Conquistas</string>
 
 
     <string name="title_activity_championship_list">Meus campeonatos</string>
@@ -250,7 +251,39 @@
     <string name="subtitle_ranking_secondplace">Vice-campeões</string>
     <string name="subtitle_ranking_victory">Nº de vitórias</string>
     <string name="subtitle_ranking_percent">% de vitórias</string>
+    <string name="title_activity_achievments">AchievmentsActivity</string>
 
+
+    <!-- achievement It's just the beginning -->
+    <string name="str_achievement_its_just_the_beginning">É só o começo</string>
+    <string name="str_achievement_its_just_the_beginning_info">10 campeonatos registrados</string>
+    <!-- achievement Expert in championships -->
+    <string name="str_achievement_expert_in_championships">Especialista em campeonatos</string>
+    <string name="str_achievement_expert_in_championships_info">50 campeonatos registrados</string>
+    <!-- achievement Elite player -->
+    <string name="str_achievement_elite_player">Jogador de elite</string>
+    <string name="str_achievement_elite_player_info">100 campeonatos registrados</string>
+    <!-- achievement Rise to stardom -->
+    <string name="str_achievement_rise_to_stardom">Rumo ao estrelato</string>
+    <string name="str_achievement_rise_to_stardom_info">Ganhou 10 campeonatos</string>
+    <!-- achievement Born champion -->
+    <string name="str_achievement_born_champion">Campeão nato</string>
+    <string name="str_achievement_born_champion_info">Ganhou 50 campeonatos</string>
+    <!-- achievement You are a Paddle Legend -->
+    <string name="str_achievement_you_are_a_paddle_legend">Você é uma lenda do pádel</string>
+    <string name="str_achievement_you_are_a_paddle_legend_info">Ganhou 100 campeonatos</string>
+    <!-- achievement Victorious -->
+    <string name="str_achievement_victorious">Vitorioso</string>
+    <string name="str_achievement_victorious_info">Ganhou 200 jogos</string>
+    <!-- achievement Ready to start -->
+    <string name="str_achievement_ready_to_start">Pronto para começar</string>
+    <string name="str_achievement_ready_to_start_info">Completou o seu perfil</string>
+    <!-- achievement Spy -->
+    <string name="str_achievement_spy">Espião</string>
+    <string name="str_achievement_spy_info">Viu campeonatos de outro jogador</string>
+    <!-- achievement Curious -->
+    <string name="str_achievement_curious">Curioso</string>
+    <string name="str_achievement_curious_info">Viu jogos de outros jogadores</string>
 
 
 </resources>

@@ -281,6 +281,7 @@ public class ChampionshipInfoActivity extends CommonActivity
     private void setUIPermission(){
         if (mIsReadOnly){
             fabAddMatch.setVisibility(View.INVISIBLE);
+            MainActivity.mPlayer.setCheckedOtherChampionship(true);
         }else{
             fabAddMatch.setVisibility(View.VISIBLE);
         }

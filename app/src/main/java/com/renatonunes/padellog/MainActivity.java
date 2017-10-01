@@ -62,6 +62,8 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.achievement.Achievement;
 import com.google.android.gms.identity.intents.AddressConstants;
 import com.google.android.gms.identity.intents.UserAddressRequest;
 import com.google.android.gms.identity.intents.model.UserAddress;
@@ -98,6 +100,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.renatonunes.padellog.adapters.RankingAdapter;
+import com.renatonunes.padellog.domain.AllAchievments;
 import com.renatonunes.padellog.domain.Championship;
 import com.renatonunes.padellog.domain.ChampionshipSummary;
 import com.renatonunes.padellog.domain.Match;
@@ -116,8 +119,10 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -333,6 +338,10 @@ public class MainActivity extends CommonActivity
     @BindView(R.id.img_marker)
     ImageView imgMarker;
 
+    // request codes we use when invoking an external activity
+    private static final int RC_RESOLVE = 5000;
+    private static final int RC_UNUSED = 5001;
+    private static final int RC_SIGN_IN = 9001;
 
     private ProgressDialog mProgressDialog;
     private IconGenerator mIconGenerator;
@@ -350,6 +359,9 @@ public class MainActivity extends CommonActivity
     private GoogleApiClient mGoogleApiClient;
     private GoogleApiClient mGoogleMapApiClient;
     private GoogleMap mMap;
+
+    private GoogleApiClient mGoogleGamesApiClient;
+
     private Context mContext;
     public static Player mPlayer = null;
     private Boolean isLoading = true;
@@ -498,6 +510,15 @@ public class MainActivity extends CommonActivity
                     });
         }
 
+        // Create the Google API Client with access to Games
+        mGoogleGamesApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                .build();
+
+
+
 
 //        String token = FirebaseInstanceId.getInstance().getToken();
 //        Log.e("TESTEMSG", "token no service: " + token);
@@ -505,6 +526,196 @@ public class MainActivity extends CommonActivity
 
         new Wait().execute();
     }
+
+    // my games
+
+    private void checkMyAchievmentsUpdates(){
+        if (mPlayer != null){
+
+            //String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            Date date = new Date();
+
+            AllAchievments allAchievments = new AllAchievments();
+
+            allAchievments.setId(mPlayer.getId());
+
+            if (mPlayer.getTotalChampionship() >= 10){
+                allAchievments.setBeggining(1);
+                //allAchievments.setBeggining_d(date);
+                //unlockAchievement(R.string.achievement_its_just_the_beginning);
+            }
+
+            if (mPlayer.getTotalChampionship() >= 50){
+                allAchievments.setExpert(1);
+                //allAchievments.setExpert_d(date);
+                //unlockAchievement(R.string.achievement_expert_in_championships);
+            }
+//
+            if (mPlayer.getTotalChampionship() >= 100){
+                allAchievments.setElite(1);
+                //unlockAchievement(R.string.achievement_elite_player);
+            }
+
+            if (mPlayer.getTotalFirstPlace() >= 10){
+                allAchievments.setStardom(1);
+                //unlockAchievement(R.string.achievement_rise_to_stardom);
+            }
+
+            if (mPlayer.getTotalFirstPlace() >= 50){
+                allAchievments.setBorn(1);
+                //unlockAchievement(R.string.achievement_born_champion);
+            }
+
+            if (mPlayer.getTotalFirstPlace() >= 100){
+                allAchievments.setLegend(1);
+                //unlockAchievement(R.string.achievement_you_are_a_paddle_legend);
+            }
+
+            if (mPlayer.getWinForUI() >= 200){
+                allAchievments.setVictorious(1);
+                //unlockAchievement(R.string.achievement_victorious);
+            }
+
+            if (mPlayer.profileCompleted()){
+                allAchievments.setReady(1);
+                //unlockAchievement(R.string.achievement_ready_to_start);
+            }
+
+            if (mPlayer.isCheckedOtherChampionship()){
+                allAchievments.setSpy(1);
+                //unlockAchievement(R.string.achievement_spy);
+            }
+
+            if (mPlayer.isCheckedOtherMatch()){
+                allAchievments.setCurious(1);
+                //unlockAchievement(R.string.achievement_curious);
+            }
+
+//            allAchievments.saveDB(new DatabaseReference.CompletionListener() {
+//                @Override
+//                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+//
+//                }
+//            });
+            allAchievments.saveDB();
+        }
+    }
+
+    //end my games
+
+
+
+    //games with Google Play Games Service
+
+    @Override
+    public void onConnected (Bundle connectionHint){
+        checkForAchievements();
+
+        Log.d("RNN", Games.Players.getCurrentPlayerId(mGoogleGamesApiClient));
+
+        com.google.android.gms.games.Player player = Games.Players.getCurrentPlayer(mGoogleGamesApiClient);
+
+        Log.d("RNN", player.getDisplayName() +"/" + player.getName());
+
+    }
+
+
+    private boolean isSignedIn() {
+//        boolean isNull = mGoogleGamesApiClient == null;
+//        boolean isConnected = false;
+//
+//        if (mGoogleGamesApiClient != null){
+//            isConnected = mGoogleGamesApiClient.isConnected();
+//        }
+//
+//        return isConnected;
+        return (mGoogleGamesApiClient != null && mGoogleGamesApiClient.isConnected());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("RNN", "onStart(): connecting");
+        mGoogleGamesApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("RNN", "onStop(): disconnecting");
+        if (mGoogleGamesApiClient.isConnected()) {
+            mGoogleGamesApiClient.disconnect();
+        }
+    }
+
+    //@Override
+    public void onShowAchievementsRequested() {
+        if (isSignedIn()) {
+            startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleGamesApiClient),
+                    RC_UNUSED);
+        } else {
+            //BaseGameUtils.makeSimpleDialog(this, getString(R.string.achievements_not_available)).show();
+            //showToast("Nao disponível");
+            checkMyAchievmentsUpdates();
+            AchievmentsActivity.start(mContext, mPlayer.getId());
+        }
+    }
+
+    void checkForAchievements(){
+
+        if ((mPlayer != null) && (isSignedIn())){
+            if (mPlayer.getTotalChampionship() >= 10){
+                unlockAchievement(R.string.achievement_its_just_the_beginning);
+            }
+
+            if (mPlayer.getTotalChampionship() >= 50){
+                unlockAchievement(R.string.achievement_expert_in_championships);
+            }
+
+            if (mPlayer.getTotalChampionship() >= 100){
+                unlockAchievement(R.string.achievement_elite_player);
+            }
+
+            if (mPlayer.getTotalFirstPlace() >= 10){
+                unlockAchievement(R.string.achievement_rise_to_stardom);
+            }
+
+            if (mPlayer.getTotalFirstPlace() >= 50){
+                unlockAchievement(R.string.achievement_born_champion);
+            }
+
+            if (mPlayer.getTotalFirstPlace() >= 100){
+                unlockAchievement(R.string.achievement_you_are_a_paddle_legend);
+            }
+
+            if (mPlayer.getWinForUI() >= 200){
+                unlockAchievement(R.string.achievement_victorious);
+            }
+
+            if (mPlayer.profileCompleted()){
+                unlockAchievement(R.string.achievement_ready_to_start);
+            }
+
+            if (mPlayer.isCheckedOtherChampionship()){
+                unlockAchievement(R.string.achievement_spy);
+            }
+
+            if (mPlayer.isCheckedOtherMatch()){
+                unlockAchievement(R.string.achievement_curious);
+            }
+        }
+    }
+
+
+    void unlockAchievement(int achievementId){//, String fallbackString) {
+        if (isSignedIn()) {
+            Games.Achievements.unlock(mGoogleGamesApiClient, getString(achievementId));
+        } else {
+            Toast.makeText(this, "Não conectado",// + ": " + fallbackString,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+    //end games with google play services
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -710,9 +921,12 @@ public class MainActivity extends CommonActivity
 
         updatePlayerPlace();
 
-        countMatches();// testar isso aqui e testar no user do google
+        countMatches();
 
         //convertPhoto();
+
+        checkForAchievements();
+        checkMyAchievmentsUpdates();
 
         isLoading = false;
     }
@@ -806,6 +1020,8 @@ public class MainActivity extends CommonActivity
                 showPlayers();
             } else if (id == R.id.nav_ranking) {
                 callRanking();
+            } else if (id == R.id.nav_awards) {
+                onShowAchievementsRequested();
             } else if (id == R.id.nav_per_year) {
                 Intent intent = new Intent(this, ChartActivity.class);
                 startActivity(intent);
@@ -824,6 +1040,12 @@ public class MainActivity extends CommonActivity
                     Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 }
 
+                if (mGoogleGamesApiClient != null && mGoogleGamesApiClient.isConnected()) {
+                    Games.signOut(mGoogleGamesApiClient);
+
+                    mGoogleGamesApiClient.disconnect();
+                }
+
                 finish();
             }
         }
@@ -833,9 +1055,9 @@ public class MainActivity extends CommonActivity
         return true;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
-    @Override
-    public void onConnected(Bundle bundle) {
+//    @TargetApi(Build.VERSION_CODES.M)
+//    @Override
+//    public void onConnected(Bundle bundle) {
 
 //        String permissions[] = new String[]{
 //                android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -896,7 +1118,7 @@ public class MainActivity extends CommonActivity
         mMap.setOnCameraChangeListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
         */
-    }
+  //  }
 
 
 //    public void desenharLinha(LatLng inicio, LatLng fim){
@@ -1283,6 +1505,12 @@ public class MainActivity extends CommonActivity
             getChampionships();
         }else{
             getPlayers();
+        }
+
+        if (mPlayer != null) {
+            if (mPlayer.isCheckedOtherChampionship() || mPlayer.isCheckedOtherChampionship() ){
+                checkMyAchievmentsUpdates();
+            }
         }
     }
 

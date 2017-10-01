@@ -48,6 +48,10 @@
                     android:icon="@drawable/ic_menu_partner"
                     android:visible="false"
                     android:title="@string/nav_per_partner" />
+                <item
+                    android:id="@+id/nav_awards"
+                    android:icon="@drawable/ic_award"
+                    android:title="@string/nav_awards" />
             </menu>
         </item>
     </group>

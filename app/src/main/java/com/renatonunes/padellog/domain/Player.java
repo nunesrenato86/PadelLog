@@ -65,6 +65,30 @@ public class Player extends MyMapItem { //implements ClusterItem{
     private Integer loss;
     private Double ratio;
 
+    private boolean checkedOtherChampionship;
+
+    @Exclude
+    public boolean isCheckedOtherChampionship() {
+        return checkedOtherChampionship;
+    }
+
+    @Exclude
+    public void setCheckedOtherChampionship(boolean checkedOtherChampionship) {
+        this.checkedOtherChampionship = checkedOtherChampionship;
+    }
+
+    @Exclude
+    public boolean isCheckedOtherMatch() {
+        return checkedOtherMatch;
+    }
+
+    @Exclude
+    public void setCheckedOtherMatch(boolean checkedOtherMatch) {
+        this.checkedOtherMatch = checkedOtherMatch;
+    }
+
+    private boolean checkedOtherMatch;
+
     private Bitmap markerBitmap;
 
     private Uri photoUriDownloaded;
@@ -883,6 +907,20 @@ public class Player extends MyMapItem { //implements ClusterItem{
     @Exclude
     public boolean isImgFirebase(){
         return ((this.getPhotoUrl() != null) && (this.getPhotoUrl().contains("firebasestorage")));
+    }
+
+    @Exclude
+    public boolean profileCompleted(){
+        boolean havePic = (this.isImgFirebase()) || (this.isImgStrValid());
+
+        boolean haveName = ((this.name != null)) && (!this.name.isEmpty());
+
+        boolean haveCategory = ((this.category != null)) && (this.category != 26); //other
+
+        return havePic
+                && haveName
+                && haveCategory
+                && this.havePlace();
     }
 
 }

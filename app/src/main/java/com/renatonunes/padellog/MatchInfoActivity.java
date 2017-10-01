@@ -122,6 +122,7 @@ public class MatchInfoActivity extends CommonActivity {
 	private void setUIPermission(){
 		if (mIsReadOnly){
 			fabEditMatch.setVisibility(View.INVISIBLE);
+			MainActivity.mPlayer.setCheckedOtherMatch(true);
 		}else{
 			fabEditMatch.setVisibility(View.VISIBLE);
 		}
